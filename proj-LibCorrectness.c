@@ -4,7 +4,7 @@
 #include<math.h>  //fabs
 /*We use column major access and assume args are stored in column major order in accordance with all the other work we did this semester*/
 //the rounding error tolerance
-#define EPSILON 0.000000001
+#define EPSILON 0.000001
 
 //cannot be static when testing
 /*inline static */ double identity(const uint32_t m, const uint32_t n){
@@ -38,19 +38,31 @@ int IsQbyQtransposeIdentity(const double * const Q, const uint32_t m, const uint
   }
   return 1;
 }
-/*Considering that getting perfect equality between two doubles is sometimes nearly impossible we may need to use an epsilon. Function fails fast if any error occurs and doesn't waste time computing rest of the matrix. Function does not store the result of the matrix multiplication, but only compares individually computed elements to elements in A. This function only operates upon square Q and R matrices. NEED to support non-square R. */
-int IsQRequalToA(const double * const Q, const double * const R, const double * const A, const uint32_t n){
+/*
+  Function fails fast if any error occurs and doesn't waste time computing rest 
+  of the matrix. Function does not store the result of the multiplication, but 
+  only compares individually computed elements to elements in A. To support 
+  non-square R, require more args to specify the dimensions of Q and R each.
+  Perhaps structs with bounds would be better and they would know how to multiply
+  against each other... 
+  Q -> pointer to array of doubles in column-major order that represents Q
+  R -> ditto that represents R
+  A -> ditto that represents A
+  Qm, Qn -> the m x n size of Q
+  Rm, Rn -> the m x n size of R
+*/
+int IsQRequalToA(const double * const Q, const double * const R, const double * const A, const uint32_t Qm, const uint32_t Qn, const uint32_t Rm, const uint32_t Rn){
   //for each row i and col j in result
   int verbose = 0;
   double temp = 0.0;
-  for(uint32_t i=0; i<n; i++){
-    for(uint32_t j=0; j<n; j++){
-      for(uint32_t k=0; k<n; k++){
-	temp += Q[i+k*n] * R[k+j*n];
-	if(verbose) printf("\ni:%d j:%d k:%d +=  %-9.9f x %-9.9f",i,j,k,Q[i+k*n],R[k+j*n]);
+  for(uint32_t i=0; i<Qm; i++){
+    for(uint32_t j=0; j<Rn; j++){
+      for(uint32_t k=0; k<Qn; k++){
+	temp += Q[i+k*Qm] * R[k+j*Rm];
+	if(verbose) printf("\ni:%d j:%d k:%d +=  %-9.9f x %-9.9f",i,j,k,Q[i+k*Qm],R[k+j*Rm]);
       }
-      if(fabs(temp - A[i+j*n]) > EPSILON){
-	if(verbose) printf("\nA != QR; element i: %d j: %d should be %-9.15f but computed to be %-9.15f\n", i,j,A[i+j*n],temp);
+      if(fabs(temp - A[i+j*Qm]) > EPSILON){
+	printf("\nA != QR; element i: %d j: %d should be %-9.15f but computed to be %-9.15f\n", i,j,A[i+j*Qm],temp);
 	return 0;
       } else {
 	temp = 0.0;
@@ -76,18 +88,17 @@ int isUpperTriangular(const double * const M, const uint32_t m, const uint32_t n
 }
 
 //Pretty print to user as square array with 5 digits per # with spaces between
-//ensuring columns line up...assumes column major storage of elements (within 
-//our by default and unchangeable row-major memory of C--ugh); prints any sized
-//matrix.
+//ensuring columns line up...assumes column major storage of elements; prints 
+//any sized matrix; must supply m x n dimensions of the matrix
 void print_matrix(const double matrix[], const int m, const int n){
   for(int i = 0; i < m; i++){
     for(int j = 0; j < n; j++){
       if((int)(matrix[i+j*m]) >= 100){
-	printf("%-9.9f ", matrix[i+j*m]);
+	printf("%-9.5f ", matrix[i+j*m]);
       } else if((int)(matrix[i+j*m]) >= 10) {
-	printf(" %-9.9f ", matrix[i+j*m]);
+	printf(" %-9.5f ", matrix[i+j*m]);
       } else {
-	printf("  %-9.9f ", matrix[i+j*m]);
+	printf("  %-9.5f ", matrix[i+j*m]);
       }
     }
     printf("\n");
