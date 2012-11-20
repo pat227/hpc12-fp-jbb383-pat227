@@ -99,8 +99,9 @@ void test_QRisA(){
 void test_QbyQtransposeIsIdentity(){
   double Q[9] = {6.0/7,3.0/7,-2/7.0,   69.0/175,-158/175.0,-6/35.0,
 		 -58/175.0,6.0/175,-33/35.0};
-  /*  THIS CASE FAILS AND BY MY TI-85 it seems QxQt != I, so perhaps it was
-  bad example and not a true QR factorization...but then what is it?
+  /*  THIS CASE FAILS AND BY MY TI-85 as well: QxQt != I, and more to the point, 
+      Q is not m x m; however, Qt x Q does = I so perhaps it was bad example
+      and not a true QR factorization...but then what is it? 
   double Q2[18] = {0.322329186, 0.322329186, 0.161164593, 0.080582296, 
 		   0.483493778, 0.725240668,
 		   0.256776296, 0.513552591, 0.427960493, 0.556348640,
@@ -111,9 +112,20 @@ void test_QbyQtransposeIsIdentity(){
     double Q3[9] = {0.666666667, 0.666666667, 0.333333333,    
 		 -0.630190220, 0.265343251, 0.729693939,      
 		 -0.398014876, 0.696526033, -0.597022314};
-  CU_ASSERT(IsQbyQtransposeIdentity(Q, 3,3) == 1);
-  //CU_ASSERT(IsQbyQtransposeIdentity(Q2, 3,6) == 1);
-  CU_ASSERT(IsQbyQtransposeIdentity(Q3, 3,3) == 1);
+    int verbose = 0;
+  if(verbose){
+    printf("\nOur matrices:");
+    printf("\nQ:\n");
+    print_matrix(Q,3,3);
+    //printf("\nQ2:\n");
+    //print_matrix(Q2,6,3);
+    printf("\nQ3:\n");
+    print_matrix(Q3,3,3);
+  }
+    
+  CU_ASSERT(IsQbyQtransposeIdentity(Q,3) == 1);
+  //  CU_ASSERT(IsQbyQtransposeIdentity(Q2, 6,3) == 1);
+  CU_ASSERT(IsQbyQtransposeIdentity(Q3,3) == 1);
 }
 
 void test_RisUpperTriangular(){

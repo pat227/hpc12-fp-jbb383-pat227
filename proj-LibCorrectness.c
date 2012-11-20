@@ -15,21 +15,25 @@
   }
 }
 /*
-  Apply to Q of the A=QR decomposition. Note that Q is NOT always square. This 
-  function does not store the product matrix, but only computes individual 
-  elements at a time and compares against identity matrix.
-  m -> # of rows of Q
-  n -> # of cols of Q
+  Apply to Q of the A=QR decomposition. Note that Q must be square. I've 
+  seen some decompositions called "QR" where Q is not square...these are
+  not supported. This function does not store the product matrix, but 
+  only computes individual elements at a time and compares against 
+  identity matrix.
+  m -> # of rows and cols of Q
 */
-int IsQbyQtransposeIdentity(const double * const Q, const uint32_t m, const uint32_t n){
+int IsQbyQtransposeIdentity(const double * const Q, const uint32_t m){
   double temp = 0.0;
   int verbose = 0;
   for(uint32_t i=0; i<m; i++){
-    for(uint32_t j=0; j<n; j++){
-      for(uint32_t k=0; k<n; k++){
-	temp += Q[k+i*m] * Q[k+j*m];
+    for(uint32_t j=0; j<m; j++){
+      for(uint32_t k=0; k<m; k++){
+	//QxQt is really computing dot products of all combinations of rows 
+	//(since under transpose rows become columns) , and since Q is 
+	//orthogonal, they should all = 0 except when dot product is with self
+	temp += Q[i+k*m] * Q[j+k*m];
 	if(verbose) printf("\ni:%d j:%d k:%d +=  %-9.9f x %-9.9f",
-			   i,j,k,Q[k+i*m],Q[k+j*m]);
+			   i,j,k,Q[i+k*m],Q[j+k*m]);
       }
       if(fabs(temp - identity(i,j)) > EPSILON){
 	printf("\nElement i: %d j: %d does not comport with I; computed to be %-9.5f\n", i,j, temp);

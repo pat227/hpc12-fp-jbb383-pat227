@@ -2,13 +2,14 @@
 #define MATRIXCHECKS
 //use these as boolean functions
 /* Check for constraint: Q * Qtranspose = I 
-   Apply to Q of the A=QR decomposition. Note that Q is NOT always square. This 
-   function does not store the product matrix, but only computes individual 
-   elements at a time and compares against identity matrix.
-   m -> # of rows of Q
-   n -> # of cols of Q
+   Apply to Q of the A=QR decomposition. Note that Q must be square. I've 
+   seen some decompositions called "QR" where Q is not square...these are
+   not supported. This function does not store the product matrix, but 
+   only computes individual elements at a time and compares against 
+   identity matrix.
+   m -> # of rows and cols of Q
 */
-int IsQbyQtransposeIdentity(const double * const Q, const uint32_t m, const uint32_t n);
+int IsQbyQtransposeIdentity(const double * const Q, const uint32_t m);
 
 /* Check for constraint: A = QR given QR; need additional args for m&n of Q and 
    R each 
