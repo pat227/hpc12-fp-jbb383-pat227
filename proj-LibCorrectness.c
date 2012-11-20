@@ -14,26 +14,28 @@
     return 0.0;
   }
 }
-/*May have to use epsilon here since again getting two doubles to equal is sometimes impossible but they will be very nearly same value. Apply to Q in A=QR.*/
-/*May have to use epsilon here since again getting two doubles to equal is sometimes impossible but they will be very nearly same value. Apply to Q of the A=QR.  Uses the smaller of the width or height. */
+/*
+  Apply to Q of the A=QR decomposition. Note that Q is NOT always square. This 
+  function does not store the product matrix, but only computes individual 
+  elements at a time and compares against identity matrix.
+  m -> # of rows of Q
+  n -> # of cols of Q
+*/
 int IsQbyQtransposeIdentity(const double * const Q, const uint32_t m, const uint32_t n){
-  /*  uint32_t n2 = 0;
-  uint32_t stride = 0;
-  if(m > n){
-    n2 = n;
-    stride = m;
-  } else {
-    n2 = m;
-    stride = n;
-    }*/
+  double temp = 0.0;
+  int verbose = 0;
   for(uint32_t i=0; i<m; i++){
     for(uint32_t j=0; j<n; j++){
       for(uint32_t k=0; k<n; k++){
-	if((Q[i+j*m] * Q[j+i*m]) != identity(i,j)){
-	  printf("\nElement i: %d j: %d does not comport with I\n", i,j);
-	  return 0;
-	}
+	temp += Q[k+i*m] * Q[k+j*m];
+	if(verbose) printf("\ni:%d j:%d k:%d +=  %-9.9f x %-9.9f",
+			   i,j,k,Q[k+i*m],Q[k+j*m]);
       }
+      if(fabs(temp - identity(i,j)) > EPSILON){
+	printf("\nElement i: %d j: %d does not comport with I; computed to be %-9.5f\n", i,j, temp);
+	return 0;
+      }
+      temp = 0.0;
     }
   }
   return 1;
@@ -51,7 +53,9 @@ int IsQbyQtransposeIdentity(const double * const Q, const uint32_t m, const uint
   Qm, Qn -> the m x n size of Q
   Rm, Rn -> the m x n size of R
 */
-int IsQRequalToA(const double * const Q, const double * const R, const double * const A, const uint32_t Qm, const uint32_t Qn, const uint32_t Rm, const uint32_t Rn){
+int IsQRequalToA(const double * const Q, const double * const R, 
+		 const double * const A, const uint32_t Qm, const uint32_t Qn, 
+		 const uint32_t Rm, const uint32_t Rn){
   //for each row i and col j in result
   int verbose = 0;
   double temp = 0.0;
@@ -59,10 +63,12 @@ int IsQRequalToA(const double * const Q, const double * const R, const double * 
     for(uint32_t j=0; j<Rn; j++){
       for(uint32_t k=0; k<Qn; k++){
 	temp += Q[i+k*Qm] * R[k+j*Rm];
-	if(verbose) printf("\ni:%d j:%d k:%d +=  %-9.9f x %-9.9f",i,j,k,Q[i+k*Qm],R[k+j*Rm]);
+	if(verbose) printf("\ni:%d j:%d k:%d +=  %-9.9f x %-9.9f",
+			   i,j,k,Q[i+k*Qm],R[k+j*Rm]);
       }
       if(fabs(temp - A[i+j*Qm]) > EPSILON){
-	printf("\nA != QR; element i: %d j: %d should be %-9.15f but computed to be %-9.15f\n", i,j,A[i+j*Qm],temp);
+	printf("\nA != QR; element i: %d j: %d should be %-9.15f but computed to be %-9.15f\n",
+	       i,j,A[i+j*Qm],temp);
 	return 0;
       } else {
 	temp = 0.0;
@@ -74,17 +80,17 @@ int IsQRequalToA(const double * const Q, const double * const R, const double * 
 
 /*Check constraint that a matrix is upper triangular. Apply to R only in A=QR.*/
 int isUpperTriangular(const double * const M, const uint32_t m, const uint32_t n){
-  for(uint32_t i=0; i<n; i++){
-    for(uint32_t k=0; k<m; k++){
-      if(k>i){
-	if(M[k+i*n] != 0){
-	  printf("\nMatrix is not upper triangular; element i:%d j:%d is not zero.\n", i,k);
+  for(uint32_t i=0; i<m; i++){
+    for(uint32_t j=0; j<n; j++){
+      if(i > j){
+	if(fabs(M[i+j*m]) > EPSILON){
+	  printf("\nMatrix is not upper triangular; element i:%d j:%d is not zero but %f.\n", i,j, M[i+j*m]);
 	  return 0;
 	}
       }
     }
   }
-  return 0;
+  return 1;
 }
 
 //Pretty print to user as square array with 5 digits per # with spaces between

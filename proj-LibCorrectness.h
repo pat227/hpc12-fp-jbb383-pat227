@@ -1,12 +1,29 @@
 #ifndef MATRIXCHECKS
 #define MATRIXCHECKS
 //use these as boolean functions
-/* Check for constraint: A * A transpose = I */
-int IsAbyAtransposeIdentity(const double * const A, const uint32_t m, 
-			    const uint32_t n);
+/* Check for constraint: Q * Qtranspose = I 
+   Apply to Q of the A=QR decomposition. Note that Q is NOT always square. This 
+   function does not store the product matrix, but only computes individual 
+   elements at a time and compares against identity matrix.
+   m -> # of rows of Q
+   n -> # of cols of Q
+*/
+int IsQbyQtransposeIdentity(const double * const Q, const uint32_t m, const uint32_t n);
 
 /* Check for constraint: A = QR given QR; need additional args for m&n of Q and 
-   R each */
+   R each 
+   Function fails fast if any error occurs and doesn't waste time computing rest 
+   of the matrix. Function does not store the result of the multiplication, but 
+   only compares individually computed elements to elements in A. To support 
+   non-square R require more args to specify the dimensions of Q and R each.
+   Perhaps structs with bounds would be better and they would know how to multiply
+   against each other... 
+   Q -> pointer to array of doubles in column-major order that represents Q
+   R -> ditto that represents R
+   A -> ditto that represents A
+   Qm, Qn -> the m x n size of Q
+   Rm, Rn -> the m x n size of R
+*/
 int IsQRequalToA(const double * const Q, const double * const R, 
 		 const double * const A, const uint32_t Qm, const uint32_t Qn, 
 		 const uint32_t Rm, const uint32_t Rn);
