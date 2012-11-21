@@ -144,9 +144,9 @@ void test_RisUpperTriangular(){
 		   7.666666667, 7.529114739, -1.592059504,      
 		   5.333333333, -4.145988293, -2.089578099,
 		   8.0, 0.796029752, 2.089578099};
-  CU_ASSERT(isUpperTriangular(R,3,3));
-  CU_ASSERT(isUpperTriangular(R2,3,3));
-  CU_ASSERT(isUpperTriangular(R3,3,6));
+  CU_ASSERT(isUpperTriangular(R,3));
+  CU_ASSERT(isUpperTriangular(R2,3));
+  CU_ASSERT(isUpperTriangular(R3,3));
 }
 
 int main()

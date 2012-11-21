@@ -30,8 +30,7 @@ int IsQRequalToA(const double * const Q, const double * const R,
 		 const uint32_t Rm, const uint32_t Rn);
 
 /* Check for constraint: R is upper triangular */
-int isUpperTriangular(const double * const M, const uint32_t m, 
-		      const uint32_t n);
+int isUpperTriangular(const double * const M, const uint32_t m);
 void print_matrix(const double matrix[], const int m, const int n);
 /*not needed here except for testing...might have to use some conditional 
   compilation*/

@@ -83,14 +83,12 @@ int IsQRequalToA(const double * const Q, const double * const R,
 }
 
 /*Check constraint that a matrix is upper triangular. Apply to R only in A=QR.*/
-int isUpperTriangular(const double * const M, const uint32_t m, const uint32_t n){
+int isUpperTriangular(const double * const M, const uint32_t m){
   for(uint32_t i=0; i<m; i++){
-    for(uint32_t j=0; j<n; j++){
-      if(i > j){
-	if(fabs(M[i+j*m]) > EPSILON){
-	  printf("\nMatrix is not upper triangular; element i:%d j:%d is not zero but %f.\n", i,j, M[i+j*m]);
-	  return 0;
-	}
+    for(uint32_t j=0; j<i; j++){
+      if(fabs(M[i+j*m]) > EPSILON){
+	printf("\nMatrix is not upper triangular; element i:%d j:%d is not zero but %f.\n", i,j, M[i+j*m]);
+	return 0;
       }
     }
   }
