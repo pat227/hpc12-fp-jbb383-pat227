@@ -101,14 +101,20 @@ void test_QbyQtransposeIsIdentity(){
 		 -58/175.0,6.0/175,-33/35.0};
   /*  THIS CASE FAILS AND BY MY TI-85 as well: QxQt != I, and more to the point, 
       Q is not m x m; however, Qt x Q does = I so perhaps it was bad example
-      and not a true QR factorization...but then what is it? 
-  double Q2[18] = {0.322329186, 0.322329186, 0.161164593, 0.080582296, 
+      and not a true QR factorization...but then what is it? */
+  //FIXED IT...had been missing 3 more columns; got them from lapack (by way of armadillo++)
+  double Q2[36] = {0.322329186, 0.322329186, 0.161164593, 0.080582296, 
 		   0.483493778, 0.725240668,
 		   0.256776296, 0.513552591, 0.427960493, 0.556348640,
 		   -0.171184197,-0.385164443,
 		   -0.270918747, 0.148085129, 0.210571917, -0.264284876,
-		   0.756475332, -0.467152942};
-  */
+		   0.756475332, -0.467152942,
+		   -0.17063541, -0.632751924, 0.145160343, 0.678761105, 
+		   0.292902314, 0.054117043,
+		   -0.182799363, 0.358320825, -0.806791034, 0.386289771, 
+		   0.184148016, -0.0644090721,
+		   -0.833211159, 0.285778962, 0.273042051, 0.0648055884,
+		   -0.212067327, 0.316804785  };
     double Q3[9] = {0.666666667, 0.666666667, 0.333333333,    
 		 -0.630190220, 0.265343251, 0.729693939,      
 		 -0.398014876, 0.696526033, -0.597022314};
@@ -117,14 +123,14 @@ void test_QbyQtransposeIsIdentity(){
     printf("\nOur matrices:");
     printf("\nQ:\n");
     print_matrix(Q,3,3);
-    //printf("\nQ2:\n");
-    //print_matrix(Q2,6,3);
+    printf("\nQ2:\n");
+    print_matrix(Q2,6,6);
     printf("\nQ3:\n");
     print_matrix(Q3,3,3);
   }
     
   CU_ASSERT(IsQbyQtransposeIdentity(Q,3) == 1);
-  //  CU_ASSERT(IsQbyQtransposeIdentity(Q2, 6,3) == 1);
+  CU_ASSERT(IsQbyQtransposeIdentity(Q2,6) == 1);
   CU_ASSERT(IsQbyQtransposeIdentity(Q3,3) == 1);
 }
 
