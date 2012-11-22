@@ -36,7 +36,7 @@ int IsQbyQtransposeIdentity(const double * const Q, const uint32_t m){
 			   i,j,k,Q[i+k*m],Q[j+k*m]);
       }
       if(fabs(temp - identity(i,j)) > EPSILON){
-	printf("\nElement i: %d j: %d does not comport with I; computed to be %-9.5f\n", i,j, temp);
+	if(verbose) printf("\nElement i: %d j: %d does not comport with I; computed to be %-9.5f\n", i,j, temp);
 	return 0;
       }
       temp = 0.0;
@@ -71,7 +71,7 @@ int IsQRequalToA(const double * const Q, const double * const R,
 			   i,j,k,Q[i+k*Qm],R[k+j*Rm]);
       }
       if(fabs(temp - A[i+j*Qm]) > EPSILON){
-	printf("\nA != QR; element i: %d j: %d should be %-9.15f but computed to be %-9.15f\n",
+	if(verbose) printf("\nA != QR; element i: %d j: %d should be %-9.15f but computed to be %-9.15f\n",
 	       i,j,A[i+j*Qm],temp);
 	return 0;
       } else {
@@ -84,10 +84,11 @@ int IsQRequalToA(const double * const Q, const double * const R,
 
 /*Check constraint that a matrix is upper triangular. Apply to R only in A=QR.*/
 int isUpperTriangular(const double * const M, const uint32_t m){
+  int verbose = 0;
   for(uint32_t i=0; i<m; i++){
     for(uint32_t j=0; j<i; j++){
       if(fabs(M[i+j*m]) > EPSILON){
-	printf("\nMatrix is not upper triangular; element i:%d j:%d is not zero but %f.\n", i,j, M[i+j*m]);
+	if(verbose) printf("\nMatrix is not upper triangular; element i:%d j:%d is not zero but %f.\n", i,j, M[i+j*m]);
 	return 0;
       }
     }

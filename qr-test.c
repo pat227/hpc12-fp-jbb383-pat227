@@ -36,6 +36,7 @@ void test_QRisA(){
   double Q[9] = {6.0/7,3.0/7,-2/7.0,   69.0/175,-158/175.0,-6/35.0,
 		 -58/175.0,6.0/175,-33/35.0};
   double R[9] = {14,0,0,    21,-175,0,    -14,70,35};
+  double wrongR[9] = {14,0,0,    20,-174,0,    -14,70,35};
   int verbose = 0;
   if(verbose){
     printf("\nOur matrices:");
@@ -47,6 +48,7 @@ void test_QRisA(){
     print_matrix(R,3,3);
   }
   CU_ASSERT(IsQRequalToA(Q, R, A, 3, 3, 3, 3) == 1);
+  CU_ASSERT(IsQRequalToA(Q, wrongR, A, 3, 3, 3, 3) == 0);
 
   //n<m, 6x3 in this case
   double A2[18] = {4,4,2,1,6,9,   5,8,6,7,1,0,   4,8,6,4,7,2};
@@ -55,9 +57,15 @@ void test_QRisA(){
 		   0.256776296, 0.513552591, 0.427960493, 0.556348640,
 		   -0.171184197,-0.385164443,
 		   -0.270918747, 0.148085129, 0.210571917, -0.264284876,
-		   0.756475332, -0.467152942,};
+		   0.756475332, -0.467152942};
   double R2[9] = {12.409673646, 0, 0,      6.204836823, 11.683321446, 0,
 		  9.992204754, 7.960065161, 4.668319483};
+  double wrongQ2[18] = {0.342329186, 0.342329186, 0.161164593, 0.080582296, 
+		   0.483493778, 0.725240668,
+		   0.256776296, 0.513552591, 0.427960493, 0.556348640,
+		   -0.171184197,-0.385164443,
+		   -0.270918747, 0.148085129, 0.210571917, -0.264284876,
+		   0.756475332, -0.467152942};
   //verbose = 1;
   if(verbose){
     printf("\nOur matrices:");
@@ -69,6 +77,7 @@ void test_QRisA(){
     print_matrix(R2,3,3);
   }
   CU_ASSERT(IsQRequalToA(Q2, R2, A2, 6,3,3,3) == 1);
+  CU_ASSERT(IsQRequalToA(wrongQ2, R2, A2, 6,3,3,3) == 0);
 
   //3x6, n>m case
   double A3[18] = {4,4,2,   5,8,6,   4,8,6,    1,6,9,   7,1,0,    4,7,2};
@@ -118,6 +127,9 @@ void test_QbyQtransposeIsIdentity(){
     double Q3[9] = {0.666666667, 0.666666667, 0.333333333,    
 		 -0.630190220, 0.265343251, 0.729693939,      
 		 -0.398014876, 0.696526033, -0.597022314};
+    double wrongQ3[9] = {0.666666667, 0.333333333, 0.666666667,
+		 -0.630190220, 0.265343251, 0.729693939,      
+		 -0.398014876, 0.696526033, -0.597022314};
     int verbose = 0;
   if(verbose){
     printf("\nOur matrices:");
@@ -127,11 +139,11 @@ void test_QbyQtransposeIsIdentity(){
     print_matrix(Q2,6,6);
     printf("\nQ3:\n");
     print_matrix(Q3,3,3);
-  }
-    
+  }  
   CU_ASSERT(IsQbyQtransposeIdentity(Q,3) == 1);
   CU_ASSERT(IsQbyQtransposeIdentity(Q2,6) == 1);
   CU_ASSERT(IsQbyQtransposeIdentity(Q3,3) == 1);
+  CU_ASSERT(IsQbyQtransposeIdentity(wrongQ3,3) == 0);
 }
 
 void test_RisUpperTriangular(){
@@ -144,9 +156,16 @@ void test_RisUpperTriangular(){
 		   7.666666667, 7.529114739, -1.592059504,      
 		   5.333333333, -4.145988293, -2.089578099,
 		   8.0, 0.796029752, 2.089578099};
-  CU_ASSERT(isUpperTriangular(R,3));
-  CU_ASSERT(isUpperTriangular(R2,3));
-  CU_ASSERT(isUpperTriangular(R3,3));
+  double wrongR3[18] = {6.0, 0.0, 0.0,
+		   10.666666667, 3.349958540, 0.0001,
+		   10.0, 3.980148761, 0.398014876,      
+		   7.666666667, 7.529114739, -1.592059504,      
+		   5.333333333, -4.145988293, -2.089578099,
+		   8.0, 0.796029752, 2.089578099};
+  CU_ASSERT(isUpperTriangular(R,3) == 1);
+  CU_ASSERT(isUpperTriangular(R2,3) == 1);
+  CU_ASSERT(isUpperTriangular(R3,3) == 1);
+  CU_ASSERT(isUpperTriangular(wrongR3,3) == 0);
 }
 
 int main()
