@@ -36,4 +36,3 @@ void print_matrix(const double matrix[], const int m, const int n);
   compilation*/
 double identity(const uint32_t m, const uint32_t n);
 #endif
-
