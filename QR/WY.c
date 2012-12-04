@@ -90,7 +90,7 @@ for( int k = 1; k<h; k++){
 	for(int i =0; i<h; i++){
 		Q[i + h*i] += 1 ;
 	}
-
+gi
 /* Perform matrix transpose on Q */
   MatrixTranspose(Q, w, h, Qtranspose);
 
