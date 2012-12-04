@@ -29,7 +29,7 @@ int main(int argc, char** argv)
  /* Initilize matrix A */
   double *A = malloc( m*n*sizeof(double) );
   double *B = malloc( m*n*sizeof(double) );
-  double *C = malloc( m*n*sizeof(double) );
+  double *C = malloc( m*m*sizeof(double) );
  
  /* Fill up matrix A with elements from [0,10)*/
   int i; 
@@ -37,12 +37,13 @@ int main(int argc, char** argv)
   for(i=0; i< (m*n) ; i++){
       A[i] = (double) (rand() %1000)/100;
       B[i] = (double) (rand() %1000)/100;
-      C[i] = 0;			   
+   }
+  for(i=0; i< (m*m) ; i++){
+      C[i] = 0;		   
    }
 
-
-// MatrixMatrixMultiply( A, m, n, B , n , m , C);  
-test2( A, n, m, B, m , n , C);
+  MatrixMatrixMultiply( A, n, m, B , m , n , C);  
+ //test2( A, n, m, B, m , n , C);
 
 
 }

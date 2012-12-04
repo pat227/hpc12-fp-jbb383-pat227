@@ -3,7 +3,7 @@
 //#include<stdarg.h> //var args functions
 //#include<math.h> //sqrt
 #include<stdlib.h> //memory
-#include "CUnit/Basic.h" //Basic interface with non-interactive output to stdout.
+//#include "CUnit/Basic.h" //Basic interface with non-interactive output to stdout.
 #include "matrices.h"
 extern void init(struct matrix * m, const int w, const int h);
 int main(){//int argc, char** argv){
