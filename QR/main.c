@@ -30,6 +30,7 @@ int main(int argc, char** argv)
   double *A = malloc( m*n*sizeof(double) );
   double *B = malloc( m*n*sizeof(double) );
   double *C = malloc( m*m*sizeof(double) );
+  double *Qtranspose = malloc( m*m*sizeof(double) );
  
  /* Fill up matrix A with elements from [0,10)*/
   int i; 
@@ -39,11 +40,12 @@ int main(int argc, char** argv)
       B[i] = (double) (rand() %1000)/100;
    }
   for(i=0; i< (m*m) ; i++){
-      C[i] = 0;		   
+      C[i] = 0;	
+      Qtranspose[i] = 0;		   
    }
 
-  MatrixMatrixMultiply( A, n, m, B , m , n , C);  
- //test2( A, n, m, B, m , n , C);
+ // MatrixMatrixMultiply( A, n, m, B , m , n , C);  
+  WY( A, n, m, Qtranspose);
 
 
 }
