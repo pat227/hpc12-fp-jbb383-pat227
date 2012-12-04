@@ -30,7 +30,7 @@ int main(int argc, char** argv)
   double *A = malloc( m*n*sizeof(double) );
   double *B = malloc( m*n*sizeof(double) );
   double *C = malloc( m*m*sizeof(double) );
- 
+  double *D = malloc( n*m*sizeof(double));
  /* Fill up matrix A with elements from [0,10)*/
   int i; 
   srand ( time ( NULL ) );	 
@@ -41,9 +41,39 @@ int main(int argc, char** argv)
   for(i=0; i< (m*m) ; i++){
       C[i] = 0;		   
    }
-
+  for(i=0; i< (m*n) ; i++){
+      D[i] = 0;		   
+   }
   MatrixMatrixMultiply( A, n, m, B , m , n , C);  
- //test2( A, n, m, B, m , n , C);
+  //test2( A, n, m, B, m , n , C);
+  printf("A:\n");
+  for(int i = 0; i < m ; i++){
+    for(int j = 0; j < n ; j++){
+      printf("%5.5f ", A[i+j*m]);
+    }
+    printf("\n");
+  }
+  printf("\n");
 
 
+  MatrixTranspose(A,n,m,D);
+  
+  printf("A again:\n");
+  for(int i = 0; i < m ; i++){
+    for(int j = 0; j < n ; j++){
+      printf("%5.5f ", A[i+j*m]);
+    }
+    printf("\n");
+  }
+  printf("\n");
+
+  
+  printf("Atranspose:\n");
+  for(int i = 0; i < m ; i++){
+    for(int j = 0; j < n ; j++){
+      printf("%5.5f ", D[i+j*m]);
+    }
+    printf("\n");
+  }
+  printf("\n");
 }

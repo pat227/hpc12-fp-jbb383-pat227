@@ -8,8 +8,8 @@
 #include <omp.h>
 #include "QR.h"
 
-#define L1_BLK_SIZE 2
-#define L2_BLK_SIZE (L1_BLK_SIZE * 2)
+#define L1_BLK_SIZE 16
+#define L2_BLK_SIZE (L1_BLK_SIZE * 32)
 
 /* Blocked Matrix Matrix Multiply Subfunctions */
 static void dgemm_lowest( const double*restrict, const double*restrict, double*restrict);
@@ -79,7 +79,7 @@ for( int i = 0; i < hn_bloc; i++){
 
 
 /* Uncomment to Test this function */
-test(A, B, C, hA, wA, hB, wB);
+//test(A, B, C, hA, wA, hB, wB);
 
 return 0;
 }
@@ -194,7 +194,7 @@ for(int i=0; i<hC; i++){
 	for(int j=0;j<wC; j++){
 		double error = abs( C[i+ j*hC] - testC[i + j*hC]);
 		//printf(" error = %f, i = %d, j = %d\n", error, i, j);
-		printf(" C = %f, testC = %f \n", C[i+j*hC], testC[i + j*hC]);
+		//printf(" C = %f, testC = %f \n", C[i+j*hC], testC[i + j*hC]);
 		double errorbound = 1e-5;
 		if( error > errorbound ){
 		fprintf(stderr,"Blocked Matrix Multiplication is not working! \n") ;
