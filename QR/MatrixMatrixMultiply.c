@@ -6,29 +6,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <omp.h>
-#include "QR.h"
+#include "MatrixMatrixMultiply.h"
 
 #define L1_BLK_SIZE 16
 #define L2_BLK_SIZE (L1_BLK_SIZE * 32)
 
 /* Blocked Matrix Matrix Multiply Subfunctions */
 static void dgemm_lowest( const double*restrict, const double*restrict, double*restrict);
-static void dgemm_middle( const double*restrict, const double*restrict, double*restrict); 
-
-
-/* Code to load and unload blocks of matrix */
-void BlockMatrix( const double *, double *, int, int, int, int, int);
-void BlockMatrixInner(const double *inA, double *outA, int hA, int wA, int b, int i_bloc, int j_bloc);
-void UnBlockMatrix( double *, const double *, int, int, int, int, int);
-void CleanMatrix( double *, int, int );
-
-
-/* Code to test Blocked Matrix Matrix Multipy */
-void dgemm_simple(const double *, const int, const int, const double *, const int, const int, double *);
-void test( const double *, const double*, double*, int, int, int , int );
-
-
-/*==================================================================================*/
+static void dgemm_middle( const double*restrict, const double*restrict, double*restrict);
 
 int MatrixMatrixMultiply( double *A, int wA, int hA, double *B, int wB, int hB, double *C)
 {
@@ -108,10 +93,10 @@ CleanMatrix(c_block, b, b);
 
 for( int j = 0; j < n_bloc; j++){
 	for( int i=0; i < n_bloc; i++){
-		BlockMatrixInner(C, c_block, n, n, b, i, j);
+		BlockMatrix(C, c_block, n, n, b, i, j);
 		for( int k = 0; k < n_bloc ; k++){
-		BlockMatrixInner(A, a_block, n, n, b, i, k);
-		BlockMatrixInner(B, b_block, n, n, b, k, j);
+		BlockMatrix(A, a_block, n, n, b, i, k);
+		BlockMatrix(B, b_block, n, n, b, k, j);
 		dgemm_lowest( a_block, b_block, c_block);
 		CleanMatrix(a_block, b, b);
 		CleanMatrix(b_block, b, b);	
@@ -250,46 +235,6 @@ if( wA % b != 0 || hA % b != 0  ){
 
 }
 
-void BlockMatrixInner(const double *inA, double *outA, int hA, int wA, int b, int i_bloc, int j_bloc){
-/*----------------------------------------------------------------------------- 
-PURPOSE: Takes matrix A, outputs the desired block, pads with zeros when necessary. 
-ARGUEMENTS:
-	hA: Height of matrix
-	wA: Width of matrix  
-	b: Blocksize
-	i_bloc: i Block index 
-	j_bloc: j Block index  
------------------------------------------------------------------------------*/
-int i, j;
-
-if( wA % b != 0 || hA % b != 0  ){
-	// Will only enter this section if we are in outerblock of code. 
-	int wn_bloc = (wA+L2_BLK_SIZE -1)/L2_BLK_SIZE; // Number of Blocks 
-	int hn_bloc = (hA+L2_BLK_SIZE -1)/L2_BLK_SIZE; // Number of Blocks
-	int wpadding = wn_bloc*b - wA ; // Number of columns of zeros needed.
-	int hpadding = hn_bloc*b - hA ; // Number of rows of zeros needed.
-	for(i=0; i<b; i++){
-		for(j=0; j<b; j++){
-		
-		if( (i_bloc == hn_bloc -1) && (i>= (b-hpadding))){
-			outA[i+ j*b] = 0;
-		} else{
-			if( (j_bloc == wn_bloc -1) && (j >= (b-wpadding))){
-			outA[i+ j*b] = 0;
-			} else{
-			outA[i + j*b] = inA[ i+i_bloc*b + (j+ j_bloc*b)*hA ] ;
-			} 
-		} }
-    	} 
-}else{
-	for(i=0; i<b; i++){
-		for(j=0; j<b; j++){
-		outA[i + j*b] = inA[ i+i_bloc*b + (j+ j_bloc*b)*hA ] ;
-		} 
-	}
-}
-
-}
 
 void UnBlockMatrix(double *outA, const double *inA, int hA, int wA, int b, int i_bloc, int j_bloc){
 /*----------------------------------------------------------------------------- 
