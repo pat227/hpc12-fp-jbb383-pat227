@@ -2,5 +2,5 @@
 /* Header File */
 
 int MatrixMatrixMultiply( double *, int, int, double *, int, int, double *); 
-int MatrixTranspose(double *, int, int, double *);
+void MatrixTranspose(const double * const A, const int w, const int h, double * B);
 int WY(double *, int, int,  double *);
