@@ -9,7 +9,11 @@ Generates n by m matrix and performs Blocked QR factorization/
 #include <unistd.h>
 #include <omp.h>
 #include <time.h>
-#include "QR.h"
+//#include "QR.h"
+#include "MatrixMatrixMultiply.h"
+//#include "MatrixTranspose.h"
+
+#if 0
 //#include "timing.h"
 //HAS TO BE STATIC UNTIL .h and .c files re-organized or else get name clash
 static void prettyPrint(const double * const A, const int m, const int n){
@@ -23,7 +27,7 @@ static void prettyPrint(const double * const A, const int m, const int n){
   printf("\n");
 }
 
-
+#endif
 
 int main(int argc, char** argv) 
 {
@@ -57,8 +61,11 @@ int main(int argc, char** argv)
       Qtranspose[i] = 0;		   
    }
 
- // MatrixMatrixMultiply( A, n, m, B , m , n , C);  
 
+  //MatrixTranspose(A, m, n, C);
+  MatrixMatrixMultiply( A, n, m, B , m , n , C);  
+
+#if 0
   for(i=0; i< (m*n) ; i++){
     D[i] = 0;		   
   }
@@ -78,7 +85,7 @@ int main(int argc, char** argv)
 
   //WY( A, n, m, Qtranspose);
 
-  MatrixTranspose(A, m, n, D);
+  
 
   printf("\nA again:\n");
   prettyPrint(A, m, n);
@@ -104,4 +111,7 @@ int main(int argc, char** argv)
   }
   printf("\n");
   */
+
+
+#endif
 }
