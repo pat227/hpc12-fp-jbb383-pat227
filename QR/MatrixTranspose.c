@@ -100,7 +100,8 @@ void transposeL2(const double * const A, double * B){
 void copyTransposedL1Block(const double * const B, const int submatrix_row, const int submatrix_col, double * A){
   for(int j = 0; j < L1_BLK_SIZE; j++){
     for(int i = 0; i < L1_BLK_SIZE; i++){
-      A[(submatrix_row * L1_BLK_SIZE) + (submatrix_col*L2_BLK_SIZE) + i + j] = B[i+j*L1_BLK_SIZE];
+      //A[(submatrix_row * L1_BLK_SIZE) + (submatrix_col*L2_BLK_SIZE) + i + j]
+      A[submatrix_col*L1_BLK_SIZE + submatrix_row*L1_BLK_SIZE*L2_BLK_SIZE + i + j*L2_BLK_SIZE] = B[i+j*L1_BLK_SIZE];
     }
   }
 }
