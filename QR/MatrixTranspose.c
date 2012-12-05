@@ -33,11 +33,10 @@ void prettyPrint(const double * const A, const int size){
 void MatrixTranspose(const double * const A, const int w, const int h, double * B){
   int num_blocks_w = (w + L2_BLK_SIZE - 1) / L2_BLK_SIZE;
   int num_blocks_h = (h + L2_BLK_SIZE - 1) / L2_BLK_SIZE;
-  printf("\n# of sub-blocks: %d by %d ", num_blocks_w, num_blocks_h);
+  printf("\n# of sub-blocks:  %d high by %d wide", num_blocks_h, num_blocks_w);
   /* Make static matrices */
   static __attribute__ ((aligned(16))) double b_blockL2[L2_BLK_SIZE*L2_BLK_SIZE];
   static __attribute__ ((aligned(16))) double c_blockL2[L2_BLK_SIZE*L2_BLK_SIZE];
-
   for(int j = 0; j < num_blocks_w; j++){
     for(int i = 0; i < num_blocks_h; i++){
       copyL2Block(A, i , j, b_blockL2, w, h);
@@ -55,17 +54,110 @@ void MatrixTranspose(const double * const A, const int w, const int h, double * 
 //copy a transposed L2-sized block to proper location in larger answer matrix--submatrices do not go
 //back to where they came from but are themselves transposed as well
 void copyTransposedL2Block(const double * const B, const int submatrix_row , const int submatrix_col, double * A, const int w, const int h){
-  for(int j = 0; j < L2_BLK_SIZE; j++){
-    for(int i = 0; i < L2_BLK_SIZE; i++){
-      A[(submatrix_col*L2_BLK_SIZE) + i + (submatrix_row+j)*h] = B[i+j*L2_BLK_SIZE];
-    }
+  if((submatrix_col+1)*L2_BLK_SIZE < h && submatrix_row+L2_BLK_SIZE < w){
+    for(int j = 0; j < L2_BLK_SIZE; j++){
+      for(int i = 0; i < L2_BLK_SIZE; i++){
+	A[i + (submatrix_col*L2_BLK_SIZE) + (submatrix_row+j)*h] = B[i+j*L2_BLK_SIZE];
+      }
+    } 
+  } else if((submatrix_col+1)*L2_BLK_SIZE >= h && submatrix_row+L2_BLK_SIZE < w){
+    //have to do stop early along bottom edge at some point
+    int diff = (submatrix_col+1)*L2_BLK_SIZE - h;
+    int new_rowguard = L2_BLK_SIZE - diff;
+    for(int j = 0; j < L2_BLK_SIZE; j++){
+      for(int i = 0; i < new_rowguard; i++){
+	A[i + (submatrix_row+j)*h + (submatrix_col*L2_BLK_SIZE)] = B[i+j*L2_BLK_SIZE];
+      }
+    } 
+    //zero out rest
+    for(int j = 0; j < L2_BLK_SIZE; j++){
+      for(int i = new_rowguard; i < L2_BLK_SIZE; i++){
+	A[i + (submatrix_row+j)*h + (submatrix_col*L2_BLK_SIZE)] = 0.0;
+      }
+    } 
+  } else if((submatrix_col+1)*L2_BLK_SIZE < h && submatrix_row+L2_BLK_SIZE >= w){
+    int diff = submatrix_row+L2_BLK_SIZE - w;
+    int new_colguard = w - diff;
+    for(int j = 0; j < new_colguard; j++){
+      for(int i = 0; i < L2_BLK_SIZE; i++){
+	A[i + (submatrix_row+j)*h + (submatrix_col*L2_BLK_SIZE)] = B[i+j*L2_BLK_SIZE];
+      }
+    } 
+    //zero out rest
+    for(int j = new_colguard; j < L2_BLK_SIZE; j++){
+      for(int i = L2_BLK_SIZE; i < L2_BLK_SIZE; i++){
+	A[i + (submatrix_row+j)*h + (submatrix_col*L2_BLK_SIZE)] = 0.0;
+      }
+    } 
+  } else if((submatrix_col+1)*L2_BLK_SIZE >= h && submatrix_row+L2_BLK_SIZE >= w){
+    int diff1 = (submatrix_col+1)*L2_BLK_SIZE - h;
+    int new_rowguard = L2_BLK_SIZE - diff1;
+    int diff2 = submatrix_row+L2_BLK_SIZE - w;
+    int new_colguard = w - diff2;
+    for(int j = 0; j < new_colguard; j++){
+      for(int i = 0; i < new_rowguard; i++){
+	A[i + (submatrix_row+j)*h + (submatrix_col*L2_BLK_SIZE)] = B[i+j*L2_BLK_SIZE];
+      }
+    } 
+    //zero out rest
+    for(int j = new_colguard; j < L2_BLK_SIZE; j++){
+      for(int i = new_rowguard; i < L2_BLK_SIZE; i++){
+	A[i + (submatrix_row+j)*h + (submatrix_col*L2_BLK_SIZE)] = 0.0;
+      }
+    } 
   }
 }
 //copy a NOT-YET-transposed L2 submatrix block of A to L2-block-sized B
 void copyL2Block(const double * const A, const int submatrix_row , const int submatrix_col, double * B, const int w, const int h){
-  for(int j = 0; j < L2_BLK_SIZE ; j++){
-    for(int i = 0; i < L2_BLK_SIZE ; i++){
-      B[i+j*L2_BLK_SIZE] = A[(submatrix_row*L2_BLK_SIZE) + i + (submatrix_col+j)*h];
+  if((submatrix_row+1)*L2_BLK_SIZE < h && (submatrix_col+1)*L2_BLK_SIZE < w){
+    for(int j = 0; j < L2_BLK_SIZE ; j++){
+      for(int i = 0; i < L2_BLK_SIZE ; i++){
+	B[i+j*L2_BLK_SIZE] = A[(submatrix_row*L2_BLK_SIZE) + i + (submatrix_col+j)*h];
+      }
+    }
+  }  else if((submatrix_row+1)*L2_BLK_SIZE >= h && (submatrix_col+1)*L2_BLK_SIZE < w){
+    int diff = (submatrix_row+1)*L2_BLK_SIZE - h;
+    int new_rowguard = (L2_BLK_SIZE - diff);
+    for(int j = 0; j < L2_BLK_SIZE ; j++){
+      for(int i = 0; i < new_rowguard ; i++){
+	B[i+j*L2_BLK_SIZE] = A[(submatrix_row*L2_BLK_SIZE) + i + (submatrix_col+j)*h];
+      }
+    }
+    //fill with zeros for rest
+    for(int j = 0; j < L2_BLK_SIZE; j++){
+      for(int i = new_rowguard; i < L2_BLK_SIZE; i++){
+	B[i+j*L2_BLK_SIZE] = 0.0;
+      }
+    } 
+  } else if((submatrix_row+1)*L2_BLK_SIZE < h && (submatrix_col+1)*L2_BLK_SIZE >= w){
+    int diff = (submatrix_col+1)*L2_BLK_SIZE - w;
+    int new_colguard = (L2_BLK_SIZE - diff);
+    for(int j = 0; j < new_colguard ; j++){
+      for(int i = 0; i < L2_BLK_SIZE; i++){
+       	B[i+j*L2_BLK_SIZE] = A[(submatrix_row*L2_BLK_SIZE) + i + (submatrix_col+j)*h];
+      }
+    } 
+    //fill with zeros for rest
+    for(int j = new_colguard; j < L2_BLK_SIZE; j++){
+      for(int i = 0; i < L2_BLK_SIZE; i++){
+	B[i+j*L2_BLK_SIZE] = 0.0;
+      }
+    }
+  } else if((submatrix_row+1)*L2_BLK_SIZE >= h && (submatrix_col+1)*L2_BLK_SIZE >= w){
+    int diff1 = (submatrix_row+1)*L2_BLK_SIZE - h;
+    int new_rowguard = (L2_BLK_SIZE - diff1);
+    int diff2 = (submatrix_col+1)*L2_BLK_SIZE - w;
+    int new_colguard = (L2_BLK_SIZE - diff2);
+    for(int j = 0; j < new_colguard; j++){
+      for(int i = 0; i < new_rowguard; i++){
+	B[i+j*L2_BLK_SIZE] = A[(submatrix_row*L2_BLK_SIZE) + i + (submatrix_col+j)*h];
+      }
+    } 
+    //fill with zeros for rest
+    for(int j = new_colguard; j < L2_BLK_SIZE; j++){
+      for(int i = new_rowguard; i < L2_BLK_SIZE; i++){
+	B[i+j*L2_BLK_SIZE] = 0.0;
+      }
     }
   }
 }
@@ -100,7 +192,6 @@ void transposeL2(const double * const A, double * B){
 void copyTransposedL1Block(const double * const B, const int submatrix_row, const int submatrix_col, double * A){
   for(int j = 0; j < L1_BLK_SIZE; j++){
     for(int i = 0; i < L1_BLK_SIZE; i++){
-      //A[(submatrix_row * L1_BLK_SIZE) + (submatrix_col*L2_BLK_SIZE) + i + j]
       A[submatrix_col*L1_BLK_SIZE + submatrix_row*L1_BLK_SIZE*L2_BLK_SIZE + i + j*L2_BLK_SIZE] = B[i+j*L1_BLK_SIZE];
     }
   }

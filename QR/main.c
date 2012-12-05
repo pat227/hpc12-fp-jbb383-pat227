@@ -76,8 +76,8 @@ int main(int argc, char** argv)
   
   
   printf("Atranspose:\n");
-  for(int i = 0; i < m ; i++){
-    for(int j = 0; j < n ; j++){
+  for(int i = 0; i < n ; i++){
+    for(int j = 0; j < m ; j++){
       printf("%5.5f ", D[i+j*m]);
     }
     printf("\n");
