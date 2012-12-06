@@ -78,3 +78,58 @@ for(int i=0; i<hC; i++){
 /*============================================================================*/
 
 
+/*====================== Code to test Matrix Transpose =======================*/
+
+void simple_transpose(const double *A, int h, int w, double *B){
+/*----------------------------------------------------------------------------- 
+PURPOSE: Computes simple matrix transpose with A in Column-major order. 
+ARGUEMENTS:
+	w = width of A
+	h = height of A
+-----------------------------------------------------------------------------*/
+  
+  for(int j = 0; j < w; j++){
+    for(int i = 0; i < h; i++){
+      B[j + i*w] = A[i + j*h];
+    }
+  }
+}
+
+
+void testMatrixTranspose(const double *A, int h, int w, const double *ATranspose){
+/*----------------------------------------------------------------------------- 
+PURPOSE: Tests Blocked matrix transpose against the simple variant (which we know works)
+ARGUEMENTS:
+	h: Height of A
+	w: Width of A
+-----------------------------------------------------------------------------*/
+
+/* Test Matrix */
+double *testA = malloc( w*h*sizeof(double) );
+CleanMatrix(testA, h, w);
+simple_transpose( A, h,w, testA);
+
+		
+/* Error Check */
+for(int i=0; i<w; i++){
+	for(int j=0;j<h; j++){
+		double error = abs( ATranspose[i+ j*w] - testA[i + j*w]);
+		double errorbound = 1e-5;
+		if( error > errorbound ){
+		fprintf(stderr,"Blocked Matrix Tanspose is not working! \n") ;
+   	 	abort();
+		}
+	}
+  }
+
+}
+
+
+/*============================================================================*/
+
+
+
+
+
+
+

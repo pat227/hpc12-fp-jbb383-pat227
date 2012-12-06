@@ -2,33 +2,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <omp.h>
-#include "QR.h"
+#include "MatrixTranspose.h"
+#include "Utilities.h"
+#include "test.h"
 
 #define L1_BLK_SIZE 2
 #define MULTIPLE 2
 #define L2_BLK_SIZE (L1_BLK_SIZE * MULTIPLE)
-void copyTransposedL2Block(const double * const B, const int submatrix_row , 
-			   const int submatrix_col, double * A, const int w, 
-			   const int h);
-void copyL2Block(const double * const A, const int submatrix_row , 
-		 const int submatrix_col, double * B, const int w, 
-		 const int h);
-void copyL1Block(const double * const A, const int i, const int j, double * B);
-void transposeL2(const double * const A, double * B);
-void copyTransposedL1Block(const double * const B, const int submatrix_row, 
-			   const int submatrix_col, double * A);
-void transposeL1Size(double * const A, double * B);
-
-void prettyPrint(const double * const A, const int m, const int n){
-  for(int i = 0; i < m ; i++){
-    for(int j = 0; j < n; j++){
-      printf("%5.5f ", A[i+j*m]);
-    }
-    printf("\n");
-  }
-  printf("\n");
-}
-
 
 /*
   Transposes a matrix using L1 and L2 sized sub-blocks to hopefully gain a speed
@@ -68,11 +48,15 @@ void MatrixTranspose(const double * const A, const int h, const int w, double * 
       }
     }
   }
+
+/* Uncomment if you want to test this function*/
+ testMatrixTranspose( A, h, w, B);
+
 }
 
 //copy a transposed L2-sized block to proper location in larger answer matrix--
 //submatrices do not go back to where they came from but are themselves 
-//transposed as well--BUG FIX--GUARD AGAINST CASE 4 WHEN M is smaller than L2
+//transposed as well
 void copyTransposedL2Block(const double * const B, const int submatrix_row , 
 			   const int submatrix_col, double * A, const int w, 
 			   const int h){

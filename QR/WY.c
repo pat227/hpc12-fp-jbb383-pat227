@@ -7,7 +7,8 @@ Given a Matrix A this code outputs the transpose of the orthogonal matrix Q.
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "QR.h"
+#include "MatrixMatrixMultiply.h"
+#include "MatrixTranspose.h"
 #include <math.h>
 
 /* Code to perform Householder */

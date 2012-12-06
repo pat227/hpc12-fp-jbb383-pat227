@@ -4,13 +4,15 @@
 Generates n by m matrix and performs Blocked QR factorization/
 */
 
+/* Headers: */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <omp.h>
 #include <time.h>
+#include "test.h"
 #include "MatrixMatrixMultiply.h"
 #include "MatrixTranspose.h"
+#include "Utilities.h"
 
 
 int main(int argc, char** argv) 
@@ -50,15 +52,19 @@ int main(int argc, char** argv)
     D[i] = 0;		   
   }
   //MatrixMatrixMultiply( A, n, m, B , m , n , C);  
-  //test2( A, n, m, B, m , n , C);
-  printf("=main=A:\n");
-  prettyPrint(A, m, n);
+  
+  //printf("=main=A:\n");
+  //prettyPrint(A, m, n);
 
   MatrixTranspose(A, m, n, D);
-  printf("\nA again:\n");
-  prettyPrint(A, m, n);
-    
-  printf("\nAtranspose:\n");
-  prettyPrint(D, n, m);
+  
+   
+  //printf("\nAtranspose:\n");
+  //prettyPrint(D, n, m);
+   
+
+  //testMatrixTranspose( A, m, n, D);
+ 
+  
 
 }
