@@ -13,6 +13,8 @@
 #define L2_BLK_SIZE (L1_BLK_SIZE * 32)
 
 /* Blocked Matrix Matrix Multiply Subfunctions */
+/* We couldn't add these two functions to the header because they are static */
+
 static void dgemm_lowest( const double*restrict, const double*restrict, double*restrict);
 static void dgemm_middle( const double*restrict, const double*restrict, double*restrict);
 
