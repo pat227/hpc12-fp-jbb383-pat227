@@ -8,6 +8,4 @@ void BlockMatrix( const double *, double *, int, int, int, int, int);
 void UnBlockMatrix( double *, const double *, int, int, int, int, int);
 void CleanMatrix( double *, int, int);
 
-/* Code to test Blocked Matrix Matrix Multiply */
-void dgemm_simple( const double *, const int, const int, const double *, const int, const int, double *);
-void test( const double *, const double *, double *, int, int, int, int);
+
