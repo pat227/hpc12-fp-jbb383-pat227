@@ -57,15 +57,6 @@ int main(int argc, char** argv)
   MatrixTranspose(A, m, n, D);
   printf("\nA again:\n");
   prettyPrint(A, m, n);
-  /*
-  for(int i = 0; i < m ; i++){
-    for(int j = 0; j < n ; j++){
-      printf("%5.5f ", A[i+j*m]);
-    }
-    printf("\n");
-  }
-  printf("\n");
-  */
     
   printf("\nAtranspose:\n");
   prettyPrint(D, n, m);
