@@ -1,7 +1,7 @@
 #include<stdio.h> //fprintf, printf
 #include<stdint.h> //exact types
 #include<math.h> //sqrt
-#include<stdlib.h> //memory
+#include<stdlib.h> //memory, rand
 #include<stdarg.h> //var args
 #include"matrices.h"
 //Computes the sum of 2 matrices into a 3rd provided empty matrix, provided the
@@ -65,6 +65,18 @@ void extractVector(const struct matrix * const m, const int row,
     setElement(vector, vecrow++, 0, getElement(m,i,col));
   }
 }
+//fills all elements with random values given an upper and lower bound for those values
+void fillWithRandomElements(struct matrix * m, uint32_t upper, uint32_t lower){
+  double value = 0.0;
+  srand(1);
+  for(int j = 0; j < m->width; j++){
+    for(int i = 0; i < m->height; i++){
+      value = (rand()/(double)RAND_MAX) * (upper - lower) + lower;
+      setElement(m, i, j, value);
+    }
+  }
+}
+
 //returns value of an element
 double getElement(const struct matrix * const m, const int row, const int col){
   if(row > m->height || col > m->width || row < 0 || col < 0){
@@ -236,7 +248,7 @@ void subtract(const struct matrix * const m,
   matrix that is the identity matrix. If smaller, the the other matrix is 
   subtracted from right-most and bottom-most elements only of the identity matrix;
   this function is only of use for Householder transformation computations
-  m -> identity matrix that becomes the Householder Reflector
+  m     -> identity matrix that becomes the Householder Reflector
   other -> the matrix whose values are subtracted from m  
 */
 void subtractFromRightBottomMost(struct matrix * const m, 

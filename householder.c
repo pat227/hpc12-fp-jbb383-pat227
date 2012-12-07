@@ -1,14 +1,35 @@
 #include<stdio.h> //fprintf, printf
 #include<stdint.h> //exact types
-//#include<stdarg.h> //var args functions
-//#include<math.h> //sqrt
 #include<stdlib.h> //memory
-//#include "CUnit/Basic.h" //Basic interface with non-interactive output to stdout.
 #include "matrices.h"
+
+
 extern void init(struct matrix * m, const int w, const int h);
-int main(){//int argc, char** argv){
+int main(int argc, char** argv){
+  if(argc != 3){
+    printf("\n================================================================================");
+    printf("\nGeneralized householder & example arguments:                                    ");
+    printf("\nm -> desired height of matrix to decompose into QR                              ");
+    printf("\nn -> desired width of matrix to decompose into QR                               ");
+    printf("\nThis program will compute an example 3x3 QR decomposition by Householder        ");
+    printf("\nreflectors and then compute a QR decomposition for a matrix of random elements  ");
+    printf("\nof the size specified at the command line by the 2 preceding arguments.         ");
+    printf("\nHPC Fall'12 GSAS NYU                                                            ");
+    printf("\n================================================================================");
+    return 1;
+  }
+
   struct matrix a,b,c,v,h,h2,e1,temp,acopy,q;
   struct matrix * mp;
+  int m = atoi(argv[1]);
+  int n = atoi(argv[2]);
+  if(m == 0 || n == 0){
+    printf("\nCould not parse the desired matrix dimensions m, n");
+    abort();
+  } else if(m < 0 || n < 0){
+    printf("\nMatrix dimensions m, n must be greater than zero.");
+    abort();
+  }
   init(&a, 3,3);
   init(&b, 3,3);
   init(&c, 3,3);
@@ -49,104 +70,9 @@ int main(){//int argc, char** argv){
   for(int i = 0; i < number; i++){
     init(&mp[i], 3, 3);
   }
-  /*
-  a.extractVector(&a,0,0,&v);
-  printf("\nV (col vector of A from 0,0):");
-  v.prettyPrint(&v);
-  norm = norm4(&v,0);
-  printf("\nNorm of V: %f", norm);
-  e1.zero(&e1);
-  if(a.getElement(&a,0,0) < 0){
-    e1.setElement(&e1,0,0,1.0);
-  } else {
-    e1.setElement(&e1,0,0,-1.0);
-  }
-  e1.scalarMultiply(&e1,norm);
-  v.add(&v, &e1, &c);
-  v.copyMatrix(&v,&c);
-  printf("\nV of Householder:");
-  v.prettyPrint(&v);
-
-  v.transpose(&v,&b);
-  printf("\nVtranopose:");
-  b.prettyPrint(&b);
-  printf("\nV x Vtranopose:");
-  v.rightMultiply(&v,&b,&c);
-  c.prettyPrint(&c);
-
-  printf("\nVtranopose x V:");
-  b.rightMultiply(&b, &v, &temp);
-  temp.prettyPrint(&temp);
-
-  c.scalarMultiply(&c, 2.0);
-  c.scalarMultiply(&c, (1/temp.getElement(&temp, 0, 0)));
-  printf("\n 2(v vT / vT v) ");
-  c.prettyPrint(&c);
-  h.setToIdentity(&h);
-  h.subtractFromRightBottomMost(&h, &c);
-  printf("\nFirst Householder matrix H(1):");
-  h.prettyPrint(&h);
-
-  printf("\nA(1) = H(1) A(0):");
-  h.rightMultiply(&h, &a, &temp);
-  printf("\nA(1):");
-  temp.prettyPrint(&temp);
-  a.copyMatrix(&a, &temp);
-
-  //final round
-  a.extractVector(&a, 1, 1, &v);
-  printf("\nV (col vector of A from 1,1):");
-  v.prettyPrint(&v);
-  norm = norm4(&v, 0);
-  printf("\nNorm of V: %f", norm);
-  e1.destroy(&e1);
-  e1.init(&e1, 1, 2);
-  e1.zero(&e1);
-  e1.setElement(&e1, 0, 0, 1.0);
-  e1.scalarMultiply(&e1, norm);
-  v.add(&v, &e1, &c);
-  v.copyMatrix(&v,&c);
-  printf("\nV of Householder:");
-  v.prettyPrint(&v);
-
-  v.transpose(&v,&b);
-  printf("\nVtranopose:");
-  b.prettyPrint(&b);
-  printf("\nV x Vtranopose:");
-  v.rightMultiply(&v,&b,&c);
-  c.prettyPrint(&c);
-
-  printf("\nVtranopose x V:");
-  b.rightMultiply(&b, &v, &temp);
-  temp.prettyPrint(&temp);
-
-  c.scalarMultiply(&c, 2.0);
-  c.scalarMultiply(&c, (1/temp.getElement(&temp, 0, 0)));
-  printf("\n 2(v vT / vT v) ");
-  c.prettyPrint(&c);
-  h2.setToIdentity(&h2);
-  h2.subtractFromRightBottomMost(&h2, &c);
-  printf("\nSecond Householder matrix H(2):");
-  h2.prettyPrint(&h2);
-
-  printf("\nA(1) = H(2) A(1):");
-  h2.rightMultiply(&h2, &a, &temp);
-  printf("\nA(1) (aka R):");
-  temp.prettyPrint(&temp);
-  a.copyMatrix(&a, &temp);
-  
-  printf("\nQ (H1 H2) :");
-  h.rightMultiply(&h, &h2, &q);
-  q.prettyPrint(&q);
-  //confirm
-  q.rightMultiply(&q,&a,&temp);
-  printf("Should equal A:");
-  temp.prettyPrint(&temp);
-  printf("A again:");
-  acopy.prettyPrint(&acopy);
-  */
+  //============================================================================
   //looped
-  //a.copyMatrix(&acopy);
+  //============================================================================
   printf("=Looped=");
   double norm = 0.0;
   int j = 0;
@@ -198,7 +124,6 @@ int main(){//int argc, char** argv){
   }  
   setToIdentity(&h);
   for(int i = 0; i < j; i+=2){
-    //mp[i].rightMultiply(&mp[i], &mp[i+1], &h);
     matrixMultiply(&h, &mp[i], &h2);
     copyMatrix(&h, &h2);
     matrixMultiply(&h, &mp[i+1], &h2);
@@ -213,4 +138,99 @@ int main(){//int argc, char** argv){
   prettyPrint(&temp);
   printf("A again:");
   prettyPrint(&acopy);  
+
+  //============================================================================
+  //generalized version using supplied args
+  //============================================================================
+  free(mp);
+  mp = NULL;
+  number = 0;
+  if(m > n){
+    number = (n-1);
+  } else {
+    number = (m-1);
+  }
+  mp = malloc(sizeof(struct matrix)*number);
+  if(mp == NULL){
+    printf("Couldn't allocate matrices array.");
+    abort();
+  }
+  printf("\n===============================================================================");
+  printf("\nSetting up blank householder reflectors for generalized version...");
+  for(int i = 0; i < number; i++){
+    init(&mp[i], m, m);
+  }
+  //reset j and a
+  j = 0;
+  init(&a, n, m);
+  fillWithRandomElements(&a, 10, 0);
+  printf("A:");
+  prettyPrint(&a);
+  copyMatrix(&acopy, &a);
+  //the loop --AGAIN -- that computes all the reflectors and QR
+  while(j+1 < a.width || j+2 < a.height){
+    extractVector(&a,j,j,&v);
+    printf("\nV (col vector of A from j,j):");
+    prettyPrint(&v);
+    norm = normOfVector(&v,0);
+    printf("\nNorm of V: %f", norm);
+    init(&e1, 1, a.height-j);
+    zero(&e1);
+    if(getElement(&a,j,j) < 0){
+      setElement(&e1,0,0,1.0);
+    } else {
+      setElement(&e1,0,0,-1.0);
+    }  
+    scalarMultiply(&e1, norm);
+    add(&v, &e1, &c);
+    copyMatrix(&v, &c);
+    printf("\nV of Householder:");
+    prettyPrint(&v);
+
+    transpose(&v,&b);
+    printf("\nVtranopose:");
+    prettyPrint(&b);
+    printf("\nV x Vtranopose:");
+    matrixMultiply(&v,&b,&c);
+    prettyPrint(&c);
+    
+    printf("\nVtranopose x V:");
+    matrixMultiply(&b, &v, &temp);
+    prettyPrint(&temp);
+    
+    scalarMultiply(&c, 2.0);
+    scalarMultiply(&c, (1 / getElement(&temp, 0, 0)));
+    printf("\n 2(v vT / vT v) ");
+    prettyPrint(&c);
+    setToIdentity(&(mp[j]));
+    subtractFromRightBottomMost(&mp[j], &c);
+    printf("\n%d Householder matrix H(%d):",j+1, j+1);
+    prettyPrint(&mp[j]);
+
+    printf("\nA(%d) = H(%d) A(%d):",j+1,j+1,j);
+    matrixMultiply(&mp[j], &a, &temp);
+    printf("\nA(%d):",j+1);
+    prettyPrint(&temp);
+    copyMatrix(&a, &temp);    
+    j++;
+  }  
+  init(&h, m, m);
+  setToIdentity(&h);
+  for(int i = 0; i < j; i+=2){
+    matrixMultiply(&h, &mp[i], &h2);
+    copyMatrix(&h, &h2);
+    matrixMultiply(&h, &mp[i+1], &h2);
+    copyMatrix(&h, &h2);
+  }
+  printf("\nQ:");
+  copyMatrix(&q, &h);
+  prettyPrint(&q);
+  //confirm
+  matrixMultiply(&q, &a, &temp);
+  printf("Should equal A:");
+  prettyPrint(&temp);
+  printf("A again:");
+  prettyPrint(&acopy);  
+
+  return 0;
 }

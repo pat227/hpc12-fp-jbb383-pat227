@@ -1,3 +1,4 @@
+
 struct matrix{
   int height;
   int width;
@@ -11,6 +12,7 @@ void destroy(struct matrix * this);
 void copyMatrix(struct matrix * this, const struct matrix * const other);
 double getElement(const struct matrix * const this, const int row, 
 			const int col);
+void fillWithRandomElements(struct matrix * const m, int upper, int lower);
 void prettyPrint(const struct matrix * const this);
 int setElement(struct matrix * this, const int row, const int col, 
 		     const double value);
