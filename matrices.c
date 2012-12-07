@@ -27,7 +27,9 @@ void add(const struct matrix * const m, const struct matrix * const other,
     }
   }
 }
-//copy element for element
+//copy element for element--this is very slow and we use it a lot
+//so make a faster version that just swaps the pointer to "elements"
+//see swapmatrix
 void copyMatrix(struct matrix * m, const struct matrix * const other){
   //ensure they are the same size or else change our size to match
   if(m->height != other->height || m->width != other->width){
@@ -66,7 +68,7 @@ void extractVector(const struct matrix * const m, const int row,
   }
 }
 //fills all elements with random values given an upper and lower bound for those values
-void fillWithRandomElements(struct matrix * m, uint32_t upper, uint32_t lower){
+void fillWithRandomElements(struct matrix * m, int upper, int lower){
   double value = 0.0;
   srand(1);
   for(int j = 0; j < m->width; j++){
@@ -269,6 +271,23 @@ void subtractFromRightBottomMost(struct matrix * const m,
     }
     j2 = 0;
   }
+}
+/*
+  Swap the elements pointer and set the other to our pointer and swap width and
+  height...should be much faster than element by element copy BUT NOT always
+  appropriate!
+*/
+void swapMatrix(struct matrix * m, struct matrix * other){
+  double * temp = m->elements;
+  m->elements = other->elements;
+  other->elements = temp;
+  int dim = 0;
+  dim = m->width;
+  m->width = other->width;
+  other->width = dim;
+  dim = m->height;
+  m->height = other->height;
+  other->height = dim;
 }
 //fill another supplied matrix with the tranpose of this one
 void transpose(const struct  matrix * const m, struct matrix * transpose){

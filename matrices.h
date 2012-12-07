@@ -17,6 +17,7 @@ void prettyPrint(const struct matrix * const this);
 int setElement(struct matrix * this, const int row, const int col, 
 		     const double value);
 void setToIdentity(struct matrix * this);
+void swapMatrix(struct matrix * m, struct matrix * other);
 void zero(struct matrix * this);
 //more advanced functions
 void add(const struct matrix * const this, 

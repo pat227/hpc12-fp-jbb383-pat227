@@ -1,5 +1,3 @@
-#ifndef MATRIXCHECKS
-#define MATRIXCHECKS
 //use these as boolean functions
 /* Check for constraint: Q * Qtranspose = I 
    Apply to Q of the A=QR decomposition. Note that Q must be square. I've 
@@ -35,4 +33,4 @@ void print_matrix(const double matrix[], const int m, const int n);
 /*not needed here except for testing...might have to use some conditional 
   compilation*/
 double identity(const uint32_t m, const uint32_t n);
-#endif
+

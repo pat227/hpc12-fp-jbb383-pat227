@@ -11,7 +11,7 @@ matrices_tests:	matrices_tests.c matrices.o
 	gcc -std=gnu99 -lcunit -lm -Wall -Wextra -Werror -o$@ $^
 matrices.o:	matrices.c
 	gcc -c -std=gnu99 -lm -Wall -Wextra -Werror -o$@ $^
-householder: householder.c  matrices.o
+householder: householder.c  matrices.o qrlib.o
 	gcc -std=gnu99 -lm -Wall -Wextra -Werror -o$@ $^
 clean:
 	rm -f $(EXECUTABLES) *.o
