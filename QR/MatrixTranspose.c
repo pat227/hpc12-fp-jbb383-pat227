@@ -9,7 +9,7 @@
 #define L1_BLK_SIZE 2
 #define MULTIPLE 2
 #define L2_BLK_SIZE (L1_BLK_SIZE * MULTIPLE)
-
+#define verbose 0
 /*
   Transposes a matrix using L1 and L2 sized sub-blocks to hopefully gain a speed
   up, similar to the openCL matrix transposition although that was on a GPU...
@@ -23,7 +23,6 @@
 void MatrixTranspose(const double * const A, const int h, const int w, double * B){
   int num_blocks_w = (w + L2_BLK_SIZE - 1) / L2_BLK_SIZE;
   int num_blocks_h = (h + L2_BLK_SIZE - 1) / L2_BLK_SIZE;
-  int verbose = 0;
   if(verbose) printf("\n# of sub-blocks:  %d high by %d wide", num_blocks_h, num_blocks_w);
   /* Make static matrices */
   static __attribute__ ((aligned(16))) double b_blockL2[L2_BLK_SIZE*L2_BLK_SIZE];
@@ -60,7 +59,6 @@ void MatrixTranspose(const double * const A, const int h, const int w, double * 
 void copyTransposedL2Block(const double * const B, const int submatrix_row , 
 			   const int submatrix_col, double * A, const int w, 
 			   const int h){
-  int verbose = 0;
   if(verbose){
     printf("\n=copyTransposedL2Block=");
     printf("\nsubmatrix_col: %d, h: %d L2: %d, w: %d submatrix_row: %d", 
@@ -90,7 +88,7 @@ void copyTransposedL2Block(const double * const B, const int submatrix_row ,
 	    (submatrix_row+1)*L2_BLK_SIZE > h){
     if(verbose) printf("\n=copyTransposedL2Block= case 3");
     int diff = (submatrix_row+1)*L2_BLK_SIZE - h;
-    int new_colguard = h - diff;
+    int new_colguard = L2_BLK_SIZE - diff;
     for(int j = 0; j < new_colguard; j++){
       for(int i = 0; i < L2_BLK_SIZE; i++){
 	A[i + (submatrix_col)*L2_BLK_SIZE + (submatrix_row*L2_BLK_SIZE+j)*w] = 
@@ -99,12 +97,14 @@ void copyTransposedL2Block(const double * const B, const int submatrix_row ,
     } 
   } else if((submatrix_col+1)*L2_BLK_SIZE > w && 
 	    (submatrix_row+1)*L2_BLK_SIZE > h && 
-	    (submatrix_col > 0 && submatrix_row > 0)){
+	    (submatrix_col > 0 || submatrix_row > 0)){
+    //BUG fix: w and h had been swapped into wrong lines and last condition 
+    //should not have been && but ||
     if(verbose) printf("\n=copyTransposedL2Block= case 4");
-    int diff1 = (submatrix_col+1)*L2_BLK_SIZE - h;
+    int diff1 = (submatrix_col+1)*L2_BLK_SIZE - w;
     int new_rowguard = L2_BLK_SIZE - diff1;
-    int diff2 = (submatrix_row+1)*L2_BLK_SIZE - w;
-    int new_colguard = w - diff2;
+    int diff2 = (submatrix_row+1)*L2_BLK_SIZE - h;
+    int new_colguard = L2_BLK_SIZE - diff2;
     for(int j = 0; j < new_colguard; j++){
       for(int i = 0; i < new_rowguard; i++){
 	A[i + (submatrix_col*L2_BLK_SIZE) + (submatrix_row*L2_BLK_SIZE+j)*w] =
@@ -113,8 +113,8 @@ void copyTransposedL2Block(const double * const B, const int submatrix_row ,
     }
   } else if((submatrix_col+1)*L2_BLK_SIZE > w && 
 	    (submatrix_row+1)*L2_BLK_SIZE > h && 
-	    (submatrix_row ==0 && submatrix_col == 0)){
-    //case of: L2 is larger than matrix being transposed
+	    (submatrix_row == 0 && submatrix_col == 0)){
+    //case of: L2 is larger than matrix being transposed in BOTH m and n
     if(verbose) printf("\n=copyTransposedL2Block= case 5");
     for(int j = 0; j < w; j++){
       for(int i = 0; i < h; i++){
@@ -122,12 +122,14 @@ void copyTransposedL2Block(const double * const B, const int submatrix_row ,
 	  B[i+j*L2_BLK_SIZE];
       }
     }
+  } else {
+    //this should NEVER print...good to have it
+    printf("\n=copyTransposedL2Block= Missing a case");
   }
 }
 //copy a NOT-YET-transposed L2 submatrix block of A to L2-block-sized B
 void copyL2Block(const double * const A, const int submatrix_row , 
 		 const int submatrix_col, double * B, const int w, const int h){
-  int verbose = 0;
   if(verbose){
     printf("\n=copyL2Block=");
     printf("\nsubmatrix_col: %d, h: %d L2: %d, w: %d submatrix_row: %d", 
@@ -182,23 +184,32 @@ void copyL2Block(const double * const A, const int submatrix_row ,
     int new_rowguard = (L2_BLK_SIZE - diff1);
     int diff2 = (submatrix_col+1)*L2_BLK_SIZE - w;
     int new_colguard = (L2_BLK_SIZE - diff2);
+    if(verbose) printf("\ndiff1:%d, new_rowguard:%d, diff2:%d, new_colguard:%d",diff1, new_rowguard, diff2, new_colguard);
     for(int j = 0; j < new_colguard; j++){
       for(int i = 0; i < new_rowguard; i++){
 	B[i+j*L2_BLK_SIZE] = 
 	  A[(submatrix_row*L2_BLK_SIZE) + i + (submatrix_col*L2_BLK_SIZE+j)*h];
       }
     } 
-    //fill with zeros for rest
+    //fill with zeros for rest--BUGFIX--wrong way to fill rest with zeros
+    //need 2 loops not 1
     for(int j = new_colguard; j < L2_BLK_SIZE; j++){
+      for(int i = 0; i < L2_BLK_SIZE; i++){
+	B[i+j*L2_BLK_SIZE] = 0.0;
+      }
+    }
+    for(int j = 0; j < new_colguard; j++){
       for(int i = new_rowguard; i < L2_BLK_SIZE; i++){
 	B[i+j*L2_BLK_SIZE] = 0.0;
       }
     }
+  } else {
+    //this should NEVER print...good to have it
+    printf("\n=copyL2Block= Missing a case");
   }
 }
 //copy a NOT-YET-transposed L1 submatrix block of L2-sized A to L1-block-sized B
 void copyL1Block(const double * const A, const int i, const int j, double * B){
-  int verbose = 0;
   if(verbose) printf("=CopyL1Block=");
   for(int j2 = 0; j2 < L1_BLK_SIZE ; j2++){
     for(int i2 = 0; i2 < L1_BLK_SIZE ; i2++){
@@ -211,7 +222,6 @@ void copyL1Block(const double * const A, const int i, const int j, double * B){
 void transposeL2(const double * const A, double * B){
   static __attribute__ ((aligned(16))) double b_blockL1[L1_BLK_SIZE*L1_BLK_SIZE];
   static __attribute__ ((aligned(16))) double c_blockL1[L1_BLK_SIZE*L1_BLK_SIZE]; 
-  int verbose = 0;
   if(verbose) printf("\n=transposeL2=");
   for(int j = 0; j < MULTIPLE ; j++){
     for(int i = 0; i < MULTIPLE ; i++){
