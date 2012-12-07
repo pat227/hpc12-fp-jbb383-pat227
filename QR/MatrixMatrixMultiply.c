@@ -18,7 +18,7 @@
 static void dgemm_lowest( const double*restrict, const double*restrict, double*restrict);
 static void dgemm_middle( const double*restrict, const double*restrict, double*restrict);
 
-int MatrixMatrixMultiply( double *A, int wA, int hA, double *B, int wB, int hB, double *C)
+int MatrixMatrixMultiply( double *A, int hA, int wA, double *B, int hB, int wB, double *C)
 {
 
 /* Check that Matrix deminsions are valid */
