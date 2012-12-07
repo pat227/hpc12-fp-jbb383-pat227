@@ -65,12 +65,12 @@ CalculateV( A, h, w, 0, v);
 	CleanMatrix(v, h, 1);
 	CleanMatrix(z, h, 1);
 
-for(int k =1; k<h; k++){
+for(int k =1; k<1; k++){
 	/* Calculate v */
 	CalculateV( A, h, w, k, v); 
 
 	/* Calculate z */
-	CalculateZ(Y, W, v, h, z );	
+	CalculateZ(W, Y, v, h, z );	
 	
 	/* Fill in kth column of W and kth row of Y */
 	for(int i = 0; i<h; i++){
@@ -91,6 +91,9 @@ for(int k =1; k<h; k++){
 
 MatrixMatrixMultiply(W, h,h, Y, h,h, Q);
 
+
+prettyPrint(Q, h,h);
+
 for(int i =0; i< h; i++){
 		Q[i + i*h] += 1;
 	}
@@ -100,8 +103,8 @@ prettyPrint(Q, h,h);
 simple_transpose( Q, h, h, Qt );
 printf("Qt = \n");
 prettyPrint(Qt, h,h);
-
-MatrixMatrixMultiply(Qt, h,h, A, h, w, temp);
+ 
+ MatrixMatrixMultiply(Qt, h,h, A, h, w, temp);
 
 printf("R = \n");
 prettyPrint(temp, h, w);
@@ -118,7 +121,8 @@ void CalculateZ( double *W, double *Y, double *v, int h, double *z){
 	CleanMatrix(temp, h,h);
 
 /*  W*Y (Note Y = Y^T theoretically)*/
-	MatrixMatrixMultiply( Y, h,h, W, h,h, temp);
+
+   MatrixMatrixMultiply( W, h,h, Y, h,h, temp);
 
 printf(" WY = \n");
 prettyPrint(temp, h,h);
@@ -156,7 +160,7 @@ void CalculateV( double *A, int h, int w, int coli, double *v){
 /*Calculate sign of x*/
 	int sign =1 ; 
 
-	if ( v[1] <0)
+	if ( v[0] <0)
 		sign = -1;
 
 /*Calculate norm */
