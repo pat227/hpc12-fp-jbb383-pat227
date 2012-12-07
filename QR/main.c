@@ -32,7 +32,7 @@ int main(int argc, char** argv)
  /* Initilize matrix A */
   double *A = malloc( m*n*sizeof(double) );
   double *C = malloc( m*m*sizeof(double) );
-  double *D = malloc( n*m*sizeof(double));
+ 
  
  /* Fill up matrix A with elements from [0,10)*/
   int i; 
