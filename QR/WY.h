@@ -3,5 +3,5 @@
 /* Header file for WY code */
 
 void CalculateV( double *, int, int, int, double *);
-void CalculateZ( double *, double *,double *, int, double *);
 int WY( double *, int , int , double *);
+void CalculateQ( double *, double *, int , int,  double *);

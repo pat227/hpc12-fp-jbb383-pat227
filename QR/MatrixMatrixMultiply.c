@@ -9,8 +9,8 @@
 #include "MatrixMatrixMultiply.h"
 #include "test.h"
 
-#define L1_BLK_SIZE 16
-#define L2_BLK_SIZE (L1_BLK_SIZE * 32)
+#define L1_BLK_SIZE 2
+#define L2_BLK_SIZE (L1_BLK_SIZE * 2)
 
 /* Blocked Matrix Matrix Multiply Subfunctions */
 /* We couldn't add these two functions to the header because they are static */
@@ -67,7 +67,7 @@ for( int i = 0; i < hn_bloc; i++){
 
 
 /* Uncomment to Test this function */
-testMatrixMultiply(A, B, C, hA, wA, hB, wB);
+//testMatrixMultiply(A, B, C, hA, wA, hB, wB);
 
 return 0;
 }
