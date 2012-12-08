@@ -14,8 +14,6 @@ Given a Matrix A this code outputs the transpose of the orthogonal matrix Q.
 #include "Utilities.h"
 #include <math.h>
 
-/* Currently works for k = 2, We need m greater than or equal to n */
-
 
 /*=========================================================================*/
 
@@ -23,20 +21,26 @@ int WY( double *A, int h, int w, double *Q){
 
 /* Current Householder vector */
 double *v = malloc( h * sizeof(double));
-
-/* Current z vector */
 double *z = malloc( h * sizeof(double));
 
-/* Qt Array */
-double *Qt = malloc(h * h * sizeof(double));
-
-
-/* R array */
-double *R = malloc( h* w * sizeof(double));
+/* Temporary Arrays */
+double *temp = malloc(h * h* sizeof(double));
+double *temp1 = malloc(h * w * sizeof(double));
+double *temp2 = malloc(h * h * sizeof(double));
+double *temp3 = malloc(h* h * sizeof(double));
+double *temp4 = malloc( h * h * sizeof(double));
+double *temp5 = malloc( h* h * sizeof(double));
+double *temp6 = malloc(h * h * sizeof(double));
+double *temp7 = malloc(h * h * sizeof(double));
 
 /* W and Yt Arrays. Note: Yt = Y^t */
 double *W = malloc( h* w* sizeof(double));
 double *Yt = malloc( w*h * sizeof(double)); 
+
+
+
+/*============================  First iteration ==========================================*/
+
 
 /* Initial Householder vector*/
 CalculateV( A, h, w, 0, v);
@@ -51,69 +55,150 @@ for(int i=0; i< h; i++){
 	Yt[i*w] = v[i];
 }
 
-/* Calculate Temp */	
-	CleanMatrix(Q, h, h);
-	CalculateQ( W, Yt, h, w, Q);
 
-		
-/* Calculate new R */
-	MatrixTranspose( Q, h,h, Qt);	
-	MatrixMatrixMultiply( Qt, h,h,A, h, w, R);
+
+
+MatrixMatrixMultiply( v, h, 1, v, 1, h , temp2);
+/* Scalar multiplication by -2 */
+	for(int i=0; i< h; i++){
+	for( int j=0; j<h; j++){
+		temp2[i + j*h] *=-2 ;
+	} }
+for(int i=0; i<h; i++){
+	temp2[ i + i*h] += 1;
+}
+
+
+	CalculateQ( W, Yt, h, w, temp);
+
+	MatrixMatrixMultiply( temp, h,h,A, h, w, temp1);
 	
-	printf(" R k=%d : \n", 0); 
-	prettyPrint(R, h, w);
+	printf(" R k %d : \n", 0); 
+	prettyPrint(temp1, h, w);
 
 
-/*********************** Start Loop *********************************/
+/*============================= Second Iteration ==========================================*/
 
-for( int k= 1; k< w; k++){
+	CalculateV( temp1, h, w, 1, v);
+	prettyPrint(v, h, 1);
 
-	CalculateV( R, h, w, k, v);
+MatrixMatrixMultiply( v, h, 1, v, 1, h, temp3);
+/* Scalar multiplication by -2 */
+	for(int i=0; i< h; i++){
+	for( int j=0; j<h; j++){
+		temp3[i + j*h] *=-2 ;
+	} }
 
-/* Calculate new z */
+for(int i=0; i<h; i++){
+	temp3[ i + i*h] += 1;
+}
+
+
+
+MatrixMatrixMultiply(temp2, h,h, temp3, h,h, temp4);
 
 	/* Scalar multiplication by -2 */
 	for(int i=0; i< h; i++){
 	for( int j=0; j<h; j++){
-		Q[i + j*h] *=-2 ;
+		temp[i + j*h] *=-2 ;
 	} }
 
-	MatrixMatrixMultiply(Q, h, h, v, h ,1, z); 
+	MatrixMatrixMultiply(temp, h, h, v, h ,1, z);
+	prettyPrint(z, h, 1); 
 
-/* Fill in k row or column of W and Yt */
+	/* Fill in k row or column of W and Yt */
 	for(int i=0; i< h; i++){
-	W[i+ k*h] = z[i];
-	Yt[k+ i*w] = v[i];
-	}	
+	W[i+ h] = z[i];
+	Yt[1+ i*w] = v[i];
+	}
 
-/* Calculate Temp */	
-	CleanMatrix(Q, h, h);
-	CalculateQ( W, Yt, h, w, Q);
+	CleanMatrix(temp, h, h);
 
-		
-/* Calculate new R */
-	CleanMatrix(R, h, w);
-	MatrixTranspose( Q, h,h, Qt);	
-	MatrixMatrixMultiply( Qt, h,h,A, h, w, R);
+	CalculateQ( W, Yt, h, w, temp);
+	prettyPrint(temp, h, h);
+	prettyPrint(temp4, h, h);
+
+  	CleanMatrix(temp1, h,w );      
+
+	MatrixTranspose( temp, h, h, temp5);
 	
-	printf(" R=k %d : \n", k); 
-	prettyPrint(R, h, w);
+	MatrixMatrixMultiply( temp5, h,h,A, h, w, temp1);
+	
+	printf(" R k %d : \n", 1); 
+	prettyPrint(temp1, h, w);
 
+/*=============================  Thrid iteration ======================================== */
 
-}
+	CalculateV( temp1, h, w, 2, v);
+	printf("v = \n");
+	prettyPrint(v, h, 1);
 
-}
-
-
-
-void CalculateQ( double *W, double *Yt, int h, int w, double *Q){
-
-/* Calculates Q =  I + W Y^T */
-
-MatrixMatrixMultiply( W, h, w, Yt, w, h, Q);
+MatrixMatrixMultiply( v, h, 1, v, 1, h, temp6);
+/* Scalar multiplication by -2 */
+	for(int i=0; i< h; i++){
+	for( int j=0; j<h; j++){
+		temp6[i + j*h] *=-2 ;
+	} }
 
 for(int i=0; i<h; i++){
-	Q[ i + i*h] += 1;
+	temp6[ i + i*h] += 1;
+}
+
+
+
+      MatrixMatrixMultiply(temp4, h,h, temp6, h,h, temp7);
+
+	/* Scalar multiplication by -2 */
+	for(int i=0; i< h; i++){
+	for( int j=0; j<h; j++){
+		temp[i + j*h] *=-2 ;
+	} }
+
+	MatrixMatrixMultiply(temp, h, h, v, h ,1, z);
+	prettyPrint(z, h, 1); 
+
+	/* Fill in k row or column of W and Yt */
+	for(int i=0; i< h; i++){
+	W[i+ h] = z[i];
+	Yt[1+ i*w] = v[i];
+	}
+
+	CleanMatrix(temp, h, h);
+
+	CalculateQ( W, Yt, h, w, temp);
+	
+        prettyPrint(temp, h, h);
+	prettyPrint(temp7, h, h);
+
+  	CleanMatrix(temp1, h,w );      
+	
+
+
+	MatrixTranspose( temp7, h, h, temp5);
+	
+	MatrixMatrixMultiply( temp5, h,h,A, h, w, temp1);
+	
+	printf(" R k %d : \n", 1); 
+	prettyPrint(temp1, h, w);
+
+
+
+
+
+
+return 0;
+}
+
+
+
+void CalculateQ( double *W, double *Yt, int h, int w, double *temp){
+
+/* Calculates temp =  I + W Y^T */
+
+MatrixMatrixMultiply( W, h, w, Yt, w, h, temp);
+
+for(int i=0; i<h; i++){
+	temp[ i + i*h] += 1;
 }
 
 }
@@ -166,6 +251,8 @@ void CalculateV( double *A, int h, int w, int coli, double *v){
 
 
 }
+
+
 
 
 
