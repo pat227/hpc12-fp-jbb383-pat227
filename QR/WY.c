@@ -96,8 +96,9 @@ for(int i =0; i< h; i++){
    printf("v:");
    prettyPrint(v, 1, h);
    printf("\n");
-   /* Calculate z */
-   CalculateZ(W, Y, v, h, z );	
+   /* Calculate z IN LOOP is different */
+   //CalculateZ(W, Y, v, h, z );
+   CalcZInLoop(v,h,z);
    printf("z:");
    prettyPrint(z, 1, h);
    printf("\n");
@@ -200,6 +201,52 @@ prettyPrint(temp, h, h);
 
 }
 
+void CalculateZInLoop( double *W, double *Y, double *v, int h, double *z){
+  /* Calculates z = -2 ( I + WY) v */
+  
+  /* Allocate and clean temporay array */
+  double *temp = malloc(h*h*sizeof(double));
+  CleanMatrix(temp, h,h);
+  
+  //compute v by vtranpose into temp--have to know that v is 4x1 col vector
+  //this is outer product, every element times every element
+  for(int i=0; i < h; i++){
+    for(int j=0; j < h; j++){
+      temp[i+j*h] = v[i] * v[j] * -2;
+    }
+  }
+  for(int i = 0; i<h; i++){
+    temp[i+i*h] += 1;
+  }
+  printf("\n I-2 v by vtranpose:\n");
+  prettyPrint(temp,h,h);
+  printf("\n");
+
+
+  /*  W*Y (Note Y = Y^T theoretically)*/
+  
+  MatrixMatrixMultiply( W, h, h, Y, h,h, temp);
+  
+  printf(" WY = \n");
+  prettyPrint(temp, h,h);
+  
+  /* I + W*Y */
+  for(int i =0; i< h; i++){
+    temp[i + i*h] += 1;
+  }
+  printf(" I+WY (in temp) = \n");
+  prettyPrint(temp, h, h);
+  
+  /* (I + W*Y)*v */ 
+  MatrixMatrixMultiply( temp, h, h, v, h, 1 , z);
+  printf("\n-2 ( I + W*Y)*v:\n");
+  prettyPrint(z, h, 1);
+  /* -2 ( I + W*Y)*v */
+  for(int i =0; i< h; i++){
+    z[i] *= -2;
+  }	 
+}
+
 
 
 void CalculateV( double *A, int h, int w, int coli, double *v){
@@ -215,7 +262,7 @@ void CalculateV( double *A, int h, int w, int coli, double *v){
 
 /*Calculate sign of x*/
 	int sign =1 ; 
-
+	//use sign of "first" element with respect to coli
 	if ( v[coli] <0)
 		sign = -1;
 
