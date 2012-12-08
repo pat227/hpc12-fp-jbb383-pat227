@@ -36,7 +36,7 @@ int main(int argc, char** argv)
  
  /* Fill up matrix A with elements from [0,10)*/
   int i; 
-  srand ( time ( NULL ) );	 
+  srand (1);// time ( NULL ) );	 
   for(i=0; i< (m*n) ; i++){
       A[i] = (double) (rand() %1000)/100;
    }

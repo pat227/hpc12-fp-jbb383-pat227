@@ -67,7 +67,7 @@ for( int i = 0; i < hn_bloc; i++){
 
 
 /* Uncomment to Test this function */
-testMatrixMultiply(A, B, C, hA, wA, hB, wB);
+//testMatrixMultiply(A, B, C, hA, wA, hB, wB);
 
 return 0;
 }
@@ -242,6 +242,5 @@ for(i=0; i<hA; i++){
 }
 
 }
-
 
 

@@ -11,7 +11,7 @@
 #include<stdint.h> //exact types
 #include"proj-LibCorrectness.h" //the functions we wish to test have headers here
 /*We use column major access and assume args are stored in column major order in accordance with all the other work we did this semester*/
-
+#include "QR/MatrixMatrixMultiply.h"
 
 void test_id(void){
   CU_ASSERT(identity(0,2) == 0);
@@ -166,6 +166,16 @@ void test_RisUpperTriangular(){
   CU_ASSERT(isUpperTriangular(R2,3) == 1);
   CU_ASSERT(isUpperTriangular(R3,3) == 1);
   CU_ASSERT(isUpperTriangular(wrongR3,3) == 0);
+}
+
+void test_MatrixMultiply(){
+  double A[9] = {12,6,-4, -51,167,24,  4,-68,-41};
+  double Q[9] = {6.0/7,3.0/7,-2/7.0,   69.0/175,-158/175.0,-6/35.0,
+		 -58/175.0,6.0/175,-33/35.0};
+  double R[9] = {14,0,0,    21,-175,0,    -14,70,35};  
+  double result[9] = { 0,0,0, 0,0,0, 0,0,0  };
+  MatrixMatrixMultiply(Q, 3, 3, R, 3, 3, result);
+  
 }
 
 int main()
