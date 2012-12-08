@@ -83,7 +83,6 @@ for(int i =0; i< h; i++){
  printf("R = \n");
  prettyPrint(temp, h, w);
 
-
  copyMatrix(temp, A, h, w);
  
  printf("Updated A = \n");
@@ -96,9 +95,8 @@ for(int i =0; i< h; i++){
    printf("v:");
    prettyPrint(v, 1, h);
    printf("\n");
-   /* Calculate z IN LOOP is different */
-   //CalculateZ(W, Y, v, h, z );
-   CalcZInLoop(v,h,z);
+   /* Calculate z IN LOOP is different -- update Qt */
+   CalcZInLoop(v,h,z, Qt);
    printf("z:");
    prettyPrint(z, 1, h);
    printf("\n");
@@ -222,29 +220,16 @@ void CalculateZInLoop( double *W, double *Y, double *v, int h, double *z){
   prettyPrint(temp,h,h);
   printf("\n");
 
+  double *temp2 = malloc(h*h*sizeof(double));
+  CleanMatrix(temp2, h,h);
+  MatrixMatrixMultiply( Qt, h, h, temp, h, h , temp2);
+  printf("\n Updated Q with most recent reflector...\n");
+  prettyPrint(temp2, h, h);
 
-  /*  W*Y (Note Y = Y^T theoretically)*/
-  
-  MatrixMatrixMultiply( W, h, h, Y, h,h, temp);
-  
-  printf(" WY = \n");
-  prettyPrint(temp, h,h);
-  
-  /* I + W*Y */
-  for(int i =0; i< h; i++){
-    temp[i + i*h] += 1;
-  }
-  printf(" I+WY (in temp) = \n");
-  prettyPrint(temp, h, h);
-  
-  /* (I + W*Y)*v */ 
-  MatrixMatrixMultiply( temp, h, h, v, h, 1 , z);
-  printf("\n-2 ( I + W*Y)*v:\n");
-  prettyPrint(z, h, 1);
-  /* -2 ( I + W*Y)*v */
-  for(int i =0; i< h; i++){
-    z[i] *= -2;
-  }	 
+  //copy it back to Qt
+  copyMatrix(temp2, z);
+  //DRAFT NOT FINISHED I THINK...GOTTA SLEEP NOW
+
 }
 
 
