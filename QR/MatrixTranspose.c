@@ -49,7 +49,7 @@ void MatrixTranspose(const double * const A, const int h, const int w, double * 
   }
 
 /* Uncomment if you want to test this function*/
- testMatrixTranspose( A, h, w, B);
+ //testMatrixTranspose( A, h, w, B);
 
 }
 

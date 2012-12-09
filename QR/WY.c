@@ -17,193 +17,112 @@ Given a Matrix A this code outputs the transpose of the orthogonal matrix Q.
 
 /*=========================================================================*/
 
-int WY( double *A, int h, int w, double *Q){
+int WY( double *A, int h, int w, double *Q, double *Qt, double *R){
 
-/* Current Householder vector */
-double *v = malloc( h * sizeof(double));
-double *z = malloc( h * sizeof(double));
-
-/* Temporary Arrays */
-double *temp = malloc(h * h* sizeof(double));
-double *temp1 = malloc(h * w * sizeof(double));
-double *temp2 = malloc(h * h * sizeof(double));
-double *temp3 = malloc(h* h * sizeof(double));
-double *temp4 = malloc( h * h * sizeof(double));
-double *temp5 = malloc( h* h * sizeof(double));
-double *temp6 = malloc(h * h * sizeof(double));
-double *temp7 = malloc(h * h * sizeof(double));
-
-/* W and Yt Arrays. Note: Yt = Y^t */
-double *W = malloc( h* w* sizeof(double));
-double *Yt = malloc( w*h * sizeof(double)); 
+/* Initialize Matrices and vectors */
+	double *v = malloc( h * sizeof(double));
+	double *z = malloc( h * sizeof(double));
+	double *a1 = malloc( h * sizeof(double));
+	double *a2 = malloc( h * sizeof(double)); 
+	double *Yt = malloc( w * h * sizeof(double));
+	double *W = malloc( h * w * sizeof(double));
 
 
+/* Set Yt and W to zero matrix */
+	CleanMatrix(Yt, w, h);
+	CleanMatrix(W, h, w);
 
-/*============================  First iteration ==========================================*/
+/*===================== Initial steps =========================== */
 
-
-/* Initial Householder vector*/
-CalculateV( A, h, w, 0, v);
-
-/* Clean W and Yt */
-CleanMatrix(W, h, w);
-CleanMatrix(Yt, w, h);
-
-/* Fill in first row or column of W and Yt */
-for(int i=0; i< h; i++){
-	W[i] = -2 * v[i];
-	Yt[i*w] = v[i];
-}
-
-
-
-
-MatrixMatrixMultiply( v, h, 1, v, 1, h , temp2);
-/* Scalar multiplication by -2 */
-	for(int i=0; i< h; i++){
-	for( int j=0; j<h; j++){
-		temp2[i + j*h] *=-2 ;
-	} }
-for(int i=0; i<h; i++){
-	temp2[ i + i*h] += 1;
-}
-
-
-	CalculateQ( W, Yt, h, w, temp);
-
-	MatrixMatrixMultiply( temp, h,h,A, h, w, temp1);
-	
-	printf(" R k %d : \n", 0); 
-	prettyPrint(temp1, h, w);
-
-
-/*============================= Second Iteration ==========================================*/
-
-	CalculateV( temp1, h, w, 1, v);
-	prettyPrint(v, h, 1);
-
-MatrixMatrixMultiply( v, h, 1, v, 1, h, temp3);
-/* Scalar multiplication by -2 */
-	for(int i=0; i< h; i++){
-	for( int j=0; j<h; j++){
-		temp3[i + j*h] *=-2 ;
-	} }
-
-for(int i=0; i<h; i++){
-	temp3[ i + i*h] += 1;
-}
-
-
-
-MatrixMatrixMultiply(temp2, h,h, temp3, h,h, temp4);
-
-	/* Scalar multiplication by -2 */
-	for(int i=0; i< h; i++){
-	for( int j=0; j<h; j++){
-		temp[i + j*h] *=-2 ;
-	} }
-
-	MatrixMatrixMultiply(temp, h, h, v, h ,1, z);
-	prettyPrint(z, h, 1); 
-
-	/* Fill in k row or column of W and Yt */
-	for(int i=0; i< h; i++){
-	W[i+ h] = z[i];
-	Yt[1+ i*w] = v[i];
+/* Copy a_0 into a1 */
+	for(int i=0; i<h; i++){
+		a1[i] = A[i]; 
 	}
 
-	CleanMatrix(temp, h, h);
+/* Calculate initial v */
+	CalculateV( a1, h, 0, v);	
 
-	CalculateQ( W, Yt, h, w, temp);
-	prettyPrint(temp, h, h);
-	prettyPrint(temp4, h, h);
-
-  	CleanMatrix(temp1, h,w );      
-
-	MatrixTranspose( temp, h, h, temp5);
-	
-	MatrixMatrixMultiply( temp5, h,h,A, h, w, temp1);
-	
-	printf(" R k %d : \n", 1); 
-	prettyPrint(temp1, h, w);
-
-/*=============================  Thrid iteration ======================================== */
-
-	CalculateV( temp1, h, w, 2, v);
-	printf("v = \n");
-	prettyPrint(v, h, 1);
-
-MatrixMatrixMultiply( v, h, 1, v, 1, h, temp6);
-/* Scalar multiplication by -2 */
-	for(int i=0; i< h; i++){
-	for( int j=0; j<h; j++){
-		temp6[i + j*h] *=-2 ;
-	} }
-
-for(int i=0; i<h; i++){
-	temp6[ i + i*h] += 1;
-}
-
-
-
-      MatrixMatrixMultiply(temp4, h,h, temp6, h,h, temp7);
-
-	/* Scalar multiplication by -2 */
-	for(int i=0; i< h; i++){
-	for( int j=0; j<h; j++){
-		temp[i + j*h] *=-2 ;
-	} }
-
-	MatrixMatrixMultiply(temp, h, h, v, h ,1, z);
-	prettyPrint(z, h, 1); 
-
-	/* Fill in k row or column of W and Yt */
-	for(int i=0; i< h; i++){
-	W[i+ h] = z[i];
-	Yt[1+ i*w] = v[i];
+/* Fill in first row or column */	
+	for(int i = 0; i < h; i++){
+		W[i] = -2*v[i];
+		Yt[i*w] = v[i];
 	}
 
-	CleanMatrix(temp, h, h);
+/* Calculate initial Q = I + W Yt */
+	CalculateQ(W, Yt, h, w, Q);
+		
+/* Calculate Q^T */
+	MatrixTranspose(Q, h, h, Qt);
 
-	CalculateQ( W, Yt, h, w, temp);
+/* Set n equal to min(w, h). */
+	int n = w;
+	if( w > h)
+		n= h;
 	
-        prettyPrint(temp, h, h);
-	prettyPrint(temp7, h, h);
+/* ========================== Enter Loop ========================= */
+for(int k=1; k<n; k++){
 
-  	CleanMatrix(temp1, h,w );      
+	/* Copy a_k into a1 */
+	for(int i=0; i<h; i++){
+		a1[i] = A[i+k*h]; 
+	}
+
+	/* Update a_k */
+	MatrixMatrixMultiply(Qt, h, h, a1, h, 1, a2);
+
+	/* Calculate kth v */
+	CalculateV( a2, h, k, v);	
+
+	/* Calculate kth z */
+	MatrixMatrixMultiply(Q,h,h,v, h,1, z);	
+
+	/* Fill in the kth row or column */	
+	for(int i = 0; i < h; i++){
+		W[i+ k*h] = -2*z[i];
+		Yt[k +i*w] = v[i];
+	}
+
+	/* Calculate kth Q = I + W Yt */
+	CalculateQ(W, Yt, h, w, Q);
 	
+	/* Calculate Q^T */
+	MatrixTranspose(Q, h, h, Qt);
+
+}	
+
+/*========================= Calculate R ==============================*/
+MatrixMatrixMultiply(Qt, h,h,A , h ,w , R);
 
 
-	MatrixTranspose( temp7, h, h, temp5);
-	
-	MatrixMatrixMultiply( temp5, h,h,A, h, w, temp1);
-	
-	printf(" R k %d : \n", 1); 
-	prettyPrint(temp1, h, w);
+/*====================== Test Code =================================*/
+
+/* Uncomment if you want to test this code */
+//testOrthogonal(Q, Qt, h);
+//testUpperTriangular(R, h, w);
 
 
 
-
-
+/*======================== Clean Up  ====================================*/
+free(v); free(z); free(a1); free(a2); free(W); free(Yt);
 
 return 0;
 }
 
 
 
-void CalculateQ( double *W, double *Yt, int h, int w, double *temp){
+void CalculateQ( double *W, double *Yt, int h, int w, double *Q){
 
 /* Calculates temp =  I + W Y^T */
 
-MatrixMatrixMultiply( W, h, w, Yt, w, h, temp);
+MatrixMatrixMultiply( W, h, w, Yt, w, h, Q);
 
 for(int i=0; i<h; i++){
-	temp[ i + i*h] += 1;
+	Q[ i + i*h] += 1;
 }
 
 }
 
-void CalculateV( double *A, int h, int w, int coli, double *v){
+void CalculateV( double *A, int h, int coli, double *v){
 /* Calculates desired housholder vector */
 
 /* Extract v vector */
@@ -212,13 +131,13 @@ void CalculateV( double *A, int h, int w, int coli, double *v){
 	}
 
 	for(int i=coli; i<h; i++){
-		v[i] = A[(i) + coli*h]; 
+		v[i] = A[i]; 
 	}
 
 /*Calculate sign of x*/
 	int sign =1 ; 
 
-	if ( v[0] <0)
+	if ( v[coli] <0)
 		sign = -1;
 
 /*Calculate norm */

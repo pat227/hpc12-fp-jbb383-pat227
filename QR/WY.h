@@ -2,6 +2,6 @@
 
 /* Header file for WY code */
 
-void CalculateV( double *, int, int, int, double *);
-int WY( double *, int , int , double *);
+void CalculateV( double *, int, int, double *);
+int WY( double *, int , int , double *,double *, double *);
 void CalculateQ( double *, double *, int , int,  double *);

@@ -29,9 +29,12 @@ if( wA !=  hB){
   }
 }
 
+
 /* Matrix Deminsions of Output matrix */
 int wC = wB;
 int hC = hA;
+
+CleanMatrix(C, hC, wC);
 
 /* Calculate the number of Blocks in the height and width of C, as well as the width of A */
 int wn_bloc = (wC+L2_BLK_SIZE -1)/L2_BLK_SIZE; // Number of Blocks in the widith (round up)
@@ -68,6 +71,7 @@ for( int i = 0; i < hn_bloc; i++){
 
 /* Uncomment to Test this function */
 //testMatrixMultiply(A, B, C, hA, wA, hB, wB);
+
 
 return 0;
 }

@@ -11,7 +11,7 @@ MatrixTranspose.o:	MatrixTranspose.c
 WY.o:	WY.c
 	gcc -c -std=gnu99 -Wall -g -lm -o$@ $^
 test.o: test.c
-	gcc -c -std=gnu99 -Wall -g -o$@ $^
+	gcc -c -std=gnu99 -Wall -lm  -g -o$@ $^
 Utilities.o: Utilities.c
 	gcc -c -std=gnu99 -Wall -g -o$@ $^
 
