@@ -1,3 +1,4 @@
+
 /* HPC 2012 Project  : Jacqueline Bush, Paul Torres */
 
 /* BlockedQR FILE: 
@@ -19,30 +20,29 @@ Performs Blocked QR factorization/
 
 void BlockedQR( double *A, int h, int w, double *Q, double *R){
 
-int b = 2;
+int b = 3;
 
-double *temp = malloc( sizeof(double)*2*b*2*b);
+double *temp = malloc( sizeof(double)*2*b*b);
  
 
 printf("A = \n");
 prettyPrint(A, h, w);
 
-CleanMatrix(temp, 2*b, 2*b);
+CleanMatrix(temp, 2*b, b);
 
-#if 1
+#if 0
 for(int i = 0; i< 2*b ; i++){
-	for(int j =0; j<2*b; j++){
+	for(int j =0; j<b; j++){
 		temp[i + j*2*b] = i+j*2*b;
 } }
 #endif 
 
+Block(temp, A, h, w, b, 0, 2, 1 );
+
 printf("Temp = \n");
-prettyPrint(temp,2*b, 2*b);
+prettyPrint(temp,2*b, b);
 
-UnBlockQ(temp, A, h, w, b, 0, 0, 1, 2 );
 
-printf("new A =\n");
-prettyPrint(A, h, w);
 
 }
 
@@ -61,7 +61,76 @@ UnBlockMatrix(double *outA, const double *inA, int hA, int wA, int b, int i_bloc
 BlockMatrix(const double *inA, double *outA, int hA, int wA, int b, int i_bloc, int j_bloc)
 --- Copies appropriate spot in matrix into a block 
 
+Here we have:
+Block( double *outA, const double *inA, int h, int w, int b, int i_bloc1, int i_bloc2, int j_bloc)
+--- Copies appropiate 2 spots in matrix into one block
+
+UnBlock( double *outA, const double *inA, int h, int w, int b, int i_bloc1, int i_bloc2, int j_bloc)
+--- Copies elements in block into appropriate 2 spots in matrix
+
 */ 
+
+void Block( double *outA, const double *inA, int h, int w, int b, int i_bloc1, int i_bloc2, int j_bloc){
+/*----------------------------------------------------------------------------- 
+PURPOSE: Takes matrix A, outputs the desired 2b by b block, pads with zeros when necessary. 
+ARGUEMENTS:
+	h: Height of matrix
+	w: Width of matrix  
+	b: Blocksize
+	The next four arguments tell us the two distinct columns and two distinct rows the new Q will effect. 
+	i_bloc1: i Block index, uppermost i block index  
+	i_bloc2: i Block index
+	j_bloc: j Block index i.e. what column we are working in.
+-----------------------------------------------------------------------------*/
+
+/* Check to make such i_bloc1 < i_bloc2 and j_bloc1 < j_block2 */
+if (i_bloc1 >= i_bloc2)
+  {
+    fprintf(stderr, "We need i_bloc1 to be strictly greater than i_bloc2!\n");
+    abort(); 
+  } 
+
+
+/* Calculate the number of rows or columns that need to be padded */
+	int wn_bloc = (w+b-1)/b; // Number of Blocks 
+	int hn_bloc = (h+b -1)/b; // Number of Blocks
+	int wpadding = wn_bloc*b - w ; // Number of columns of zeros needed.
+	int hpadding = hn_bloc*b - h ; // Number of rows of zeros needed.
+
+/* Copy first Block - i_bloc1, j_bloc */
+for(int i=0; i<b; i++){
+		for(int j=0; j<b; j++){
+		if( (i_bloc1 == hn_bloc -1) && (i>= (b-hpadding))){
+			outA[i + j*2*b] = 0;
+		} else{
+			if( (j_bloc == wn_bloc -1) && (j >= (b-wpadding))){
+			outA[i + j*2*b] = 0;
+			} else{
+			outA[i + j*2*b] = inA[ i+i_bloc1*b + (j+ j_bloc*b)*h ] ;
+			} 
+		}	
+		} 
+	}
+
+
+/* Copy second Block - i_bloc2, j_bloc */
+for(int i=0; i<b; i++){
+		for(int j=0; j<b; j++){
+		if( (i_bloc2 == hn_bloc -1) && (i>= (b-hpadding))){
+			outA[b+i + j*2*b] = 0;
+		} else{
+			if( (j_bloc == wn_bloc -1) && (j >= (b-wpadding))){
+			outA[b+i + j*2*b] = 0;
+			} else{
+			outA[b+i + j*2*b] = inA[ i+i_bloc2*b + (j+ j_bloc*b)*h ] ;
+			} 
+		}
+		} 
+	}
+
+
+}
+
 
 
 void UnBlockQ( const double *inQ, double *outQ, int hQ, int wQ, int b, int i_bloc1, int j_bloc1, int i_bloc2, int j_bloc2){
