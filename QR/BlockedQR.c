@@ -26,6 +26,7 @@ void BlockedQR( double *A, int h, int w, double *Q, double *R){
 
 /* Block size */
 	int b= 2 ;
+	printf(" block size = %d \n", b);
 
 /* Calculate Number of blocks */
 	int wn_bloc = (w+b-1)/b; // Number of Blocks in width (round up)
@@ -35,17 +36,91 @@ void BlockedQR( double *A, int h, int w, double *Q, double *R){
 	printf("wn_bloc = %d \n", wn_bloc );
 	printf("hn_bloc = %d \n", hn_bloc );
 
-/* Determine which is smaller */
+/* Determine which num. of blocks is smaller */
 	int n = wn_bloc; 
 	if( wn_bloc > hn_bloc )
 		n = hn_bloc;
 
+/* Set Q = m by m identity matrix */
+ 	for(int i = 0; i<h; i++){
+		for(int j=0; j<h; j++){
+		Q[i + j*h] = 0;
+		if(i == j)
+			Q[i +j*h] = 1;
+		}
+	}
+
+/* Initialize Blocks */
+	double *Q1_block_1b_by_1b = malloc( b * b * sizeof( double));
+	double *Q2_block_1b_by_1b = malloc( b* b* sizeof(double));
+	double *Q3_block_1b_by_1b = malloc( b* b* sizeof(double));
+	double *Q1_block_2b_by_2b = malloc( 4*b * b * sizeof( double));
+	double *Q2_block_2b_by_2b = malloc( 4*b* b* sizeof(double));
+	double *Q3_block_2b_by_2b = malloc( 4*b* b* sizeof(double));
+	double *Qt_block_1b_by_1b = malloc( b * b * sizeof( double));
+	double *Qt_block_2b_by_2b = malloc( 2*b * 2 * b * sizeof(double));
+	double *R_block_1b_by_1b = malloc( 2*b* b* sizeof(double));
+	double *R_block_2b_by_1b = malloc(2 * b* b* sizeof(double)); 
+	double *A_block_1b_by_1b = malloc(b * b* sizeof(double));
+	double *A_block_2b_by_1b = malloc(2*b * b* sizeof(double));
+
+	double *temp = malloc( h*w*sizeof(double));
+
+/* Enter Loop */
+for(int k =0; k< n; k++){	
+	/* Update Diagonal Block */	
+	BlockMatrix(A, A_block_1b_by_1b, h, w, b, k, k);
+	WY( A_block_1b_by_1b, b, b, Q2_block_1b_by_1b, Qt_block_1b_by_1b, R_block_1b_by_1b); 
+	UnBlockMatrix(A, R_block_1b_by_1b, h, w, b, k,k);
+
+	/* Update Corresponding Diagonal Block in in Q */
+	BlockMatrix(Q, Q1_block_1b_by_1b, h, w, b, k, k);
+	MatrixMatrixMultiply(Q1_block_1b_by_1b, b, b, Q2_block_1b_by_1b, b, b, Q3_block_1b_by_1b);	
+	UnBlockMatrix(Q, Q3_block_1b_by_1b, h, h, b, k,k);		
+
+	/* Update Blocks along row with Digonal Block */
+	for( int j=k+1; j<wn_bloc ; j++){
+	BlockMatrix(A, A_block_1b_by_1b, h, w, b, k, j);
+	MatrixMatrixMultiply(Qt_block_1b_by_1b, b, b, A_block_1b_by_1b, b, b, R_block_1b_by_1b);
+	UnBlockMatrix(A, R_block_1b_by_1b, h,w,b, k, j);
+	}
+
+	/* Update Blocks below the Diagonal (will also update diagonal) */
+	for( int i=k+1; i< hn_bloc; i++){
+		Block(A_block_2b_by_1b, A, h , w, b, k, i, k);	
+		WY( A_block_2b_by_1b, 2*b, b, Q2_block_2b_by_2b, Qt_block_2b_by_2b, R_block_2b_by_1b);
+		UnBlock(A, R_block_2b_by_1b, h, w, b,k, i, k);
+
+		/* Update Q */
+		BlockQ(Q, Q1_block_2b_by_2b, h, h, b, k, k, i, i); 		
+		MatrixMatrixMultiply(Q1_block_2b_by_2b, 2*b, 2*b, Q2_block_2b_by_2b, 2*b, 2*b, Q3_block_2b_by_2b);		
+		UnBlockQ( Q3_block_2b_by_2b, Q, h, h, b, k , k, i, i);	
+ 
+		/* Update Blocks along i and k  rows */
+		for( int j=k+1; j<wn_bloc ; j++){
+			Block(A_block_2b_by_1b, A , h, w, b, k, i, j);
+			MatrixMatrixMultiply(Qt_block_2b_by_2b, 2*b, 2*b, A_block_2b_by_1b, 2*b, b, R_block_2b_by_1b);
+			UnBlock(A, R_block_2b_by_1b, h, w, b,k, i, j);	
+		}
+	}
 
 
 
+	MatrixMatrixMultiply( Q, h, h, A, h, w, temp);	
+	
+	printf(" new Q = \n");
+	prettyPrint(Q, h, h);
+	printf(" new A (R in training) = \n");
+	prettyPrint(A, h, w);
+	
+	printf("Q R = \n");
+	prettyPrint(temp, h, w);
+	
 
 }
 
+
+}
 
 /*---------------------Code to work with blocks of Matrix---------------------*/
 
