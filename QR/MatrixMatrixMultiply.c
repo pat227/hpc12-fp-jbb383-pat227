@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <omp.h>
 #include "MatrixMatrixMultiply.h"
+#include "Utilities.h"
 #include "test.h"
 
 #define L1_BLK_SIZE 2
@@ -70,7 +71,7 @@ for( int i = 0; i < hn_bloc; i++){
 
 
 /* Uncomment to Test this function */
-//testMatrixMultiply(A, B, C, hA, wA, hB, wB);
+testMatrixMultiply(A, B, C, hA, wA, hB, wB);
 
 
 return 0;
@@ -136,116 +137,6 @@ int n = L1_BLK_SIZE , i, j, k;
 
 /*============================================================================*/
 
-
-/*---------------------Code to work with blocks of Matrix---------------------*/
- 
-void BlockMatrix(const double *inA, double *outA, int hA, int wA, int b, int i_bloc, int j_bloc){
-/*----------------------------------------------------------------------------- 
-PURPOSE: Takes matrix A, outputs the desired block, pads with zeros when necessary. 
-ARGUEMENTS:
-	hA: Height of matrix
-	wA: Width of matrix  
-	b: Blocksize
-	i_bloc: i Block index 
-	j_bloc: j Block index  
------------------------------------------------------------------------------*/
-int i, j;
-
-if( wA % b != 0 || hA % b != 0  ){
-	// Will only enter this section if we are in outerblock of code. 
-	int wn_bloc = (wA+L2_BLK_SIZE -1)/L2_BLK_SIZE; // Number of Blocks 
-	int hn_bloc = (hA+L2_BLK_SIZE -1)/L2_BLK_SIZE; // Number of Blocks
-	int wpadding = wn_bloc*b - wA ; // Number of columns of zeros needed.
-	int hpadding = hn_bloc*b - hA ; // Number of rows of zeros needed.
-	for(i=0; i<b; i++){
-		for(j=0; j<b; j++){
-		
-		if( (i_bloc == hn_bloc -1) && (i>= (b-hpadding))){
-			outA[i+ j*b] = 0;
-		} else{
-			if( (j_bloc == wn_bloc -1) && (j >= (b-wpadding))){
-			outA[i+ j*b] = 0;
-			} else{
-			outA[i + j*b] = inA[ i+i_bloc*b + (j+ j_bloc*b)*hA ] ;
-			} 
-		} }
-    	} 
-}else{
-	for(i=0; i<b; i++){
-		for(j=0; j<b; j++){
-		outA[i + j*b] = inA[ i+i_bloc*b + (j+ j_bloc*b)*hA ] ;
-		} 
-	}
-}
-
-}
-
-
-void UnBlockMatrix(double *outA, const double *inA, int hA, int wA, int b, int i_bloc, int j_bloc){
-/*----------------------------------------------------------------------------- 
-PURPOSE: Takes block of A, Replaces the values of A. Gets rid of pads if necessary.  
-ARGUEMENTS:
-	n: Size of matrix 
-	b: Blocksize
-	i_bloc: i Block index 
-	j_bloc: j Block index  
------------------------------------------------------------------------------*/
-
-   int i, j;
-
-        int wn_bloc = (wA+b -1)/b; // Number of Blocks 
-	int hn_bloc = (hA+b -1)/b; // Number of Blocks
-	int wpadding = wn_bloc*b - wA ; // Number of columns of zeros needed.
-	int hpadding = hn_bloc*b - hA ; // Number of rows of zeros needed.
-
-    if( ( wpadding == 0 && hpadding == 0) || (i_bloc != hn_bloc-1 && j_bloc != wn_bloc -1)){
-	for(i=0; i<b; i++){
-		for(j=0; j<b; j++){
-		outA[ i+i_bloc*b + (j+j_bloc*b)*hA ] = inA[i + j*b];
-		}
-	} 
-    }else{
-	if( i_bloc == hn_bloc -1 && j_bloc != wn_bloc -1){
-	for(i=0; i<(b-hpadding); i++){
-		for(j=0; j<b; j++){
-		outA[ i+i_bloc*b + (j+j_bloc*b)*hA ] = inA[i + j*b];
-		}
-	}
-	}
-	if( j_bloc == wn_bloc -1 && i_bloc != hn_bloc -1){
-	for(i=0; i<b; i++){
-		for(j=0; j<(b-wpadding); j++){
-		outA[ i+i_bloc*b + (j+j_bloc*b)*hA ] = inA[i + j*b];
-		}
-	}
-	}
-	if( i_bloc == hn_bloc -1 && j_bloc == wn_bloc -1){
-	for(i=0; i<(b-hpadding); i++){
-		for(j=0; j<(b-wpadding); j++){
-		outA[ i+i_bloc*b + (j+j_bloc*b)*hA ] = inA[i + j*b];
-		}
-	}
-    	}
-   }	
-}
-
-void CleanMatrix( double *A, int wA, int hA){
-/*------------------------------------------------------------------------------
-PURPOSE: Takes matrix A, Replaces it with zeros
-ARGUEMENTS:
-	wA: width of A
-	hA: height of A
-------------------------------------------------------------------------------*/
-
-int i, j;
-
-for(i=0; i<hA; i++){
-	for(j=0; j<wA; j++){
-	A[ i + j*hA] = 0 ;
-	}
-}
-
-}
 
 
 
