@@ -19,7 +19,7 @@ Performs Blocked QR factorization/
 
 void BlockedQR( double *A, int h, int w, double *Q, double *R){
 
-int b = 3;
+int b = 2;
 
 double *temp = malloc( sizeof(double)*2*b*2*b);
  
@@ -29,9 +29,20 @@ prettyPrint(A, h, w);
 
 CleanMatrix(temp, 2*b, 2*b);
 
-UnBlockQ(temp, A, h, w, b, 0, 0, 1, 1 );
+#if 1
+for(int i = 0; i< 2*b ; i++){
+	for(int j =0; j<2*b; j++){
+		temp[i + j*2*b] = i+j*2*b;
+} }
+#endif 
 
+printf("Temp = \n");
+prettyPrint(temp,2*b, 2*b);
 
+UnBlockQ(temp, A, h, w, b, 0, 0, 1, 2 );
+
+printf("new A =\n");
+prettyPrint(A, h, w);
 
 }
 
@@ -54,10 +65,183 @@ BlockMatrix(const double *inA, double *outA, int hA, int wA, int b, int i_bloc, 
 
 
 void UnBlockQ( const double *inQ, double *outQ, int hQ, int wQ, int b, int i_bloc1, int j_bloc1, int i_bloc2, int j_bloc2){
+/*----------------------------------------------------------------------------- 
+PURPOSE: Takes block of Q, Replaces the values of A. Gets rid of pads if necessary.  
+ARGUEMENTS:
+	n: Size of matrix 
+	b: Blocksize
+	hQ: height of Q
+	wQ: width of Q
+	The next four arguments tell us the two distinct columns and two distinct rows the new Q will effect. 
+	i_bloc1: i Block index, uppermost i block index  
+	j_bloc1: j Block index,  leftmost j block index
+	i_bloc2: i Block index
+	j_bloc2: j Block index 
+-----------------------------------------------------------------------------*/
 
-printf("hi!\n");
+/* Check to make such i_bloc1 < i_bloc2 and j_bloc1 < j_block2 */
+if (i_bloc1 >= i_bloc2)
+  {
+    fprintf(stderr, "We need i_bloc1 to be strictly greater than i_bloc2!\n");
+    abort(); 
+  } 
+
+if (j_bloc1 >= j_bloc2)
+ {
+    fprintf(stderr, "We need j_bloc1 to be strictly greater than j_bloc2!\n");
+    abort(); 
+  } 
 
 
+/* Calculate the number of rows or columns padded that needs to be removed*/
+	int wn_bloc = (wQ+b-1)/b; // Number of Blocks 
+	int hn_bloc = (hQ+b -1)/b; // Number of Blocks
+	int wpadding = wn_bloc*b - wQ ; // Number of columns of zeros needed.
+	int hpadding = hn_bloc*b - hQ ; // Number of rows of zeros needed.
+
+
+/* Check to make sure that i_bloc2 < hn_bloc and j_bloc < wn_bloc */
+if (i_bloc2 >= hn_bloc)
+  {
+    fprintf(stderr, "We need i_bloc2 to be strictly less than the number of i blocks, %d!\n", hn_bloc);
+    abort(); 
+  } 
+
+if (j_bloc2 >= wn_bloc)
+ {
+    fprintf(stderr, "We need j_bloc2 to be strictly less than the number of j blocks, %d!\n", wn_bloc);
+    abort(); 
+  } 
+
+
+/* First Block - i_bloc1, j_bloc1 */
+    if( ( wpadding == 0 && hpadding == 0) || (i_bloc1 != hn_bloc-1 && j_bloc1 != wn_bloc -1)){
+	for(int i=0; i<b; i++){
+		for(int j=0; j<b; j++){
+		outQ[ i+i_bloc1*b + (j+j_bloc1*b)*hQ ] = inQ[i + 2*j*b];
+		}
+	} 
+    }else{
+	if( i_bloc1 == hn_bloc -1 && j_bloc1 != wn_bloc -1){
+	for(int i=0; i<(b-hpadding); i++){
+		for(int j=0; j<b; j++){
+		outQ[ i+i_bloc1*b + (j+j_bloc1*b)*hQ ] = inQ[i + 2*j*b];
+		}
+	}
+	}
+	if( j_bloc1 == wn_bloc -1 && i_bloc1 != hn_bloc -1){
+	for(int i=0; i<b; i++){
+		for(int j=0; j<(b-wpadding); j++){
+		outQ[ i+i_bloc1*b + (j+j_bloc1*b)*hQ ] = inQ[i + 2*j*b];
+		}
+	}
+	}
+	if( i_bloc1 == hn_bloc -1 && j_bloc1 == wn_bloc -1){
+	for(int i=0; i<(b-hpadding); i++){
+		for(int j=0; j<(b-wpadding); j++){
+		outQ[ i+i_bloc1*b + (j+j_bloc1*b)*hQ ] = inQ[i + 2*j*b];
+		}
+	}
+    	}
+   }
+
+
+/* Second Block - i_bloc1, j_bloc2 */
+
+if( ( wpadding == 0 && hpadding == 0) || (i_bloc1 != hn_bloc-1 && j_bloc2 != wn_bloc -1)){
+	for(int i=0; i<b; i++){
+		for(int j=0; j<b; j++){
+		outQ[ i+i_bloc1*b + (j+j_bloc2*b)*hQ ] = inQ[2*b*b + i + j*2*b];
+		}
+	} 
+    }else{
+	if( i_bloc1 == hn_bloc -1 && j_bloc2 != wn_bloc -1){
+	for(int i=0; i<(b-hpadding); i++){
+		for(int j=0; j<b; j++){
+		outQ[ i+i_bloc1*b + (j+j_bloc2*b)*hQ ] = inQ[2*b*b + i + j*2*b];
+		}
+	}
+	}
+	if( j_bloc2 == wn_bloc -1 && i_bloc1 != hn_bloc -1){
+	for(int i=0; i<b; i++){
+		for(int j=0; j<(b-wpadding); j++){
+		outQ[ i+i_bloc1*b + (j+j_bloc2*b)*hQ ] = inQ[2*b*b + i + j*2*b];
+		}
+	}
+	}
+	if( i_bloc1 == hn_bloc -1 && j_bloc2 == wn_bloc -1){
+	for(int i=0; i<(b-hpadding); i++){
+		for(int j=0; j<(b-wpadding); j++){
+		outQ[ i+i_bloc1*b + (j+j_bloc2*b)*hQ ] = inQ[2*b*b + i + j*2*b];
+		}
+	}
+    	}
+   }
+
+
+/* Third Block - i_bloc2, j_bloc1 */
+
+     if( ( wpadding == 0 && hpadding == 0) || (i_bloc2 != hn_bloc-1 && j_bloc1 != wn_bloc -1)){
+	for(int i=0; i<b; i++){
+		for(int j=0; j<b; j++){
+		outQ[ i+i_bloc2*b + (j+j_bloc1*b)*hQ ] = inQ[b+i + j*2*b];
+		}
+	} 
+    }else{
+	if( i_bloc2 == hn_bloc -1 && j_bloc1 != wn_bloc -1){
+	for(int i=0; i<(b-hpadding); i++){
+		for(int j=0; j<b; j++){
+		outQ[ i+i_bloc2*b + (j+j_bloc1*b)*hQ ] = inQ[b+i + j*2*b];
+		}
+	}
+	}
+	if( j_bloc1 == wn_bloc -1 && i_bloc2 != hn_bloc -1){
+	for(int i=0; i<b; i++){
+		for(int j=0; j<(b-wpadding); j++){
+		outQ[ i+i_bloc2*b + (j+j_bloc1*b)*hQ ] = inQ[b+i + j*2*b];
+		}
+	}
+	}
+	if( i_bloc2 == hn_bloc -1 && j_bloc1 == wn_bloc -1){
+	for(int i=0; i<(b-hpadding); i++){
+		for(int j=0; j<(b-wpadding); j++){
+		outQ[ i+i_bloc2*b + (j+j_bloc1*b)*hQ ] = inQ[b+i + j*2*b];
+		}
+	}
+    	}
+   }
+
+
+/* Fourth Block - i_bloc2, j_bloc2 */
+  if( ( wpadding == 0 && hpadding == 0) || (i_bloc2 != hn_bloc-1 && j_bloc2 != wn_bloc -1)){
+	for(int i=0; i<b; i++){
+		for(int j=0; j<b; j++){
+		outQ[ i+i_bloc2*b + (j+j_bloc2*b)*hQ ] = inQ[2*b*b +b +i + 2*j*b];
+		}
+	} 
+    }else{
+	if( i_bloc2 == hn_bloc -1 && j_bloc2 != wn_bloc -1){
+	for(int i=0; i<(b-hpadding); i++){
+		for(int j=0; j<b; j++){
+		outQ[ i+i_bloc2*b + (j+j_bloc2*b)*hQ ] = inQ[2*b*b +b +i + 2*j*b];
+		}
+	}
+	}
+	if( j_bloc2 == wn_bloc -1 && i_bloc2 != hn_bloc -1){
+	for(int i=0; i<b; i++){
+		for(int j=0; j<(b-wpadding); j++){
+		outQ[ i+i_bloc2*b + (j+j_bloc2*b)*hQ ] = inQ[2*b*b +b +i + 2*j*b];
+		}
+	}
+	}
+	if( i_bloc2 == hn_bloc -1 && j_bloc2 == wn_bloc -1){
+	for(int i=0; i<(b-hpadding); i++){
+		for(int j=0; j<(b-wpadding); j++){
+		outQ[ i+i_bloc2*b + (j+j_bloc2*b)*hQ ] = inQ[2*b*b +b +i + 2*j*b];
+		}
+	}
+    	}
+   }
 
 }
 
@@ -95,12 +279,6 @@ if (j_bloc1 >= j_bloc2)
 	int hn_bloc = (hQ+b -1)/b; // Number of Blocks
 	int wpadding = wn_bloc*b - wQ ; // Number of columns of zeros needed.
 	int hpadding = hn_bloc*b - hQ ; // Number of rows of zeros needed.
-
-	printf(" wn_bloc = %d \n", wn_bloc);
-	printf(" hn_bloc = %d \n", hn_bloc);
-	printf(" wpadding = %d \n", wpadding);
-	printf(" hpadding = %d \n", hpadding);
-	
 
 /* Copy first Block - i_bloc1, j_bloc1 */
 for(int i=0; i<b; i++){
