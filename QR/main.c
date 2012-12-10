@@ -32,9 +32,6 @@ int main(int argc, char** argv)
 
  /* Initilize matrix A */
   double *A = malloc( m*n*sizeof(double) );
-  double *B = malloc( m*n*sizeof(double));	
-  double *C = malloc( m*m*sizeof(double));	
-
   double *Q = malloc( m*m*sizeof(double) );
   double *R = malloc(m *n *sizeof(double));
   
@@ -45,10 +42,8 @@ int main(int argc, char** argv)
   srand ( 1 );	 
   for(i=0; i< (m*n) ; i++){
       A[i] = (double) (rand() %1000)/100;
-      B[i] = (double) (rand() %1000)/100;
    }
   
- MatrixMatrixMultiply(A, m, n, B, n, m, C);
  
   BlockedQR( A, m, n, Q, R);
 

@@ -34,7 +34,6 @@ ARGUEMENTS:
 int i, j;
 
 if( wA % b != 0 || hA % b != 0  ){
-	// Will only enter this section if we are in outerblock of code. 
 	int wn_bloc = (wA+b-1)/b; // Number of Blocks 
 	int hn_bloc = (hA+b -1)/b; // Number of Blocks
 	int wpadding = wn_bloc*b - wA ; // Number of columns of zeros needed.
