@@ -7,22 +7,57 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <math.h>
 #include "MatrixMatrixMultiply.h"
+#include "Utilities.h"
 #include "MatrixTranspose.h"
 #include "test.h"
 #include "WY.h"
 
 
+/*================= Code Test if Matrx is Upper Triangular ====================*/
+
+void testUpperTriangular(double *R, int h, int w){
+
+double errorbound = 1e-10;
+int n = w;
+if ( h < w)
+	n= h;
+
+  for(int i=0; i<n; i++){
+    for(int j=0; j<i; j++){
+      if(fabs(R[i+j*h]) > errorbound ){
+	fprintf(stderr,"R is not uppertriangular! Fix error! \n") ;
+   	 abort();
+	}
+   } }
+
+
+}
+
+
 /*================== Code Tests if Matrix is Orthogonal =======================*/
 
+void testOrthogonal(double *Q, double *Qt, int h){
+	
+	double *testQ = malloc( h* h* sizeof(double));
+	
+	MatrixMatrixMultiply(Q, h,h, Qt, h, h, testQ);
 
+	for(int i = 0; i<h; i++){
+		for(int j =0 ; j< h; j++){
+		double error = testQ[i + j*h] - 1;
+		if (i !=j)
+			error = testQ[i + j*h];
+		double errorbound = 1e-5;
+		if( error > errorbound ){
+		fprintf(stderr,"Q is not orthogonal! Fix error! \n") ;
+   	 	abort();
+		}
+	} }
 
-
-
-
-
-
-
+}	 
+  
 /*=================== Code Tests Matrix Matrix Multiply =======================*/
 
 

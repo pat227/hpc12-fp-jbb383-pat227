@@ -2,5 +2,9 @@
 /* Header file for random functions */
 
 void prettyPrint(const double * const A, const int m, const int n);
-void copyColVector(double * source, double * target, int start, int h, int col);
-void copyMatrix(double * source, double * target, int h, int w);
+
+/* Code to load and unload blocks of matrix */
+void BlockMatrix( const double *, double *, int, int, int, int, int);
+void UnBlockMatrix( double *, const double *, int, int, int, int, int);
+void CleanMatrix( double *, int, int);
+

@@ -14,6 +14,7 @@ Generates n by m matrix and performs Blocked QR factorization/
 #include "MatrixMatrixMultiply.h"
 #include "MatrixTranspose.h"
 #include "Utilities.h"
+#include "BlockedQR.h"
 
 
 int main(int argc, char** argv) 
@@ -31,44 +32,21 @@ int main(int argc, char** argv)
 
  /* Initilize matrix A */
   double *A = malloc( m*n*sizeof(double) );
-  double *C = malloc( m*m*sizeof(double) );
+  double *Q = malloc( m*m*sizeof(double) );
+  double *R = malloc(m *n *sizeof(double));
+  
  
  
  /* Fill up matrix A with elements from [0,10)*/
   int i; 
-  srand (1);// time ( NULL ) );	 
+  srand ( 1 );	 
   for(i=0; i< (m*n) ; i++){
       A[i] = (double) (rand() %1000)/100;
    }
-  for(i=0; i< (m*m) ; i++){
-      C[i] = 0;  
-   }
   
-  WY( A, m, n, C);
-
-
-
-   
-
-
  
+  BlockedQR( A, m, n, Q, R);
 
-  //for(i=0; i< (m*n) ; i++){
-  //  D[i] = 0;		   
- // }
-     
-  //printf("=main=A:\n");
-  //prettyPrint(A, m, n);
-
-  //MatrixTranspose(A, m, n, D);
-  
-   
-  //printf("\nAtranspose:\n");
-  //prettyPrint(D, n, m);
-   
-
-  //testMatrixTranspose( A, m, n, D);
- 
   
 
 }

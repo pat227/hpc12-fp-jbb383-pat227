@@ -2,6 +2,11 @@
 
 /* Header File: Code in this file is used to check the more complicated code used later. */
 
+/* Code to test Q for orthogonality */
+void testOrthogonal( double *, double *, int );
+
+/* Code to test if R is upper triangular */
+void testUpperTriangular( double  *, int,int);
 
 /* Code to test Blocked Matrix Matrix Multiply */
 void dgemm_simple( const double *, const int, const int, const double *, const int, const int, double *);
