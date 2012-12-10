@@ -20,31 +20,28 @@ Performs Blocked QR factorization/
 
 void BlockedQR( double *A, int h, int w, double *Q, double *R){
 
-int b = 2;
+/* Print A - Delete once visual check is confirmed */
+	printf("A = \n");
+	prettyPrint(A, h, w);
 
-double *temp = malloc( sizeof(double)*2*b*b);
- 
+/* Block size */
+	int b= 2 ;
 
-printf("A = \n");
-prettyPrint(A, h, w);
+/* Calculate Number of blocks */
+	int wn_bloc = (w+b-1)/b; // Number of Blocks in width (round up)
+	int hn_bloc = (h+b -1)/b; // Number of Blocks in height (round up)
 
-CleanMatrix(temp, 2*b, b);
+/* Print how many blocks we have - Delete once visual check is confirmed */
+	printf("wn_bloc = %d \n", wn_bloc );
+	printf("hn_bloc = %d \n", hn_bloc );
 
-#if 0
-for(int i = 0; i< 2*b ; i++){
-	for(int j =0; j<b; j++){
-		temp[i + j*2*b] = i+j*2*b;
-} }
-#endif 
-
-printf("Temp = \n");
-prettyPrint(temp,2*b, b);
+/* Determine which is smaller */
+	int n = wn_bloc; 
+	if( wn_bloc > hn_bloc )
+		n = hn_bloc;
 
 
-UnBlock(A, temp, h, w, b, 0, 1, 0 );
 
-printf("New A = \n");
-prettyPrint(A, h, w);
 
 
 }
