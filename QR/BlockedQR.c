@@ -29,10 +29,8 @@ prettyPrint(A, h, w);
 
 CleanMatrix(temp, 2*b, 2*b);
 
-BlockQ(A, temp, h, w, b, 0, 1, 1, 1 );
+UnBlockQ(temp, A, h, w, b, 0, 0, 1, 1 );
 
-printf("temp = \n");
-prettyPrint(temp, 2*b, 2*b);
 
 
 }
@@ -54,6 +52,14 @@ BlockMatrix(const double *inA, double *outA, int hA, int wA, int b, int i_bloc, 
 
 */ 
 
+
+void UnBlockQ( const double *inQ, double *outQ, int hQ, int wQ, int b, int i_bloc1, int j_bloc1, int i_bloc2, int j_bloc2){
+
+printf("hi!\n");
+
+
+
+}
 
 void BlockQ(const double *inQ, double *outQ, int hQ, int wQ, int b, int i_bloc1, int j_bloc1, int i_bloc2, int j_bloc2 ){
 /*----------------------------------------------------------------------------- 
@@ -84,25 +90,60 @@ if (j_bloc1 >= j_bloc2)
   } 
 
 
+/* Calculate the number of rows or columns that need to be padded */
+	int wn_bloc = (wQ+b-1)/b; // Number of Blocks 
+	int hn_bloc = (hQ+b -1)/b; // Number of Blocks
+	int wpadding = wn_bloc*b - wQ ; // Number of columns of zeros needed.
+	int hpadding = hn_bloc*b - hQ ; // Number of rows of zeros needed.
+
+	printf(" wn_bloc = %d \n", wn_bloc);
+	printf(" hn_bloc = %d \n", hn_bloc);
+	printf(" wpadding = %d \n", wpadding);
+	printf(" hpadding = %d \n", hpadding);
+	
 
 /* Copy first Block - i_bloc1, j_bloc1 */
 for(int i=0; i<b; i++){
 		for(int j=0; j<b; j++){
-		outQ[i + j*2*b] = inQ[ i+i_bloc1*b + (j+ j_bloc1*b)*hQ ] ;
+		if( (i_bloc1 == hn_bloc -1) && (i>= (b-hpadding))){
+			outQ[i + j*2*b] = 0;
+		} else{
+			if( (j_bloc2 == wn_bloc -1) && (j >= (b-wpadding))){
+			outQ[i + j*2*b] = 0;
+			} else{
+			outQ[i + j*2*b] = inQ[ i+i_bloc1*b + (j+ j_bloc1*b)*hQ ] ;
+			} 
+		}	
 		} 
 	}
 
 /* Copy second Block - i_bloc1, j_bloc2 */
 for(int i=0; i<b; i++){
 		for(int j=0; j<b; j++){
-		outQ[2*b*b + i + j*2*b] = inQ[ i+i_bloc1*b + (j+ j_bloc2*b)*hQ ] ;
+		if( (i_bloc1 == hn_bloc -1) && (i>= (b-hpadding))){
+			outQ[2*b*b + i + j*2*b] = 0;
+		} else{
+			if( (j_bloc2 == wn_bloc -1) && (j >= (b-wpadding))){
+			outQ[2*b*b + i + j*2*b] = 0;
+			} else{
+			outQ[2*b*b + i + j*2*b] = inQ[ i+i_bloc1*b + (j+ j_bloc2*b)*hQ ] ;
+			} 
+		}		
 		} 
 	}
 
 /* Copy thrid Block - i_bloc2, j_bloc1 */
 for(int i=0; i<b; i++){
 		for(int j=0; j<b; j++){
-		outQ[b+i + j*2*b] = inQ[ i+i_bloc2*b + (j+ j_bloc1*b)*hQ ] ;
+		if( (i_bloc2 == hn_bloc -1) && (i>= (b-hpadding))){
+			outQ[b+i + j*2*b] = 0;
+		} else{
+			if( (j_bloc1 == wn_bloc -1) && (j >= (b-wpadding))){
+			outQ[b+i + j*2*b] = 0;
+			} else{
+			outQ[b+i + j*2*b] = inQ[ i+i_bloc2*b + (j+ j_bloc1*b)*hQ ] ;
+			} 
+		}
 		} 
 	}
 
@@ -110,12 +151,17 @@ for(int i=0; i<b; i++){
 /* Copy fourth Block - i_bloc2, j_bloc2 */
 for(int i=0; i<b; i++){
 		for(int j=0; j<b; j++){
-		outQ[2*b*b +b +i + 2*j*b] = inQ[ i+i_bloc2*b + (j+ j_bloc2*b)*hQ ] ;
+		if( (i_bloc2 == hn_bloc -1) && (i>= (b-hpadding))){
+			outQ[2*b*b +b +i + 2*j*b] = 0;
+		} else{
+			if( (j_bloc2 == wn_bloc -1) && (j >= (b-wpadding))){
+			outQ[2*b*b +b +i + 2*j*b] = 0;
+			} else{
+			outQ[2*b*b +b +i + 2*j*b] = inQ[ i+i_bloc2*b + (j+ j_bloc2*b)*hQ ] ;
+			} 
+		}
 		} 
 	}
-
-
-
 }
 
 

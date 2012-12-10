@@ -4,3 +4,4 @@
 
 void BlockedQR( double *A, int h, int w, double *Q, double *R);
 void BlockQ(const double *inQ, double *outQ, int hQ, int wQ, int b, int i_bloc1, int j_bloc1, int i_bloc2, int j_bloc2 );
+void UnBlockQ( const double *inQ, double  *outQ, int hQ, int wQ, int b, int i_bloc1, int j_bloc1, int i_bloc2, int j_bloc2);
