@@ -31,16 +31,11 @@ void BlockedQR( double *A, int h, int w, double *Q){
 	int wn_bloc = (w+b-1)/b; // Number of Blocks in width (round up)
 	int hn_bloc = (h+b -1)/b; // Number of Blocks in height (round up)
 
-/* Print how many blocks we have - Delete once visual check is confirmed */
-	printf("wn_bloc = %d \n", wn_bloc );
-	printf("hn_bloc = %d \n", hn_bloc );
 
 /* Determine which num. of blocks is smaller */
 	int n = wn_bloc; 
 	if( wn_bloc > hn_bloc )
 		n = hn_bloc;
-
-	printf("n = %d \n", n);
 
 /* Set Q = m by m identity matrix */
  	for(int i = 0; i<h; i++){
@@ -68,7 +63,6 @@ void BlockedQR( double *A, int h, int w, double *Q){
 	double *temp = malloc( h*w*sizeof(double));
 	double *temp1 = malloc(h*h*sizeof(double));
 	double *Qt = malloc(h*h*sizeof(double));
-	double *temp_block = malloc(4*b*b*sizeof(double));
 
 /* Enter Loop */
 for(int k =0; k< n; k++){	
@@ -122,9 +116,9 @@ prettyPrint(temp1, h, h);
 
 MatrixMatrixMultiply( Q, h, h, A, h, w, temp);	
 	
-	printf(" new Q = \n");
+	printf(" Q = \n");
 	prettyPrint(Q, h, h);
-	printf(" new A (R in training) = \n");
+	printf("R = \n");
 	prettyPrint(A, h, w);
 	
 	printf("Q R = \n");
