@@ -16,7 +16,6 @@ Generates n by m matrix and performs Blocked QR factorization/
 #include "Utilities.h"
 #include "BlockedQR.h"
 
-
 int main(int argc, char** argv) 
 {
 /* Check for two arguemnts, m = height of matrix, n = width of matrix.  */ 

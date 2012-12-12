@@ -129,3 +129,55 @@ for(i=0; i<hA; i++){
 }
 
 
+/*---------------------Code to work with blocks of Matrix---------------------*/
+/*----------------------------------------------------------------------------- 
+  PURPOSE: Takes vector A, outputs the desired block, pads with zeros when necessary. 
+  ARGUMENTS:
+  hA: Height of vector 
+  b: Blocksize
+  i_bloc: i Block index 
+  -----------------------------------------------------------------------------*/
+void BlockVectorForMatrixVector(const double *inA, double *outA, const int hA,
+				const int b, const int i_bloc){
+  int i;
+  int hn_bloc = (hA+b-1)/b; // Number of Blocks
+  int hpadding = hn_bloc*b - hA ; // Number of rows of zeros needed.
+  //int hw_bloc = (wA+b-1)/b; // Number of Blocks
+  //int wpadding = hn_bloc*b - wA ; // Number of rows of zeros needed.
+  for(i = 0; i < b; i++){
+    if((i_bloc == hn_bloc - 1) && (i >= (b - hpadding))){
+      outA[i] = 0;
+    } else {
+      //do not bother padding for width...won't use those values anyway
+      //omit all j-related terms
+      outA[i] = inA[i + i_bloc*b];
+    }
+  }
+}
+
+/*----------------------------------------------------------------------------- 
+PURPOSE: Takes block of vector A, replaces the values of A.
+ARGUMENTS:
+	n: Size of vector 
+	b: Blocksize
+	i_bloc: i Block index 
+-----------------------------------------------------------------------------*/
+void UnBlockVectorForMatrixVector(double *outA, const double *inA, const int hA,
+				  const int b, const int i_bloc){
+  int i;
+  int hn_bloc = (hA + b - 1)/b; // Number of Blocks
+  //int wpadding = b - 1 ; // Number of columns of zeros  to ignore
+  int hpadding = hn_bloc*b - hA ; // Number of rows of zeros needed.
+  if(hpadding > 0) printf("\n=unblock= padding: %d b: %d ibloc: %d\n", hpadding, b, i_bloc);
+  if(hpadding == 0 || (i_bloc != hn_bloc-1)){
+    for(i = 0; i < b; i++){
+      outA[i + i_bloc*b] = inA[i];
+    } 
+  } else {
+    if(i_bloc == hn_bloc - 1){
+      for(i = 0; i < (b - hpadding); i++){
+	outA[i + i_bloc*b] = inA[i];
+      }
+    }
+  }
+}

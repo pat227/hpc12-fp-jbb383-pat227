@@ -115,3 +115,11 @@ void print_matrix(const double matrix[], const int m, const int n){
    printf("\n");
 }
 
+int equality(const double * const M, const uint32_t m, const uint32_t n, const double * const B){
+  for(uint32_t j = 0; j < m; j++){
+    for(uint32_t i = 0; i < n; i++){
+      if(M[i + j*m] != B[i +j*m]) return 0;
+    }
+  }
+  return 1;
+}

@@ -6,13 +6,14 @@
 #include "CUnit/Basic.h"	//Basic interface with non-interactive output to stdout.
 //#include <CUnit/Console.h>	//Interactive console interface.
 //#include <CUnit/CUCurses.h>	//Interactive console interface (*nix).
-
+#include <stdlib.h>
 #include<stdio.h> //fprintf, printf
 #include<stdint.h> //exact types
 #include"proj-LibCorrectness.h" //the functions we wish to test have headers here
 /*We use column major access and assume args are stored in column major order in accordance with all the other work we did this semester*/
-
-
+#include"QR/Utilities.h"
+#include"QR/MatrixVector.h"
+#include"QR/MatrixMatrixMultiply.h"
 void test_id(void){
   CU_ASSERT(identity(0,2) == 0);
   CU_ASSERT(identity(0,-2) == 0);
@@ -168,8 +169,45 @@ void test_RisUpperTriangular(){
   CU_ASSERT(isUpperTriangular(wrongR3,3) == 0);
 }
 
-int main()
-{
+void test_matrixvector(){
+  int size = 5;
+  double * vector = malloc(sizeof(double)*size);
+  double * matrix = malloc(sizeof(double)*size*size);
+  double * matrixmatrix = malloc(sizeof(double)*size*size);
+  double * matrixvector = malloc(sizeof(double)*size);
+  srand(1);
+  for(int i = 0; i < size; i++){
+    vector[i] = (rand() %1000)/100;
+  }
+  for(int i = 0; i < size; i++){
+    for(int j = 0; j < size; j++){
+      matrix[i+j*size] = (rand() %1000)/100;
+    }
+  }
+  printf("\nMatrix:\n");
+  prettyPrint(matrix, size, size);
+  printf("\nVector:\n");
+  prettyPrint(vector, size, 1);
+  //test matrix multiply against matrix vector multiply
+  /*
+    int MatrixVectorMultiply(const double * const A, const int hA, const int wA, 
+    const double * const B, const int col, double *C){
+    int MatrixMatrixMultiply( double *A, int hA, int wA, double *B, int hB, int wB, double *C)
+  */
+  MatrixMatrixMultiply(matrix, size, size, vector, size, size, matrixmatrix);
+  printf("\nMatrix matrix product:\n");
+  prettyPrint(matrixmatrix, size, 1);
+  MatrixVectorMultiply(matrix, size, size, vector, matrixvector);
+  printf("\nMatrix vector product:\n");
+  prettyPrint(matrixvector, size,1);
+
+  free(vector);
+  free(matrix);
+  free(matrixmatrix);
+  free(matrixvector);
+}
+
+int main(){
    CU_pSuite pSuite = NULL;
 
    /* initialize the CUnit test registry */
@@ -187,7 +225,9 @@ int main()
    if (NULL == CU_add_test(pSuite, "id()", test_id) || 
        NULL == CU_add_test(pSuite,"A=QR",test_QRisA) || 
        NULL == CU_add_test(pSuite, "QxQtranspose=I", test_QbyQtransposeIsIdentity) ||
-       NULL == CU_add_test(pSuite, "R is upper Triangular", test_RisUpperTriangular)){
+       NULL == CU_add_test(pSuite, "R is upper Triangular", test_RisUpperTriangular) ||
+       NULL == CU_add_test(pSuite, "Matrix Vector", test_matrixvector)
+       ){
      CU_cleanup_registry();
      return CU_get_error();
    }
