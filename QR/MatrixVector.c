@@ -188,6 +188,7 @@ static void dgemm_vector_lowest(const double * restrict A, const double * restri
   wA -> n of A
   C  -> the output vector
 */
+/*
 int AltMatrixVectorMultiply(const double * const A, const int hA, const int wA, 
 			 const double * const B, double *C){
   static __attribute__ ((aligned(16))) double a_block[3 * L2_BLK_SIZE * L2_BLK_SIZE / 2];
@@ -248,3 +249,4 @@ int AltMatrixVector_middle(const double * const A, const int hA, const int wA,
   }
 
 }
+*/

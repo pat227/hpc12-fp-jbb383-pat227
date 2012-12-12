@@ -1,4 +1,4 @@
-EXECUTABLES = main 
+EXECUTABLES = main householder
 
 all: $(EXECUTABLES)
 
@@ -22,6 +22,8 @@ householder: householder.c  matrices.o qrlib.o
 	gcc -std=gnu99 -lrt -lm -Wall -Wextra -Werror -o$@ $^
 matrices.o:	matrices.c
 	gcc -c -std=gnu99 -lm -Wall -Wextra -Werror -o$@ $^
+qrlib.o:	proj-LibCorrectness.c
+	gcc -c -std=gnu99 -Wall -Wextra -Werror -o$@ $^
 %.o: $.c %.h
 	gcc $(DUBUGS_FLAGS) -c -std=gnu99 $<
 
