@@ -33,7 +33,6 @@ ARGUEMENTS:
 -----------------------------------------------------------------------------*/
 int i, j;
 
-if( wA % b != 0 || hA % b != 0  ){
 	int wn_bloc = (wA+b-1)/b; // Number of Blocks 
 	int hn_bloc = (hA+b -1)/b; // Number of Blocks
 	int wpadding = wn_bloc*b - wA ; // Number of columns of zeros needed.
@@ -51,13 +50,7 @@ if( wA % b != 0 || hA % b != 0  ){
 			} 
 		} }
     	} 
-}else{
-	for(i=0; i<b; i++){
-		for(j=0; j<b; j++){
-		outA[i + j*b] = inA[ i+i_bloc*b + (j+ j_bloc*b)*hA ] ;
-		} 
-	}
-}
+
 
 }
 
