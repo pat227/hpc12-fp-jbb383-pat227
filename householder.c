@@ -242,7 +242,7 @@ int main(int argc, char** argv){
   }  
   init(&h, m, m);
   setToIdentity(&h);
-  //if(m!=n) setToIdentity(&mp[number-1]);
+
   printf("j bound: %d ", j);
   for(int i = 0; i < j; i+=2){
     matrixMultiply(&h, &mp[i], &h2);
@@ -267,7 +267,7 @@ int main(int argc, char** argv){
   }
   printf("\nChecking that QR=A, QQtranspose = I, and that R is upper triangular...");
   //copyMatrix(&q, &h);
-  if(IsQRequalToA(h.elements, a.elements, acopy.elements, m, m, n, n)){
+  if(IsQRequalToA(q.elements, a.elements, acopy.elements, m, m, m, n)){
     printf("\nQR = A checks...");
   } else {
     printf("\nQR = A DOES NOT check...");
