@@ -18,7 +18,7 @@ Performs Blocked QR factorization/
 #include "BlockedQR.h"
 
 
-void BlockedQR( double *A, int h, int w, double *Q, double *R){
+void BlockedQR( double *A, int h, int w, double *Q){
 
 /* Print A - Delete once visual check is confirmed */
 	printf("A = \n");

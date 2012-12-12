@@ -29,22 +29,21 @@ int main(int argc, char** argv)
   int m = atoi(argv[1]);
   int n = atoi(argv[2]);
 
- /* Initilize matrix A */
+ /* Initilize matrices A, Atest, and Q */
   double *A = malloc( m*n*sizeof(double) );
+  double *Atest = malloc(m*n*sizeof(double));	
   double *Q = malloc( m*m*sizeof(double) );
-  double *R = malloc(m *n *sizeof(double));
-  
- 
- 
+
  /* Fill up matrix A with elements from [0,10)*/
   int i; 
   srand ( 1 );	 
   for(i=0; i< (m*n) ; i++){
       A[i] = (double) (rand() %1000)/100;
+      Atest[i] = A[i];	
    }
   
- 
-  BlockedQR( A, m, n, Q, R);
+ /* BlockedQR replaces A with R, which is why we needed to copy A in order to test code */
+  BlockedQR( A, m, n, Q);
 
   
 
