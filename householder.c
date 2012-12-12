@@ -144,13 +144,11 @@ int main(int argc, char** argv){
   //============================================================================
   free(mp);
   mp = NULL;
-  number = 0;
+  number = m;
   if(m > n){
-    number = (n-1);
-  } else {
-    number = (m-1);
+    number = n;//(n-1);
   }
-  mp = malloc(sizeof(struct matrix)*number);
+  mp = malloc(sizeof(struct matrix)*m);
   if(mp == NULL){
     printf("Couldn't allocate matrices array.");
     abort();
@@ -160,6 +158,7 @@ int main(int argc, char** argv){
   printf("\n===============================================================================");
   for(int i = 0; i < number; i++){
     init(&mp[i], m, m);
+    setToIdentity(&mp[i]);
   }
   //reset j and a
   j = 0;
@@ -171,7 +170,7 @@ int main(int argc, char** argv){
   }
   copyMatrix(&acopy, &a);
   //the loop --AGAIN -- that computes all the reflectors and QR
-  while(j+1 < a.width || j+2 < a.height){
+  while(j+1 <= a.width && j+1 <= a.height){
     extractVector(&a,j,j,&v);
 
     if(verbose){
@@ -186,10 +185,10 @@ int main(int argc, char** argv){
     init(&e1, 1, a.height-j);
     zero(&e1);
     if(getElement(&a,j,j) < 0){
-      setElement(&e1,0,0,1.0);
-    } else {
       setElement(&e1,0,0,-1.0);
-    }  
+    } else {
+      setElement(&e1,0,0,1.0);
+    }
     scalarMultiply(&e1, norm);
     add(&v, &e1, &c);
     //use swap instead
@@ -222,7 +221,7 @@ int main(int argc, char** argv){
       printf("\n 2(v vT / vT v) ");
       prettyPrint(&c);
     }
-    setToIdentity(&(mp[j]));
+    //setToIdentity(&(mp[j]));
     subtractFromRightBottomMost(&mp[j], &c);
     if(verbose){
       printf("\n%d Householder matrix H(%d):",j+1, j+1);
@@ -242,7 +241,8 @@ int main(int argc, char** argv){
   }  
   init(&h, m, m);
   setToIdentity(&h);
-  for(int i = 0; i < j; i+=2){
+  printf("j bound: %d ", j);
+  for(int i = 0; i < j-1; i+=2){
     matrixMultiply(&h, &mp[i], &h2);
     //use swap instead
     //copyMatrix(&h, &h2);
@@ -261,19 +261,25 @@ int main(int argc, char** argv){
     printf("Should equal A:");
     prettyPrint(&temp);
     printf("A again:");
-    prettyPrint(&acopy); 
+    prettyPrint(&acopy);
   }
   printf("\nChecking that QR=A, QQtranspose = I, and that R is upper triangular...");
   //copyMatrix(&q, &h);
   if(IsQRequalToA(h.elements, a.elements, acopy.elements, m, m, n, n)){
     printf("\nQR = A checks...");
+  } else {
+    printf("\nQR = A DOES NOT check...");
   }
   if(IsQbyQtransposeIdentity(h.elements, m)){
     printf("\nQQtranspose = I checks...");
+  } else {
+    printf("\nQQtranspose = I DOES NOT check...");
   }
   if(isUpperTriangular(a.elements, m)){
     printf("\nR is upper triangular checks...");
-    }
+  } else {
+    printf("\nR is upper triangular DOES NOT  check...");
+  }
   printf("\n");
   return 0;
 }
