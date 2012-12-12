@@ -190,9 +190,9 @@ static void dgemm_vector_lowest(const double * restrict A, const double * restri
 */
 int AltMatrixVectorMultiply(const double * const A, const int hA, const int wA, 
 			 const double * const B, double *C){
-  static __attribute__ ((aligned(16))) double a_block[3 * L2_BLK_SIZE * L2_BLK_SIZE];
+  static __attribute__ ((aligned(16))) double a_block[3 * L2_BLK_SIZE * L2_BLK_SIZE / 2];
 
-  int bigblocksize = 3 * L2_BLK_SIZE  * L2_BLK_SIZE;
+  int bigblocksize = 3 * L2_BLK_SIZE  * L2_BLK_SIZE / 2;
   //compute # of L2 blocks for width and height of A
   int wn_blocA = (wA + bigblocksize - 1) / bigblocksize;
   //by definition
@@ -204,6 +204,8 @@ int AltMatrixVectorMultiply(const double * const A, const int hA, const int wA,
     for(int i = 0; i < hn_blocA; i++){
       //C[i] = A[i + j * hA] * B[i];
       AltBlockMatrixByCol(A, a_block, bigblocksize, i, j, hA);
+      AltMatrixVectorMiddle(a_block, hA, wA, B[j], C);
+      
     }
   }
 
@@ -227,11 +229,11 @@ void AltBlockMatrixByCol(const double * const inA, double * outA,
 }
 
 int AltMatrixVector_middle(const double * const A, const int hA, const int wA,
-			   const double * const B, double *C){
-  static __attribute__ ((aligned(16))) double a_block1[3 * L1_BLK_SIZE * L1_BLK_SIZE];
-  int bigblocksize = 3 * L1_BLK_SIZE  * L1_BLK_SIZE;
+			   const double B, double *C){
+  static __attribute__ ((aligned(16))) double a_block1[3 * L1_BLK_SIZE * L1_BLK_SIZE / 2];
+  int bigblocksize = 3 * L1_BLK_SIZE  * L1_BLK_SIZE / 2;
   //compute # of L1 blocks for width and height of A
-  int wn_blocA = (wA + bigblocksize - 1) / bigblocksize;
+  //int wn_blocA = (wA + bigblocksize - 1) / bigblocksize;
   //by definition
   int hn_blocB = wn_blocA;
   // Number of Blocks in the height
@@ -241,6 +243,7 @@ int AltMatrixVector_middle(const double * const A, const int hA, const int wA,
     for(int i = 0; i < hn_blocA; i++){
       //C[i] = A[i + j * hA] * B[i];
       AltBlockMatrixByCol(A, a_block1, bigblocksize, i, j, hA);
+      
     }
   }
 

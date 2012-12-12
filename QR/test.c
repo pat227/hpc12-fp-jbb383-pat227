@@ -13,7 +13,7 @@
 #include "MatrixTranspose.h"
 #include "test.h"
 #include "WY.h"
-
+#define EPSILON 0.00001
 
 /*================= Code Test if Matrx is Upper Triangular ====================*/
 
@@ -169,12 +169,43 @@ for(int i=0; i<w; i++){
 
 }
 
+/*
+  Function fails fast if any error occurs and doesn't waste time computing rest 
+  of the matrix. Function does not store the result of the multiplication, but 
+  only compares individually computed elements to elements in A. To support 
+  non-square R, require more args to specify the dimensions of Q and R each.
+  Perhaps structs with bounds would be better and they would know how to multiply
+  against each other... 
+  Q -> pointer to array of doubles in column-major order that represents Q
+  R -> ditto that represents R
+  A -> ditto that represents A
+  Qm, Qn -> the m x n size of Q
+  Rm, Rn -> the m x n size of R
+*/
+int IsQRequalToA(const double * const Q, const double * const R, 
+		 const double * const A, const int Qm, const int Qn, 
+		 const int Rm, const int Rn){
+  //for each row i and col j in result
+  int verbose = 0;
+  double temp = 0.0;
+  for(int i=0; i<Qm; i++){
+    for(int  j=0; j<Rn; j++){
+      for(int k=0; k<Qn; k++){
+	temp += Q[i+k*Qm] * R[k+j*Rm];
+	if(verbose) printf("\ni:%d j:%d k:%d +=  %-9.9f x %-9.9f",
+			   i,j,k,Q[i+k*Qm],R[k+j*Rm]);
+      }
+      if(fabs(temp - A[i+j*Qm]) > EPSILON){
+	if(verbose) printf("\nA != QR; element i: %d j: %d should be %-9.15f but computed to be %-9.15f\n",
+	       i,j,A[i+j*Qm],temp);
+	return 0;
+      } else {
+	temp = 0.0;
+      }
+    }
+  }
+  return 1;
+}
+
 
 /*============================================================================*/
-
-
-
-
-
-
-
