@@ -62,9 +62,19 @@ int WY( double *A, int h, int w, double *Q, double *Qt, double *R){
 /* ========================== Enter Loop ========================= */
 for(int k=1; k<n; k++){
 
-	/* Copy a_k into a1 */
+
+	/* Copy a_k relavant entries into a1 and make such it is not a zero vector*/
+	double check= 0;
+
 	for(int i=0; i<h; i++){
-		a1[i] = A[i+k*h]; 
+		a1[i] = A[i+k*h];
+		if( i > k) 
+		check += A[i +k*h];
+	}
+
+	/* Don't continue in loop if we have reached a zero column */
+	if ( check == 0 ){
+		break;
 	}
 
 	/* Update a_k */
@@ -97,8 +107,8 @@ MatrixMatrixMultiply(Qt, h,h,A , h ,w , R);
 /*====================== Test Code =================================*/
 
 /* Uncomment if you want to test this code */
-//testOrthogonal(Q, Qt, h);
-//testUpperTriangular(R, h, w);
+testOrthogonal(Q, Qt, h);
+testUpperTriangular(R, h, w);
 
 
 
