@@ -20,12 +20,8 @@ Performs Blocked QR factorization/
 
 void BlockedQR( double *A, int h, int w, double *Q){
 
-/* Print A - Delete once visual check is confirmed */
-	printf("A = \n");
-	prettyPrint(A, h, w);
-
 /* Block size */
-	int b= 3 ;
+	int b= 16 ;
 
 /* Calculate Number of blocks */
 	int wn_bloc = (w+b-1)/b; // Number of Blocks in width (round up)
@@ -60,9 +56,6 @@ void BlockedQR( double *A, int h, int w, double *Q){
 	double *A_block_1b_by_1b = malloc(b * b* sizeof(double));
 	double *A_block_2b_by_1b = malloc(2*b * b* sizeof(double));
 
-	double *temp = malloc( h*w*sizeof(double));
-	double *temp1 = malloc(h*h*sizeof(double));
-	double *Qt = malloc(h*h*sizeof(double));
 
 /* Enter Loop */
 for(int k =0; k< n; k++){	
@@ -73,13 +66,15 @@ for(int k =0; k< n; k++){
 
 	/* Update Corresponding Diagonal Block in in Q */
 	BlockQ1(Q, Q1_block_h_by_1b, h, h, b, k );
-	MatrixMatrixMultiply(Q1_block_h_by_1b, h, b, Q_block_1b_by_1b, b, b, Q2_block_h_by_1b);	
+	dgemm_simple(Q1_block_h_by_1b, h, b, Q_block_1b_by_1b, b, b, Q2_block_h_by_1b);
+	//MatrixMatrixMultiply(Q1_block_h_by_1b, h, b, Q_block_1b_by_1b, b, b, Q2_block_h_by_1b);	
 	UnBlockQ1(Q2_block_h_by_1b , Q, h, h, b, k);
 			
 	/* Update Blocks along row with Digonal Block */
 	for( int j=k+1; j<wn_bloc ; j++){
 	BlockMatrix(A, A_block_1b_by_1b, h, w, b, k, j);
-	MatrixMatrixMultiply(Qt_block_1b_by_1b, b, b, A_block_1b_by_1b, b, b, R_block_1b_by_1b);
+	dgemm_simple(Qt_block_1b_by_1b, b, b, A_block_1b_by_1b, b, b, R_block_1b_by_1b);	
+	//MatrixMatrixMultiply(Qt_block_1b_by_1b, b, b, A_block_1b_by_1b, b, b, R_block_1b_by_1b);
 	UnBlockMatrix(A, R_block_1b_by_1b, h,w,b, k, j);
 	}
 
@@ -90,14 +85,16 @@ for(int k =0; k< n; k++){
 		UnBlock(A, R_block_2b_by_1b, h, w, b,k, i, k);
 
 		/* Update Q */
-		BlockQ(Q, Q1_block_h_by_2b, h, h, b, k, i );		
-		MatrixMatrixMultiply(Q1_block_h_by_2b, h, 2*b, Q_block_2b_by_2b, 2*b, 2*b, Q2_block_h_by_2b);		
+		BlockQ(Q, Q1_block_h_by_2b, h, h, b, k, i );
+		dgemm_simple(Q1_block_h_by_1b, 2*b, h, Q_block_2b_by_2b, 2*b, 2*b, Q2_block_h_by_2b);
+		//MatrixMatrixMultiply(Q1_block_h_by_2b, h, 2*b, Q_block_2b_by_2b, 2*b, 2*b, Q2_block_h_by_2b);		
 		UnBlockQ( Q2_block_h_by_2b, Q, h, h, b, k, i);	
  
 		/* Update Blocks along i and k  rows */
 		for( int j=k+1; j<wn_bloc ; j++){
 			Block(A_block_2b_by_1b, A , h, w, b, k, i, j);
-			MatrixMatrixMultiply(Qt_block_2b_by_2b, 2*b, 2*b, A_block_2b_by_1b, 2*b, b, R_block_2b_by_1b);
+			dgemm_simple(Qt_block_2b_by_2b, 2*b, 2*b, A_block_2b_by_1b, 2*b, b, R_block_2b_by_1b);
+			//MatrixMatrixMultiply(Qt_block_2b_by_2b, 2*b, 2*b, A_block_2b_by_1b, 2*b, b, R_block_2b_by_1b);
 			UnBlock(A, R_block_2b_by_1b, h, w, b,k, i, j);	
 		}
 
@@ -107,22 +104,6 @@ for(int k =0; k< n; k++){
 }
 
 
-
-MatrixTranspose(Q, h, h, Qt);
-
-MatrixMatrixMultiply(Q, h, h, Qt, h, h , temp1);
-printf("hopefully idenitity\n");
-prettyPrint(temp1, h, h);
-
-MatrixMatrixMultiply( Q, h, h, A, h, w, temp);	
-	
-	printf(" Q = \n");
-	prettyPrint(Q, h, h);
-	printf("R = \n");
-	prettyPrint(A, h, w);
-	
-	printf("Q R = \n");
-	prettyPrint(temp, h, w);
 
 
 

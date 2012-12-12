@@ -62,7 +62,7 @@ void testOrthogonal(double *Q, double *Qt, int h){
 
 
  /*----------------------------dgemm_simple Code-------------------------------*/
-void dgemm_simple(const double *A, const int wA, const int hA, const double *B, const int wB, const int hB, double *C) {
+void dgemm_simple(const double *A, const int hA, const int wA, const double *B, const int hB, const int wB, double *C) {
 /*----------------------------------------------------------------------------- 
 PURPOSE: Computes simple matrix multiplication with A and B in Column-major order. 
 ARGUEMENTS:
@@ -74,6 +74,8 @@ ARGUEMENTS:
  
 int hC = hA;
 int wC = wB;
+
+CleanMatrix(C , hC, wC);
 
 for(int i=0; i<hC; i++){
 	for(int j=0;j<wC; j++){
@@ -101,7 +103,7 @@ int wC = wB;
 /* Test Matrix */
 double *testC = malloc( wC*hC*sizeof(double) );
 CleanMatrix(testC, hC, wC);
-dgemm_simple( A, wA, hA, B, wB, hB, testC);
+dgemm_simple( A, hA, wA, B, hB, wB, testC);
 
 		
 /* Error Check */
