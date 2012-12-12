@@ -4,7 +4,7 @@
 #include<math.h>  //fabs
 /*We use column major access and assume args are stored in column major order in accordance with all the other work we did this semester*/
 //the rounding error tolerance
-#define EPSILON 0.000001
+#define EPSILON 0.00001
 
 //cannot be static when testing
 /*inline static */ double identity(const uint32_t m, const uint32_t n){

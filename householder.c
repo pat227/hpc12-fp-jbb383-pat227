@@ -3,7 +3,8 @@
 #include<stdlib.h> //memory
 #include "matrices.h"
 #include "proj-LibCorrectness.h"
-#define verbose 1
+#include "QR/timing.h"
+#define verbose 0
 extern void init(struct matrix * m, const int w, const int h);
 int main(int argc, char** argv){
   if(argc != 3){
@@ -21,6 +22,9 @@ int main(int argc, char** argv){
 
   struct matrix a,b,c,v,h,h2,e1,temp,acopy,q;
   struct matrix * mp;
+  int number = 0;
+  int j = 0;
+  double norm = 0;
   int m = atoi(argv[1]);
   int n = atoi(argv[2]);
   if(m == 0 || n == 0){
@@ -30,127 +34,23 @@ int main(int argc, char** argv){
     printf("\nMatrix dimensions m, n must be greater than zero.");
     abort();
   }
-  init(&a, 3,3);
-  init(&b, 3,3);
-  init(&c, 3,3);
-  //can make it anything actually, since it will reshape itself when I extract a column vector later
-  init(&v, 3,3);
-  init(&h, 3,3);
-  init(&h2, 3,3);
-  init(&e1, 1,3);
-  init(&temp,3,3);
-  init(&acopy, 3,3);
-  init(&q ,3,3);
-
-  setToIdentity(&b);
-  zero(&a);
-  setElement(&a, 0,0,12.0); 
-  setElement(&a, 1,0,6.0);
-  setElement(&a, 2,0,-4.0);
-  setElement(&a, 0,1,-51.0);
-  setElement(&a, 1,1,167.0);
-  setElement(&a, 2,1,24.0);
-  setElement(&a, 0,2,4.0);
-  setElement(&a, 1,2,-68.0);
-  setElement(&a, 2,2,-41.0);
-  printf("A:");
-  prettyPrint(&a);
-  copyMatrix(&acopy, &a);
-  int number = 0;
-  if(a.height > a.width){
-    number = a.height-1;
-  } else {
-    number = a.width-1;
-  }
-  mp = malloc(sizeof(struct matrix)*number);
-  if(mp == NULL){
-    printf("Couldn't allocate matrices array.");
-    abort();
-  }
-  for(int i = 0; i < number; i++){
-    init(&mp[i], 3, 3);
-  }
-  //============================================================================
-  //looped
-  //============================================================================
-  printf("=Looped=");
-  double norm = 0.0;
-  int j = 0;
-  while(j+1 < a.width || j+2 < a.height){
-    extractVector(&a,j,j,&v);
-    printf("\nV (col vector of A from j,j):");
-    prettyPrint(&v);
-    norm = normOfVector(&v,0);
-    printf("\nNorm of V: %f", norm);
-    init(&e1, 1, a.height-j);
-    zero(&e1);
-    if(getElement(&a,j,j) < 0){
-      setElement(&e1,0,0,1.0);
-    } else {
-      setElement(&e1,0,0,-1.0);
-    }  
-    scalarMultiply(&e1, norm);
-    add(&v, &e1, &c);
-    copyMatrix(&v, &c);
-    printf("\nV of Householder:");
-    prettyPrint(&v);
-
-    transpose(&v,&b);
-    printf("\nVtranopose:");
-    prettyPrint(&b);
-    printf("\nV x Vtranopose:");
-    matrixMultiply(&v,&b,&c);
-    prettyPrint(&c);
-    
-    printf("\nVtranopose x V:");
-    matrixMultiply(&b, &v, &temp);
-    prettyPrint(&temp);
-    
-    scalarMultiply(&c, 2.0);
-    scalarMultiply(&c, (1 / getElement(&temp, 0, 0)));
-    printf("\n 2(v vT / vT v) ");
-    prettyPrint(&c);
-    setToIdentity(&(mp[j]));
-    subtractFromRightBottomMost(&mp[j], &c);
-    printf("\n%d Householder matrix H(%d):",j+1, j+1);
-    prettyPrint(&mp[j]);
-
-    printf("\nA(%d) = H(%d) A(%d):",j+1,j+1,j);
-    matrixMultiply(&mp[j], &a, &temp);
-    printf("\nA(%d):",j+1);
-    prettyPrint(&temp);
-    copyMatrix(&a, &temp);    
-    j++;
-  }  
-  setToIdentity(&h);
-  for(int i = 0; i < j; i+=2){
-    matrixMultiply(&h, &mp[i], &h2);
-    copyMatrix(&h, &h2);
-    matrixMultiply(&h, &mp[i+1], &h2);
-    copyMatrix(&h, &h2);
-  }
-  printf("\nQ:");
-  copyMatrix(&q, &h);
-  prettyPrint(&q);
-  //confirm
-  matrixMultiply(&q, &a, &temp);
-  printf("Should equal A:");
-  prettyPrint(&temp);
-  printf("A again:");
-  prettyPrint(&acopy);  
-
+  init(&b, m,n);
+  init(&c, m,n);
+  init(&v, m,1);
+  init(&h, m,m);
+  init(&h2, m,m);
+  init(&e1, m,1);
+  init(&temp, m,n);
+  init(&q, m,m);
   //============================================================================
   //generalized version using supplied args
   //============================================================================
-  free(mp);
   mp = NULL;
-  number = 0;
+  number = m;
   if(m > n){
-    number = (n-1);
-  } else {
-    number = (m-1);
+    number = n;//(n-1);
   }
-  mp = malloc(sizeof(struct matrix)*number);
+  mp = malloc(sizeof(struct matrix)*(m+1));
   if(mp == NULL){
     printf("Couldn't allocate matrices array.");
     abort();
@@ -158,20 +58,25 @@ int main(int argc, char** argv){
   printf("\n===============================================================================");
   printf("\nPerforming QR decomposition upon random matrix of size m x n...");
   printf("\n===============================================================================");
-  for(int i = 0; i < number; i++){
+  for(int i = 0; i < (m+1); i++){
     init(&mp[i], m, m);
+    setToIdentity(&mp[i]);
   }
   //reset j and a
   j = 0;
   init(&a, n, m);
+  init(&acopy, n, m);
   fillWithRandomElements(&a, 10, 0);
   if(verbose){
     printf("A:");
     prettyPrint(&a);
   }
   copyMatrix(&acopy, &a);
+  timestamp_type time1, time2;
+  get_timestamp(&time1);
+
   //the loop --AGAIN -- that computes all the reflectors and QR
-  while(j+1 < a.width || j+2 < a.height){
+  while(j+1 <= a.width && j+1 <= a.height){
     extractVector(&a,j,j,&v);
 
     if(verbose){
@@ -186,10 +91,10 @@ int main(int argc, char** argv){
     init(&e1, 1, a.height-j);
     zero(&e1);
     if(getElement(&a,j,j) < 0){
-      setElement(&e1,0,0,1.0);
-    } else {
       setElement(&e1,0,0,-1.0);
-    }  
+    } else {
+      setElement(&e1,0,0,1.0);
+    }
     scalarMultiply(&e1, norm);
     add(&v, &e1, &c);
     //use swap instead
@@ -222,7 +127,7 @@ int main(int argc, char** argv){
       printf("\n 2(v vT / vT v) ");
       prettyPrint(&c);
     }
-    setToIdentity(&(mp[j]));
+    //setToIdentity(&(mp[j]));
     subtractFromRightBottomMost(&mp[j], &c);
     if(verbose){
       printf("\n%d Householder matrix H(%d):",j+1, j+1);
@@ -242,6 +147,8 @@ int main(int argc, char** argv){
   }  
   init(&h, m, m);
   setToIdentity(&h);
+
+  printf("j bound: %d ", j);
   for(int i = 0; i < j; i+=2){
     matrixMultiply(&h, &mp[i], &h2);
     //use swap instead
@@ -252,28 +159,41 @@ int main(int argc, char** argv){
     //copyMatrix(&h, &h2);
     swapMatrix(&h,&h2);
   }
+  copyMatrix(&q, &h);
   //confirm -- use functions not on screen output
   if(verbose){
     printf("\nQ:");
-    copyMatrix(&q, &h);
     prettyPrint(&q);
     matrixMultiply(&q, &a, &temp);
     printf("Should equal A:");
     prettyPrint(&temp);
     printf("A again:");
-    prettyPrint(&acopy); 
+    prettyPrint(&acopy);
   }
   printf("\nChecking that QR=A, QQtranspose = I, and that R is upper triangular...");
   //copyMatrix(&q, &h);
-  if(IsQRequalToA(h.elements, a.elements, acopy.elements, m, m, n, n)){
+  if(IsQRequalToA(q.elements, a.elements, acopy.elements, m, m, m, n)){
     printf("\nQR = A checks...");
+  } else {
+    printf("\nQR = A DOES NOT check...");
   }
   if(IsQbyQtransposeIdentity(h.elements, m)){
     printf("\nQQtranspose = I checks...");
+  } else {
+    printf("\nQQtranspose = I DOES NOT check...");
   }
   if(isUpperTriangular(a.elements, m)){
     printf("\nR is upper triangular checks...");
-    }
+  } else {
+    printf("\nR is upper triangular DOES NOT  check...");
+  }
+  get_timestamp(&time2);
+  double elapsed = timestamp_diff_in_seconds(time1,time2);
+  printf("\nTotal Elapsed Time: %f", elapsed);
+
   printf("\n");
+
+  //============cleanup=============
+  free(mp);
   return 0;
 }
