@@ -138,6 +138,7 @@ int main(int argc, char** argv){
   prettyPrint(&temp);
   printf("A again:");
   prettyPrint(&acopy);  
+  
 
   //============================================================================
   //generalized version using supplied args
@@ -148,7 +149,7 @@ int main(int argc, char** argv){
   if(m > n){
     number = n;//(n-1);
   }
-  mp = malloc(sizeof(struct matrix)*m);
+  mp = malloc(sizeof(struct matrix)*(m+1));
   if(mp == NULL){
     printf("Couldn't allocate matrices array.");
     abort();
@@ -156,7 +157,7 @@ int main(int argc, char** argv){
   printf("\n===============================================================================");
   printf("\nPerforming QR decomposition upon random matrix of size m x n...");
   printf("\n===============================================================================");
-  for(int i = 0; i < number; i++){
+  for(int i = 0; i < (m+1); i++){
     init(&mp[i], m, m);
     setToIdentity(&mp[i]);
   }
@@ -241,8 +242,9 @@ int main(int argc, char** argv){
   }  
   init(&h, m, m);
   setToIdentity(&h);
+  //if(m!=n) setToIdentity(&mp[number-1]);
   printf("j bound: %d ", j);
-  for(int i = 0; i < j-1; i+=2){
+  for(int i = 0; i < j; i+=2){
     matrixMultiply(&h, &mp[i], &h2);
     //use swap instead
     //copyMatrix(&h, &h2);
