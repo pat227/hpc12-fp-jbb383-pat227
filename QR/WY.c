@@ -52,7 +52,8 @@ int WY( double *A, int h, int w, double *Q, double *Qt, double *R){
 	CalculateQ(W, Yt, h, w, Q);
 		
 /* Calculate Q^T */
-	MatrixTranspose(Q, h, h, Qt);
+	simple_transpose(Q, h, h, Qt);
+	//MatrixTranspose(Q, h, h, Qt);
 
 /* Set n equal to min(w, h). */
 	int n = w;
@@ -62,19 +63,31 @@ int WY( double *A, int h, int w, double *Q, double *Qt, double *R){
 /* ========================== Enter Loop ========================= */
 for(int k=1; k<n; k++){
 
-	/* Copy a_k into a1 */
+
+	/* Copy a_k relavant entries into a1 and make such it is not a zero vector*/
+	double check= 0;
+
 	for(int i=0; i<h; i++){
-		a1[i] = A[i+k*h]; 
+		a1[i] = A[i+k*h];
+		if( i > k) 
+		check += A[i +k*h];
+	}
+
+	/* Don't continue in loop if we have reached a zero column */
+	if ( check == 0 ){
+		break;
 	}
 
 	/* Update a_k */
-	MatrixMatrixMultiply(Qt, h, h, a1, h, 1, a2);
+	//MatrixMatrixMultiply(Qt, h, h, a1, h, 1, a2);
+	dgemm_simple(Qt, h, h, a1, h, 1, a2);
 
 	/* Calculate kth v */
 	CalculateV( a2, h, k, v);	
 
 	/* Calculate kth z */
-	MatrixMatrixMultiply(Q,h,h,v, h,1, z);	
+	//MatrixMatrixMultiply(Q,h,h,v, h,1, z);
+	dgemm_simple(Q, h, h, v, h, 1, z);	
 
 	/* Fill in the kth row or column */	
 	for(int i = 0; i < h; i++){
@@ -86,13 +99,14 @@ for(int k=1; k<n; k++){
 	CalculateQ(W, Yt, h, w, Q);
 	
 	/* Calculate Q^T */
-	MatrixTranspose(Q, h, h, Qt);
+	simple_transpose(Q, h, h, Qt);
+	//MatrixTranspose(Q, h, h, Qt);
 
 }	
 
 /*========================= Calculate R ==============================*/
-MatrixMatrixMultiply(Qt, h,h,A , h ,w , R);
-
+//MatrixMatrixMultiply(Qt, h,h,A , h ,w , R);
+dgemm_simple(Qt, h, h, A, h, w, R);
 
 /*====================== Test Code =================================*/
 
@@ -114,7 +128,8 @@ void CalculateQ( double *W, double *Yt, int h, int w, double *Q){
 
 /* Calculates temp =  I + W Y^T */
 
-MatrixMatrixMultiply( W, h, w, Yt, w, h, Q);
+dgemm_simple(W, h, w, Yt, w, h, Q);
+//MatrixMatrixMultiply( W, h, w, Yt, w, h, Q);
 
 for(int i=0; i<h; i++){
 	Q[ i + i*h] += 1;

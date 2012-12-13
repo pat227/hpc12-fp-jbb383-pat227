@@ -10,12 +10,12 @@ Generates n by m matrix and performs Blocked QR factorization/
 #include <unistd.h>
 #include <time.h>
 #include "WY.h"
+#include "timing.h"
 #include "test.h"
 #include "MatrixMatrixMultiply.h"
 #include "MatrixTranspose.h"
 #include "Utilities.h"
 #include "BlockedQR.h"
-
 
 int main(int argc, char** argv) 
 {
@@ -30,23 +30,29 @@ int main(int argc, char** argv)
   int m = atoi(argv[1]);
   int n = atoi(argv[2]);
 
- /* Initilize matrix A */
+ /* Initilize matrices A, Atest, and Q */
   double *A = malloc( m*n*sizeof(double) );
+  double *Atest = malloc(m*n*sizeof(double));	
   double *Q = malloc( m*m*sizeof(double) );
-  double *R = malloc(m *n *sizeof(double));
-  
- 
- 
+
  /* Fill up matrix A with elements from [0,10)*/
   int i; 
   srand ( 1 );	 
   for(i=0; i< (m*n) ; i++){
       A[i] = (double) (rand() %1000)/100;
+      Atest[i] = A[i];	
    }
-  
  
-  BlockedQR( A, m, n, Q, R);
+  /* Start Timing */
+  timestamp_type time1, time2;
+  get_timestamp(&time1); 
 
-  
+ /* BlockedQR replaces A with R, which is why we needed to copy A in order to test code */
+  BlockedQR( A, m, n, Q);
+
+ /* End Timing */
+  get_timestamp(&time2);
+  double elapsed = timestamp_diff_in_seconds(time1,time2);
+  printf("Time elasped = %f s\n", elapsed);
 
 }

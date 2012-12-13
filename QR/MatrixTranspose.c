@@ -255,7 +255,7 @@ void copyTransposedL1Block(const double * const B, const int submatrix_row,
 }
 //fill another supplied matrix with the tranpose of this one; for fixed size
 //only so no need to worry about corner cases
-void transposeL1Size(double * const A, double * B){
+void transposeL1Size(double * restrict const A, double * restrict B){
   for(int j = 0; j < L1_BLK_SIZE; j++){
     for(int i = 0; i < L1_BLK_SIZE; i++){
       B[i+j*L1_BLK_SIZE] = A[j+i*L1_BLK_SIZE];

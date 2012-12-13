@@ -18,7 +18,7 @@ def main(args):
     r = int(args[1])
     verbose = int(args[2])
     example()
-    print("Timing QR decompositions for 3x3s")
+    print("Timing QR decompositions...")
     starttime = time()
     for x in range(n):
         a = random.randn(r, r)

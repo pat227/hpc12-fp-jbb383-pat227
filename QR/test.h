@@ -15,3 +15,7 @@ void testMatrixMultiply( const double *, const double *, double *, int, int, int
 /* Code to test Blocked Matrix Transpose */
 void simple_transpose(const double *, int , int , double *);
 void testMatrixTranspose(const double *, int , int , const double *);
+//Given Q, R & A, test QR=A
+int IsQRequalToA(const double * const Q, const double * const R, 
+		 const double * const A, const int Qm, const int Qn, 
+		 const int Rm, const int Rn);
