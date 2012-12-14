@@ -1,0 +1,59 @@
+/* HPC 2012 Project  : Jacqueline Bush, Paul Torres */
+
+/* MAIN FILE: 
+Generates n by m matrix and performs Blocked QR factorization/
+*/
+
+/* Headers: */
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <time.h>
+#include "WY.h"
+#include "timing.h"
+#include "test.h"
+#include "MatrixMatrixMultiply.h"
+#include "MatrixTranspose.h"
+#include "Utilities.h"
+#include "BlockedQR.h"
+
+int main(int argc, char** argv) 
+{
+/* Check for two arguemnts, m = height of matrix, n = width of matrix.  */ 
+  if (argc != 3)
+  {
+    fprintf(stderr, "Need two arguments, m and n!\n");
+    abort(); 
+  } 
+ 
+  /* Size of Matrix */  
+  int m = atoi(argv[1]);
+  int n = atoi(argv[2]);
+
+ /* Initilize matrices A, Atest, and Q */
+  double * A = malloc(m * n * sizeof(double));
+  double * Atest = malloc( m * n * sizeof(double));	
+  double * Q = malloc(m * m * sizeof(double));
+  double * Qt = malloc(m * m * sizeof(double));
+  double * R = malloc(m * m * sizeof(double));
+
+ /* Fill up matrix A with elements from [0,10)*/
+  int i; 
+  srand ( 1 );	 
+  for(i=0; i< (m*n) ; i++){
+      A[i] = (double) (rand() %1000)/100;
+      Atest[i] = A[i];	
+   }
+ 
+  /* Start Timing */
+  timestamp_type time1, time2;
+  get_timestamp(&time1); 
+
+  WY(A, m, n, Q, Qt, R);
+
+  /* End Timing */
+  get_timestamp(&time2);
+  double elapsed = timestamp_diff_in_seconds(time1,time2);
+  printf("Time elasped = %f s\n", elapsed);
+  return 0;
+}
