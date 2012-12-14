@@ -12,7 +12,7 @@
 #include"proj-LibCorrectness.h" //the functions we wish to test have headers here
 /*We use column major access and assume args are stored in column major order in accordance with all the other work we did this semester*/
 #include"QR/Utilities.h"
-#include"QR/MatrixVector.h"
+//#include"QR/MatrixVector.h"
 #include"QR/MatrixMatrixMultiply.h"
 
 void test_id(void){
@@ -169,7 +169,7 @@ void test_RisUpperTriangular(){
   CU_ASSERT(isUpperTriangular(R3,3) == 1);
   CU_ASSERT(isUpperTriangular(wrongR3,3) == 0);
 }
-
+/*
 void test_matrixvector(){
   int size = 5;
   double * vector = malloc(sizeof(double)*size);
@@ -190,11 +190,11 @@ void test_matrixvector(){
   printf("\nVector:\n");
   prettyPrint(vector, size, 1);
   //test matrix multiply against matrix vector multiply
-  /*
-    int MatrixVectorMultiply(const double * const A, const int hA, const int wA, 
-    const double * const B, const int col, double *C){
-    int MatrixMatrixMultiply( double *A, int hA, int wA, double *B, int hB, int wB, double *C)
-  */
+  
+  //  int MatrixVectorMultiply(const double * const A, const int hA, const int wA, 
+  //  const double * const B, const int col, double *C){
+  //  int MatrixMatrixMultiply( double *A, int hA, int wA, double *B, int hB, int wB, double *C)
+  
   MatrixMatrixMultiply(matrix, size, size, vector, size, size, matrixmatrix);
   printf("\nMatrix matrix product:\n");
   prettyPrint(matrixmatrix, size, 1);
@@ -207,7 +207,7 @@ void test_matrixvector(){
   free(matrixmatrix);
   free(matrixvector);
 }
-
+*/
 int main(){
    CU_pSuite pSuite = NULL;
 
@@ -226,9 +226,9 @@ int main(){
    if (NULL == CU_add_test(pSuite, "id()", test_id) || 
        NULL == CU_add_test(pSuite,"A=QR",test_QRisA) || 
        NULL == CU_add_test(pSuite, "QxQtranspose=I", test_QbyQtransposeIsIdentity) ||
-       NULL == CU_add_test(pSuite, "R is upper Triangular", test_RisUpperTriangular) ||
-       NULL == CU_add_test(pSuite, "Matrix Vector", test_matrixvector)
-       ){
+       NULL == CU_add_test(pSuite, "R is upper Triangular", test_RisUpperTriangular)){// ||
+     //       NULL == CU_add_test(pSuite, "Matrix Vector", test_matrixvector)
+     //  ){
      CU_cleanup_registry();
      return CU_get_error();
    }
