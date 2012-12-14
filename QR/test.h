@@ -9,7 +9,9 @@ void testOrthogonal( double *, double *, int );
 void testUpperTriangular( double  *, int,int);
 
 /* Code to test Blocked Matrix Matrix Multiply */
+//this is now being used--not for testing--by QR code, should be moved to utilities
 void dgemm_simple( const double *, const int, const int, const double *, const int, const int, double *);
+
 void testMatrixMultiply( const double *, const double *, double *, int, int, int, int);
 
 /* Code to test Blocked Matrix Transpose */

@@ -194,14 +194,16 @@ void writetofile(const char * const fname, int m, int n, int iterations, double 
   pf = fopen (fname,"a");
   double log = 0.0;
   if(pf!=NULL){
-    sprintf(buffer, "%d", (m*n));
+    //number of elements as log-base-2
+    sprintf(buffer, "%f", (log10(m*n) / log10(2)) );
     fputs(buffer, pf);
     fputs(" ", pf);
-    //use the log-base-2 of iterations
-    log = log10(iterations) / log10(2);
+    //use the log-base-10 of iterations
+    log = log10(iterations);
     sprintf(buffer, "%f", log);
     fputs(buffer, pf);
     fputs(" ", pf);
+    //the dependent variable - along z axis (typically time or gb/s)
     sprintf(buffer, "%f", dependent);
     fputs(buffer, pf);
     fputs("\n", pf);
@@ -209,5 +211,46 @@ void writetofile(const char * const fname, int m, int n, int iterations, double 
   } else {
     printf("Error opening file.");
     abort();
+  }
+}
+
+
+ /*----------------------------dgemm_simple Code-------------------------------*/
+void dgemm_simple(const double *A, const int hA, const int wA, const double *B, const int hB, const int wB, double *C) {
+/*----------------------------------------------------------------------------- 
+PURPOSE: Computes simple matrix multiplication with A and B in Column-major order. 
+ARGUEMENTS:
+	wA: Width of A, number of columns in A
+	hA: Height of A, number of rows in A
+	wB: Width of B
+	hB: Height of B 
+-----------------------------------------------------------------------------*/
+ 
+int hC = hA;
+int wC = wB;
+
+CleanMatrix(C , hC, wC);
+
+for(int i=0; i<hC; i++){
+	for(int j=0;j<wC; j++){
+		for(int k=0; k<wA;k++){
+			C[i + j*hC] += A[i +k*hA]*B[k +j*hB];
+		}
+	}
+  } 
+}
+
+void simple_transpose(const double *A, int h, int w, double *B){
+/*----------------------------------------------------------------------------- 
+PURPOSE: Computes simple matrix transpose with A in Column-major order. 
+ARGUEMENTS:
+	w = width of A
+	h = height of A
+-----------------------------------------------------------------------------*/
+  
+  for(int j = 0; j < w; j++){
+    for(int i = 0; i < h; i++){
+      B[j + i*w] = A[i + j*h];
+    }
   }
 }
