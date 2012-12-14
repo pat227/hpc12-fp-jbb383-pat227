@@ -4,19 +4,15 @@ import scipy
 import time
 import os
 import subprocess
-# I confirmed that lapack libary is being used via 
-# import numpy.distutils.system_info as sysinfo
-# sysinfo.get_info('lapack')
-# {'libraries': ['lapack'], 'library_dirs': ['/usr/lib'], 'language': 'f77'}
 
 def main(args):
     if len(args) != 3:
-        print "Usage: python lapack.py n rank verbosity"
+        print "Usage: python nonlapacktimings.py n rank verbosity"
         print "   n         -> the maximum number of iterations to be used, specified as the exponent of 10^n"
         print "   rank      -> the upper bound of the square matrix size to decompose as exponent of 2^(r+1)"
         print "   verbosity -> 0,1"
         print " Computes the QR decompositions of random square matrices for a range of iterations and sizes."
-        print " NOTE: on a quad-core Q6600 intel cpu, with rank=50, 100,000 iterations take about 74 seconds."
+#        print " NOTE: on a quad-core Q6600 intel cpu, with rank=50, 100,000 iterations take about 74 seconds."
         return
     n = int(args[0])
     r = int(args[1])

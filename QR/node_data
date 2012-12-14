@@ -1,0 +1,21 @@
+BOWERY:
+[pat227@login-0-3 ~]$ python
+Python 2.4.3 (#1, Dec 11 2006, 11:39:03) 
+[GCC 4.1.1 20061130 (Red Hat 4.1.1-43)] on linux2
+   & 2.7.2 (loadable module)
+
+/usr/lib64/liblapack.so.3
+/usr/lib64/liblapack.so.3.0
+/usr/lib64/liblapack.so.3.0.3
+/usr/share/doc/lapack-3.0
+/usr/share/doc/lapack-3.0/README
+/usr/share/doc/lapack-3.0/lapackqref.ps
+
+
+CUDA:
+[pat227@cuda ~]$ python
+Python 2.4.3 (#1, Dec 11 2006, 11:39:03) 
+[GCC 4.1.1 20061130 (Red Hat 4.1.1-43)] on linux2
+
+UNION SQUARE
+Python 2.6.4

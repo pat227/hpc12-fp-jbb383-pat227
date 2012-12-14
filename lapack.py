@@ -2,6 +2,7 @@
 from numpy import *
 from scipy import *
 from time import *
+from os import *
 #I confirmed that lapack libary is being used via 
 # import numpy.distutils.system_info as sysinfo
 # sysinfo.get_info('lapack')
@@ -10,14 +11,14 @@ from time import *
 def main(args):
     if len(args) != 3:
         print "Usage: python lapack.py n rank"
-        print "   n -> # of time to compute QR decomposition"
+        print "   n    -> # of time to compute QR decomposition"
         print "   rank -> the size of the square matrices to decompose"
         print "   verbosity -> 0,1"
         return
     n = int(args[0])
     r = int(args[1])
     verbose = int(args[2])
-    example()
+    #example()
     print("Timing QR decompositions...")
     starttime = time()
     for x in range(n):
