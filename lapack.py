@@ -6,7 +6,17 @@ from time import *
 # import numpy.distutils.system_info as sysinfo
 # sysinfo.get_info('lapack')
 # {'libraries': ['lapack'], 'library_dirs': ['/usr/lib'], 'language': 'f77'}
-
+# On BOWERY I found this instead and :
+# sysinfo.get_info('blas')
+# {'libraries': ['blas'], 'library_dirs': ['/usr/lib64'], 'language': 'f77'}
+# And confiemd through rpm -q -i
+# Name        : lapack                       Relocations: (not relocatable)
+# Version     : 3.0                               Vendor: Red Hat, Inc.
+# Release     : 37.el5
+# and through rpm -q -l the relevant shared libraries are:
+# /usr/lib64/liblapack.so.3
+# /usr/lib64/liblapack.so.3.0
+# /usr/lib64/liblapack.so.3.0.3
 def main(args):
     if len(args) != 3:
         print "Usage: python lapack.py n rank"
