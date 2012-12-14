@@ -37,26 +37,26 @@ def main(args):
         sizeargs = str(rlocal) + " " + str(rlocal)
         print "Using args:" + sizeargs
         for xn in range(n):
-            starttime = time.time()
+            #starttime = time.time()
             for x in range(iterations[xn]):
-                subprocess.call(["./wy", "3", "3"])
-            endtime = time.time()
-            elapsed = (endtime-starttime)
-            print "Matrix r:", rlocal, "Iters:", iterations[xn], "Time:", elapsed, "s  WY decomps/s:", (iterations[xn] / elapsed), "GB/s:", (rlocal * rlocal * 8 * iterations[xn] / elapsed / 1000000000)
+                subprocess.call(["./wy", str(rlocal), str(rlocal)])
+            #endtime = time.time()
+            #elapsed = (endtime-starttime)
+            #print "Matrix r:", rlocal, "Iters:", iterations[xn], "Time:", elapsed, "s  WY decomps/s:", (iterations[xn] / elapsed), "GB/s:", (rlocal * rlocal * 8 * iterations[xn] / elapsed / 1000000000)
     #output suitable for input to gnu plot (x,y,z) triples that will need sorting
     #need multiple files for different series (iterations,time), (size,GB/s)
-            filename1 = "WY_time.txt"
-            outfile1 = open(filename1, 'a+')
+            #filename1 = "WY_time.txt"
+            #outfile1 = open(filename1, 'a+')
     #outfile.write("#Matrix size:" + str(r) + "^2\n")
     #outfile.write("#Iterations, seconds \n")
-            outfile1.write(str(rlocal) + " " + str(xn) + " " + str(elapsed) + "\n")
-            filename2 = "WY_gb.txt"
-            outfile2 = open(filename2, 'a+')
+            #outfile1.write(str(rlocal) + " " + str(xn) + " " + str(elapsed) + "\n")
+            #filename2 = "WY_gb.txt"
+            #outfile2 = open(filename2, 'a+')
     #outfile.write("#Matrix size:" + str(r) + "^2\n")
     #outfile.write("#GBs, seconds \n")
-            outfile2.write(str(rlocal) + " " + str(xn) + " " + str(rlocal * rlocal * 8 / elapsed / 1000000000) + " \n")
-    outfile1.close()
-    outfile2.close()
+            #outfile2.write(str(rlocal) + " " + str(xn) + " " + str(rlocal * rlocal * 8 / elapsed / 1000000000) + " \n")
+    #outfile1.close()
+    #outfile2.close()
 
 if __name__ == "__main__":
     import sys
