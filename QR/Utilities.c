@@ -18,6 +18,12 @@ void prettyPrint(const double * const A, const int m, const int n){
   printf("\n");
 }
 
+//h is height NOT how many; how many is start row - h, computed by function
+void copyColVector(double * source, double * target, int start, int h, int col){
+  for(int i = start ; i<h; i++){
+    target[i + col*h] = source[i];
+  }
+}
 
 /*---------------------Code to work with blocks of Matrix---------------------*/
  
@@ -122,6 +128,7 @@ for(i=0; i<hA; i++){
 }
 
 
+
 /*---------------------Code to work with blocks of Matrix---------------------*/
 /*----------------------------------------------------------------------------- 
   PURPOSE: Takes vector A, outputs the desired block, pads with zeros when necessary. 
@@ -174,3 +181,4 @@ void UnBlockVectorForMatrixVector(double *outA, const double *inA, const int hA,
     }
   }
 }
+

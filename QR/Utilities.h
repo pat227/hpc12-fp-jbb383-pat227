@@ -11,3 +11,4 @@ void BlockVectorForMatrixVector(const double *inA, double *outA, const int hA,
 				const int b, const int i_bloc);
 void UnBlockVectorForMatrixVector(double *outA, const double *inA, const int hA,
 				  const int b, const int i_bloc);
+

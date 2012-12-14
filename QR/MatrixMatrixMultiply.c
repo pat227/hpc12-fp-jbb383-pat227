@@ -71,7 +71,7 @@ for( int i = 0; i < hn_bloc; i++){
 
 
 /* Uncomment to Test this function */
-testMatrixMultiply(A, B, C, hA, wA, hB, wB);
+//testMatrixMultiply(A, B, C, hA, wA, hB, wB);
 
 
 return 0;
@@ -136,7 +136,6 @@ int n = L1_BLK_SIZE , i, j, k;
 }
 
 /*============================================================================*/
-
 
 
 

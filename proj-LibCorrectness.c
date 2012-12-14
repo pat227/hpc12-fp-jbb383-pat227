@@ -96,23 +96,20 @@ int isUpperTriangular(const double * const M, const uint32_t m){
   return 1;
 }
 
+
+
+
 //Pretty print to user as square array with 5 digits per # with spaces between
 //ensuring columns line up...assumes column major storage of elements; prints 
 //any sized matrix; must supply m x n dimensions of the matrix
 void print_matrix(const double matrix[], const int m, const int n){
-  for(int i = 0; i < m; i++){
+  for(int i = 0; i < m ; i++){
     for(int j = 0; j < n; j++){
-      if((int)(matrix[i+j*m]) >= 100){
-	printf("%-9.5f ", matrix[i+j*m]);
-      } else if((int)(matrix[i+j*m]) >= 10) {
-	printf(" %-9.5f ", matrix[i+j*m]);
-      } else {
-	printf("  %-9.5f ", matrix[i+j*m]);
-      }
+      printf("%5.5f ", A[i+j*m]);
     }
     printf("\n");
   }
-   printf("\n");
+  printf("\n");
 }
 
 int equality(const double * const M, const uint32_t m, const uint32_t n, const double * const B){
