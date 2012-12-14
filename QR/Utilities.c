@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "Utilities.h"
-
+#include <math.h>
 
 void prettyPrint(const double * const A, const int m, const int n){
   for(int i = 0; i < m ; i++){
@@ -181,4 +181,33 @@ void UnBlockVectorForMatrixVector(double *outA, const double *inA, const int hA,
     }
   }
 }
-
+/*
+  fname -> name of the file to which to write (append) the data
+  m -> m size of matrix
+  n -> n size of matrix
+  iterations -> number of iterations for which algo was run (written in log-base-2 form)
+  dependent -> dependent variable, could be time elapsed in seconds or gb/s
+ */
+void writetofile(const char * const fname, int m, int n, int iterations, double dependent){
+  FILE * pf;
+  char buffer[32];
+  pf = fopen (fname,"a");
+  double log = 0.0;
+  if(pf!=NULL){
+    sprintf(buffer, "%d", (m*n));
+    fputs(buffer, pf);
+    fputs(" ", pf);
+    //use the log-base-2 of iterations
+    log = log10(iterations) / log10(2);
+    sprintf(buffer, "%f", log);
+    fputs(buffer, pf);
+    fputs(" ", pf);
+    sprintf(buffer, "%f", dependent);
+    fputs(buffer, pf);
+    fputs("\n", pf);
+    fclose(pf);
+  } else {
+    printf("Error opening file.");
+    abort();
+  }
+}

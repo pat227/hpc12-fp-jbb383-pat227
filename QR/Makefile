@@ -19,7 +19,7 @@ WY.o:	WY.c
 test.o: test.c
 	gcc -c -std=gnu99 -Wall -lm  -g -o$@ $^
 Utilities.o: Utilities.c
-	gcc -c -std=gnu99 -Wall -g -o$@ $^
+	gcc -c -lm -std=gnu99 -Wall -g -o$@ $^
 BlockedQR.o: BlockedQR.c
 	gcc -c -std=gnu99 -Wall -g -o$@ $^
 matrices.o:	matrices.c

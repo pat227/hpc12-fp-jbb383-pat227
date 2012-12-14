@@ -20,7 +20,6 @@ def main(args):
     n = int(args[0])
     r = int(args[1])
     verbose = int(args[2])
-    #example()
     print("Timing QR decompositions...")
     if( n > 7 or n < 0):
         print "N must be a value of 1 through 7 (corresponding to 10^n); exercise caution in selection."
@@ -34,29 +33,11 @@ def main(args):
     print "Starting iterations up to:", iterations[n], " with sizes up to:", sizes[r]
     for xr in range(r):
         rlocal = sizes[xr]
-        sizeargs = str(rlocal) + " " + str(rlocal)
-        print "Using args:" + sizeargs
         for xn in range(n):
-            #starttime = time.time()
-            for x in range(iterations[xn]):
-                subprocess.call(["./wy", str(rlocal), str(rlocal)])
-            #endtime = time.time()
-            #elapsed = (endtime-starttime)
-            #print "Matrix r:", rlocal, "Iters:", iterations[xn], "Time:", elapsed, "s  WY decomps/s:", (iterations[xn] / elapsed), "GB/s:", (rlocal * rlocal * 8 * iterations[xn] / elapsed / 1000000000)
-    #output suitable for input to gnu plot (x,y,z) triples that will need sorting
-    #need multiple files for different series (iterations,time), (size,GB/s)
-            #filename1 = "WY_time.txt"
-            #outfile1 = open(filename1, 'a+')
-    #outfile.write("#Matrix size:" + str(r) + "^2\n")
-    #outfile.write("#Iterations, seconds \n")
-            #outfile1.write(str(rlocal) + " " + str(xn) + " " + str(elapsed) + "\n")
-            #filename2 = "WY_gb.txt"
-            #outfile2 = open(filename2, 'a+')
-    #outfile.write("#Matrix size:" + str(r) + "^2\n")
-    #outfile.write("#GBs, seconds \n")
-            #outfile2.write(str(rlocal) + " " + str(xn) + " " + str(rlocal * rlocal * 8 / elapsed / 1000000000) + " \n")
-    #outfile1.close()
-    #outfile2.close()
+            subprocess.call(["./wy", str(rlocal), str(rlocal), str(iterations[xn]) ] )
+    #output suitable for input to gnu plot (x,y,z) triples that may need sorting
+    #output is done by the routine itself...this is just a shell script
+
 
 if __name__ == "__main__":
     import sys
