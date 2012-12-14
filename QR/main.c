@@ -54,5 +54,8 @@ int main(int argc, char** argv)
   get_timestamp(&time2);
   double elapsed = timestamp_diff_in_seconds(time1,time2);
   printf("Time elasped = %f s\n", elapsed);
+  free(A);
+  free(Atest);
+  free(Q);
 
 }

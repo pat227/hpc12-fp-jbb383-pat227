@@ -39,7 +39,7 @@ def main(args):
         for xn in range(n):
             starttime = time.time()
             for x in range(iterations[xn]):
-                subprocess.check_output(["wy", " 3 3"], shell = True)
+                subprocess.call(["./wy", "3", "3"])
             endtime = time.time()
             elapsed = (endtime-starttime)
             print "Matrix r:", rlocal, "Iters:", iterations[xn], "Time:", elapsed, "s  WY decomps/s:", (iterations[xn] / elapsed), "GB/s:", (rlocal * rlocal * 8 * iterations[xn] / elapsed / 1000000000)
