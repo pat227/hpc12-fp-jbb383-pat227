@@ -1,4 +1,5 @@
-EXECUTABLES = tests matrices_tests householder
+EXECUTABLES = householder #tests matrices_tests
+#tests cannot be compiled right now on bowery node; relied upon c-unit library
 #gcc -std=gnu99 -g -lrt -Wall -Wextra -Werror -o$@ $^
 #gcc -std=gnu99 -O3 -march=native -mtune=native -ftree-vectorize -lrt -Wall -Wextra -Werror -o$@ $^
 all: $(EXECUTABLES)
