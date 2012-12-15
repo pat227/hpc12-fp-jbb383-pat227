@@ -49,12 +49,12 @@ def main(args):
             outfile1 = open(filename1, 'a+')
     #outfile.write("#Matrix size:" + str(r) + "^2\n")
     #outfile.write("#Iterations, seconds \n")
-            outfile1.write(str(rlocal) + " " + str(xn) + " " + str(elapsed) + "\n")
+            outfile1.write(str(rlocal * rlocal) + " " + str(xn) + " " + str(elapsed) + "\n")
             filename2 = "lapack_gb.txt"
             outfile2 = open(filename2, 'a+')
     #outfile.write("#Matrix size:" + str(r) + "^2\n")
     #outfile.write("#GBs, seconds \n")
-            outfile2.write(str(rlocal) + " " + str(xn) + " " + str(rlocal * rlocal * 8 / elapsed / 1000000000) + " \n")
+            outfile2.write(str(rlocal * rlocal) + " " + str(xn) + " " + str(rlocal * rlocal * 8 / elapsed / 1000000000) + " \n")
     outfile1.close()
     outfile2.close()
 

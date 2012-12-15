@@ -1,4 +1,4 @@
-EXECUTABLES = householder wy
+EXECUTABLES = householder wy BlockedQR
 
 all: $(EXECUTABLES)
 
@@ -7,6 +7,9 @@ all: $(EXECUTABLES)
 householder: householder.c  matrices.o qrlib.o
 	gcc -std=gnu99 -lrt -lm -Wall -Wextra -Werror -o$@ $^
 wy:	WYmain.c WY.o Utilities.o test.o MatrixMatrixMultiply.o
+	gcc -std=gnu99 -Wall -Wextra -O3 -lrt -lm  -o$@ $^
+#too many dependencies spread out over too many files needlessly
+BlockedQR:	BlockedQR_main.c BlockedQR.o Utilities.o WY.o 
 	gcc -std=gnu99 -Wall -Wextra -O3 -lrt -lm  -o$@ $^
 MatrixMatrixMultiply.o:	MatrixMatrixMultiply.c
 	gcc -c -std=gnu99 -Wall -Wextra -Werror -g -o$@ $^
@@ -19,7 +22,7 @@ WY.o:	WY.c
 test.o: test.c
 	gcc -c -std=gnu99 -Wall -lm  -g -o$@ $^
 Utilities.o: Utilities.c
-	gcc -c -std=gnu99 -Wall -g -o$@ $^
+	gcc -c -lm -std=gnu99 -Wall -g -o$@ $^
 BlockedQR.o: BlockedQR.c
 	gcc -c -std=gnu99 -Wall -g -o$@ $^
 matrices.o:	matrices.c

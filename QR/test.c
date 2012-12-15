@@ -58,34 +58,6 @@ void testOrthogonal(double *Q, double *Qt, int h){
 
 }	 
   
-/*=================== Code Tests Matrix Matrix Multiply =======================*/
-
-
- /*----------------------------dgemm_simple Code-------------------------------*/
-void dgemm_simple(const double *A, const int hA, const int wA, const double *B, const int hB, const int wB, double *C) {
-/*----------------------------------------------------------------------------- 
-PURPOSE: Computes simple matrix multiplication with A and B in Column-major order. 
-ARGUEMENTS:
-	wA: Width of A, number of columns in A
-	hA: Height of A, number of rows in A
-	wB: Width of B
-	hB: Height of B 
------------------------------------------------------------------------------*/
- 
-int hC = hA;
-int wC = wB;
-
-CleanMatrix(C , hC, wC);
-
-for(int i=0; i<hC; i++){
-	for(int j=0;j<wC; j++){
-		for(int k=0; k<wA;k++){
-			C[i + j*hC] += A[i +k*hA]*B[k +j*hB];
-		}
-	}
-  } 
-}
-
 void testMatrixMultiply( const double *A, const double *B, double *C, int hA, int wA, int hB, int wB ){
 /*----------------------------------------------------------------------------- 
 PURPOSE: Tests Blocked matrix multiplication against the simple variant (which we know works)
@@ -120,26 +92,6 @@ for(int i=0; i<hC; i++){
 	}
   }
 
-}
-
-/*============================================================================*/
-
-
-/*====================== Code to test Matrix Transpose =======================*/
-
-void simple_transpose(const double *A, int h, int w, double *B){
-/*----------------------------------------------------------------------------- 
-PURPOSE: Computes simple matrix transpose with A in Column-major order. 
-ARGUEMENTS:
-	w = width of A
-	h = height of A
------------------------------------------------------------------------------*/
-  
-  for(int j = 0; j < w; j++){
-    for(int i = 0; i < h; i++){
-      B[j + i*w] = A[i + j*h];
-    }
-  }
 }
 
 

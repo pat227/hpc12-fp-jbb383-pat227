@@ -5,6 +5,7 @@
 #include "proj-LibCorrectness.h"
 #include "timing.h"
 #define verbose 0
+#define verbose2 0
 extern void init(struct matrix * m, const int w, const int h);
 int main(int argc, char** argv){
   if(argc != 3){
@@ -55,9 +56,11 @@ int main(int argc, char** argv){
     printf("Couldn't allocate matrices array.");
     abort();
   }
-  printf("\n===============================================================================");
-  printf("\nPerforming QR decomposition upon random matrix of size m x n...");
-  printf("\n===============================================================================");
+  if(verbose){
+    printf("\n===============================================================================");
+    printf("\nPerforming QR decomposition upon random matrix of size m x n...");
+    printf("\n===============================================================================");
+  }
   for(int i = 0; i < (m+1); i++){
     init(&mp[i], m, m);
     setToIdentity(&mp[i]);
@@ -148,7 +151,7 @@ int main(int argc, char** argv){
   init(&h, m, m);
   setToIdentity(&h);
 
-  printf("j bound: %d ", j);
+  //printf("j bound: %d ", j);
   for(int i = 0; i < j; i+=2){
     matrixMultiply(&h, &mp[i], &h2);
     //use swap instead
@@ -170,26 +173,28 @@ int main(int argc, char** argv){
     printf("A again:");
     prettyPrint(&acopy);
   }
-  printf("\nChecking that QR=A, QQtranspose = I, and that R is upper triangular...");
+  if(verbose) printf("\nChecking that QR=A, QQtranspose = I, and that R is upper triangular...");
   //copyMatrix(&q, &h);
-  if(IsQRequalToA(q.elements, a.elements, acopy.elements, m, m, m, n)){
-    printf("\nQR = A checks...");
-  } else {
-    printf("\nQR = A DOES NOT check...");
-  }
-  if(IsQbyQtransposeIdentity(h.elements, m)){
-    printf("\nQQtranspose = I checks...");
-  } else {
-    printf("\nQQtranspose = I DOES NOT check...");
-  }
-  if(isUpperTriangular(a.elements, m)){
-    printf("\nR is upper triangular checks...");
-  } else {
-    printf("\nR is upper triangular DOES NOT  check...");
+  if(verbose2){
+    if(IsQRequalToA(q.elements, a.elements, acopy.elements, m, m, m, n)){
+      printf("\nQR = A checks...");
+    } else {
+      printf("\nQR = A DOES NOT check...");
+    }
+    if(IsQbyQtransposeIdentity(h.elements, m)){
+      printf("\nQQtranspose = I checks...");
+    } else {
+      printf("\nQQtranspose = I DOES NOT check...");
+    }
+    if(isUpperTriangular(a.elements, m)){
+      printf("\nR is upper triangular checks...");
+    } else {
+      printf("\nR is upper triangular DOES NOT  check...");
+    }
   }
   get_timestamp(&time2);
   double elapsed = timestamp_diff_in_seconds(time1,time2);
-  printf("\nTotal Elapsed Time: %f", elapsed);
+  printf("Total Elapsed Time: %f", elapsed);
 
   printf("\n");
 

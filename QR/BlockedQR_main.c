@@ -9,13 +9,13 @@ Generates n by m matrix and performs Blocked QR factorization/
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
-#include "WY.h"
+//#include "WY.h"
 #include "timing.h"
 #include "test.h"
 #include "MatrixMatrixMultiply.h"
 #include "MatrixTranspose.h"
 #include "Utilities.h"
-//#include "BlockedQR.h"
+#include "BlockedQR.h"
 #define verbose 1
 
 int main(int argc, char** argv) 
@@ -36,8 +36,6 @@ int main(int argc, char** argv)
   double * A = malloc(m * n * sizeof(double));
   double * Atest = malloc( m * n * sizeof(double));	
   double * Q = malloc(m * m * sizeof(double));
-  double * Qt = malloc(m * m * sizeof(double));
-  double * R = malloc(m * m * sizeof(double));
 
  /* Fill up matrix A with elements from [0,10)*/
   int i = 0; 
@@ -52,22 +50,20 @@ int main(int argc, char** argv)
       //Atest[i] = A[i];
     }
     /* BlockedQR replaces A with R, which is why we needed to copy A in order to test code */
-    WY(A, m, n, Q, Qt, R);    
+    BlockedQR(A, m, n, Q);
   }
   get_timestamp(&time2);
   double elapsed = timestamp_diff_in_seconds(time1,time2);
   double gbs = m * n * 8 * iterations / elapsed / 1e9;
-
-  writetofile("wy_time.txt", m, n, iterations, elapsed);
-  writetofile("wy_gbs.txt", m, n, iterations, gbs);
+  
+  writetofile("blockedQR_time.txt", m, n, iterations, elapsed);
+  writetofile("blockedQR_gbs.txt", m, n, iterations, gbs);
   
   if(verbose) printf("Time elasped = %f s over %d iterations\n", elapsed, iterations);
 
   free(A);
   free(Atest);
   free(Q);
-  free(Qt);
-  free(R);
 
   return 0;
 }
