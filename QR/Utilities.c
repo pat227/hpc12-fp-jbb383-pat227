@@ -216,6 +216,30 @@ void writetofile(const char * const fname, int m, int n, int iterations, double 
   }
 }
 
+void writetofile2(const char * const fname, int m, int n, double dependent){
+  FILE * pf;
+  char buffer[32];
+  pf = fopen (fname,"a");
+  double log = 0.0;
+  if(pf!=NULL){
+    //need a newline between series or else lines in gnu plot get screwed up
+    fputs("\n", pf);
+    sprintf(buffer, "%d", m);
+    fputs(buffer, pf);
+    fputs(" ", pf);
+    sprintf(buffer, "%d", n);
+    fputs(buffer, pf);
+    fputs(" ", pf);
+    //the dependent variable - along z axis (typically time or gb/s)
+    sprintf(buffer, "%f", dependent);
+    fputs(buffer, pf);
+    fputs("\n", pf);
+    fclose(pf);
+  } else {
+    printf("Error opening file.");
+    abort();
+  }
+}
 
  /*----------------------------dgemm_simple Code-------------------------------*/
 void dgemm_simple(const double *A, const int hA, const int wA, const double *B, const int hB, const int wB, double *C) {

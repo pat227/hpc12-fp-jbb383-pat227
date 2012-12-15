@@ -24,7 +24,7 @@ int main(int argc, char** argv){
   }
 
   struct matrix a,b,c,v,h,h2,e1,temp,acopy,q;
-  struct matrix * mp;
+  struct matrix * mp = NULL;
   int number = 0;
   int j = 0;
   double norm = 0;

@@ -36,27 +36,27 @@ def main(args):
         for xr in range(r):
             rlocal = sizes[xr]
             for xn in range(n):
-                subprocess.call(["./householder", str(rlocal), str(rlocal), str(iterations[xn]) ] )
+                subprocess.call(["./householder", str(rlocal), str(rlocal), str(iterations[xn]), str(0)] )
 
     if(methods.find("b") > -1):
         print "Starting iterations up to:", iterations[n], " with sizes up to:", sizes[r]
         for xr in range(r):
             rlocal = sizes[xr]
             for xn in range(n):
-                subprocess.call(["./wy", str(rlocal), str(rlocal), str(iterations[xn]) ] )
+                subprocess.call(["./wy", str(rlocal), str(rlocal), str(iterations[xn]), str(0)] )
 
     if(methods.find("c") > -1):                
     for xr in range(r):
         rlocal = sizes[xr]
         for xn in range(n):
-            subprocess.call(["./BlockedQR", str(rlocal), str(rlocal), str(iterations[xn]) ] )
+            subprocess.call(["./BlockedQR", str(rlocal), str(rlocal), str(iterations[xn]), str(0)] )
   
     if(methods.find("d") > -1):
         print "Starting iterations up to:", iterations[n], " with sizes up to:", sizes[r]
         for xr in range(r):
             rlocal = sizes[xr]
             for xn in range(n):
-                subprocess.call(["./BlockedQR2", str(rlocal), str(rlocal), str(iterations[xn]) ] )
+                subprocess.call(["./BlockedQR2", str(rlocal), str(rlocal), str(iterations[xn]), str(0)] )
 
 if __name__ == "__main__":
     import sys

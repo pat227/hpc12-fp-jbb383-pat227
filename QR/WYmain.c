@@ -73,7 +73,7 @@ int main(int argc, char** argv)
 
   writetofile("wy_time.txt", m, n, iterations, elapsed);
   writetofile("wy_gbs.txt", m, n, iterations, gbs);
-  
+  writetofile("wy_mbyn.txt", m, n, (elapsed/(double)iterations));
   if(verbose) printf("Time elasped = %f s over %d iterations\n", elapsed, iterations);
 
   free(A);
