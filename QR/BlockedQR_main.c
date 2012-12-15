@@ -47,10 +47,25 @@ int main(int argc, char** argv)
   for(int i2 = 0; i2 < iterations; i2++){
     for(i=0; i< (m*n) ; i++){
       A[i] = (double) (rand() %1000)/100;
-      //Atest[i] = A[i];
+      Atest[i] = A[i];
     }
     /* BlockedQR replaces A with R, which is why we needed to copy A in order to test code */
     BlockedQR(A, m, n, Q);
+
+ /* Test Code */
+ #if 0
+ printf(" Testing Code ..... \n");
+ 
+ double *Qt = malloc( m* m* sizeof(double)); 
+ MatrixTranspose(Q, m, m, Qt);	
+
+ testUpperTriangular(A, m, n);
+ printf(" R is Upper Triangular! \n");
+ testOrthogonal(Q, Qt, m);
+ printf(" Q is Orthogonal! \n");
+ IsQRequalToA(Q, A, Atest, m, m, m, n);  	
+ printf(" A = QR! QR factorization was sucessful!\n");	
+#endif 
   }
   get_timestamp(&time2);
   double elapsed = timestamp_diff_in_seconds(time1,time2);
@@ -60,6 +75,10 @@ int main(int argc, char** argv)
   writetofile("blockedQR_gbs.txt", m, n, iterations, gbs);
   
   if(verbose) printf("Time elasped = %f s over %d iterations\n", elapsed, iterations);
+
+
+
+
 
   free(A);
   free(Atest);
