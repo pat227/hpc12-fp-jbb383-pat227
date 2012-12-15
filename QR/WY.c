@@ -7,7 +7,7 @@ Given a Matrix A this code outputs the transpose of the orthogonal matrix Q.
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "MatrixMatrixMultiply.h"
+//#include "MatrixMatrixMultiply.h"
 //#include "MatrixTranspose.h"
 #include "WY.h"
 #include "test.h"
@@ -182,7 +182,5 @@ void CalculateV( double *A, int h, int coli, double *v){
 /*Update v */
 	for(int i = 0; i< h; i++)
 		v[i] /= normv;
-	//printf("\nv:");
-	//prettyPrint(v, 1, h);
-	//printf("\n");
+	
 }

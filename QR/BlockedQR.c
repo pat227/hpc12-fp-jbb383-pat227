@@ -9,11 +9,9 @@ Performs Blocked QR factorization/
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <time.h>
+#include <omp.h>
 #include "WY.h"
 #include "test.h"
-#include "MatrixMatrixMultiply.h"
-#include "MatrixTranspose.h"
 #include "Utilities.h"
 #include "BlockedQR.h"
 
@@ -40,72 +38,76 @@ void BlockedQR( double *A, int h, int w, double *Q){
 		if(i == j)
 			Q[i +j*h] = 1;
 		}
-	}
-
-/* Initialize Blocks */
-	double *Q_block_1b_by_1b = malloc( b * b * sizeof( double));
-	double *Q1_block_h_by_1b = malloc( h* b* sizeof(double));
-	double *Q2_block_h_by_1b = malloc( h* b* sizeof(double));
-	double *Q_block_2b_by_2b = malloc( 4*b * b * sizeof( double));
-	double *Q1_block_h_by_2b = malloc( 2*h* b* sizeof(double));
-	double *Q2_block_h_by_2b = malloc( 2*h* b* sizeof(double));
-	double *Qt_block_1b_by_1b = malloc( b * b * sizeof( double));
-	double *Qt_block_2b_by_2b = malloc( 2*b * 2 * b * sizeof(double));
-	double *R_block_1b_by_1b = malloc( 2*b* b* sizeof(double));
-	double *R_block_2b_by_1b = malloc(2 * b* b* sizeof(double)); 
-	double *A_block_1b_by_1b = malloc(b * b* sizeof(double));
-	double *A_block_2b_by_1b = malloc(2*b * b* sizeof(double));
+	}	
 
 
 /* Enter Loop */
 for(int k =0; k< n; k++){	
-	/* Update Diagonal Block */	
-	BlockMatrix(A, A_block_1b_by_1b, h, w, b, k, k);
-	WY( A_block_1b_by_1b, b, b, Q_block_1b_by_1b, Qt_block_1b_by_1b, R_block_1b_by_1b); 
-	UnBlockMatrix(A, R_block_1b_by_1b, h, w, b, k,k);
+	/* Update Diagonal Block */
+	double *tempA = malloc( b*b*sizeof(double));
+	double *tempR = malloc( b * b* sizeof(double));	
+	double *tempQ = malloc( b* b*sizeof(double));
+	double *tempQt = malloc( b* b* sizeof(double));
+	BlockMatrix(A, tempA, h, w, b, k, k);
+	WY( tempA, b, b, tempQ, tempQt, tempR); 
+	UnBlockMatrix(A, tempR, h, w, b, k,k);
+	free(tempA); free(tempR); 
 
 	/* Update Corresponding Diagonal Block in in Q */
-	BlockQ1(Q, Q1_block_h_by_1b, h, h, b, k );
-	dgemm_simple(Q1_block_h_by_1b, h, b, Q_block_1b_by_1b, b, b, Q2_block_h_by_1b);
-	//MatrixMatrixMultiply(Q1_block_h_by_1b, h, b, Q_block_1b_by_1b, b, b, Q2_block_h_by_1b);	
-	UnBlockQ1(Q2_block_h_by_1b , Q, h, h, b, k);
+	double *tempQh1 = malloc( b* h* sizeof(double));
+	double *tempQh2 = malloc( b* h* sizeof(double));
+	BlockQ1(Q, tempQh1, h, h, b, k );
+	dgemm_simple(tempQh1, h, b, tempQ, b, b, tempQh2);	
+	UnBlockQ1(tempQh2 , Q, h, h, b, k);
+	free(tempQ); free(tempQh1); free(tempQh2);
 			
-	/* Update Blocks along row with Digonal Block */
-	for( int j=k+1; j<wn_bloc ; j++){
-	BlockMatrix(A, A_block_1b_by_1b, h, w, b, k, j);
-	dgemm_simple(Qt_block_1b_by_1b, b, b, A_block_1b_by_1b, b, b, R_block_1b_by_1b);	
-	//MatrixMatrixMultiply(Qt_block_1b_by_1b, b, b, A_block_1b_by_1b, b, b, R_block_1b_by_1b);
-	UnBlockMatrix(A, R_block_1b_by_1b, h,w,b, k, j);
-	}
+	/* Update Blocks along row with Digonal Block - Do in Parallel */
+		#pragma omp parallel for shared(A, k, h, w, b, tempQt) 	
+		for( int j=k+1; j<wn_bloc ; j++){
+		double *tempA = malloc( b*b*sizeof(double));		
+		double *tempR = malloc( b*b*sizeof(double));
+		BlockMatrix(A, tempA, h, w, b, k, j);
+		dgemm_simple(tempQt, b, b, tempA, b, b, tempR);	
+		UnBlockMatrix(A, tempR, h,w,b, k, j);
+		free(tempA); free(tempR);
+		}
+   		free(tempQt);
 
 	/* Update Blocks below the Diagonal (will also update diagonal) */
 	for( int i=k+1; i<hn_bloc ; i++){
-		Block(A_block_2b_by_1b, A, h , w, b, k, i, k);	
-		WY( A_block_2b_by_1b, 2*b, b, Q_block_2b_by_2b, Qt_block_2b_by_2b, R_block_2b_by_1b);
-		UnBlock(A, R_block_2b_by_1b, h, w, b,k, i, k);
+		double  *tempA = malloc(2*b*b*sizeof(double));
+		double  *tempR = malloc(2*b*b*sizeof(double));
+		double  *tempQ = malloc(2*b*2*b*sizeof(double));
+		double *tempQt = malloc(2*b*2*b*sizeof(double));
+		Block(tempA, A, h , w, b, k, i, k);	
+		WY( tempA, 2*b, b, tempQ, tempQt, tempR);
+		UnBlock(A, tempR, h, w, b,k, i, k);
+		free(tempA); free(tempR); 
 
 		/* Update Q */
-		BlockQ(Q, Q1_block_h_by_2b, h, h, b, k, i );
-		dgemm_simple(Q1_block_h_by_1b, 2*b, h, Q_block_2b_by_2b, 2*b, 2*b, Q2_block_h_by_2b);
-		//MatrixMatrixMultiply(Q1_block_h_by_2b, h, 2*b, Q_block_2b_by_2b, 2*b, 2*b, Q2_block_h_by_2b);		
-		UnBlockQ( Q2_block_h_by_2b, Q, h, h, b, k, i);	
+		double *tempQh1 = malloc( b* 2*h* sizeof(double));
+		double *tempQh2 = malloc( b* 2*h* sizeof(double));
+		BlockQ(Q, tempQh1, h, h, b, k, i );
+		dgemm_simple(tempQh1, h, 2*b, tempQ, 2*b, 2*b, tempQh2);	
+		UnBlockQ( tempQh2, Q, h, h, b, k, i);	
+		free(tempQ); free(tempQh1); free(tempQh2);
  
 		/* Update Blocks along i and k  rows */
+		#pragma omp parallel for shared(A, k, h, w, b, i) 	
 		for( int j=k+1; j<wn_bloc ; j++){
-			Block(A_block_2b_by_1b, A , h, w, b, k, i, j);
-			dgemm_simple(Qt_block_2b_by_2b, 2*b, 2*b, A_block_2b_by_1b, 2*b, b, R_block_2b_by_1b);
-			//MatrixMatrixMultiply(Qt_block_2b_by_2b, 2*b, 2*b, A_block_2b_by_1b, 2*b, b, R_block_2b_by_1b);
-			UnBlock(A, R_block_2b_by_1b, h, w, b,k, i, j);	
+			double *tempA = malloc(2*b*b*sizeof(double));
+			double *tempR = malloc(2*b*b*sizeof(double));
+			Block(tempA, A , h, w, b, k, i, j);
+			dgemm_simple(tempQt, 2*b, 2*b, tempA, 2*b, b, tempR);
+			UnBlock(A, tempR, h, w, b,k, i, j);
+			free(tempA); free(tempR);	
 		}
+		free(tempQt);
 
 	}
 
 	
 }
-
-
-
-
 
 }
 

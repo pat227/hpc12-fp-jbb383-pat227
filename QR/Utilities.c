@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "Utilities.h"
-
+#include <math.h>
 
 void prettyPrint(const double * const A, const int m, const int n){
   for(int i = 0; i < m ; i++){
@@ -181,4 +181,102 @@ void UnBlockVectorForMatrixVector(double *outA, const double *inA, const int hA,
     }
   }
 }
+/*
+  fname -> name of the file to which to write (append) the data
+  m -> m size of matrix
+  n -> n size of matrix
+  iterations -> number of iterations for which algo was run (written in log-base-2 form)
+  dependent -> dependent variable, could be time elapsed in seconds or gb/s
+ */
+void writetofile(const char * const fname, int m, int n, int iterations, double dependent){
+  FILE * pf;
+  char buffer[32];
+  pf = fopen (fname,"a");
+  double log = 0.0;
+  if(pf!=NULL){
+    //need a newline between series or else lines in gnu plot get screwed up
+    fputs("\n", pf);
+    //number of elements as log-base-2
+    sprintf(buffer, "%f", (log10(m*n) / log10(2)) );
+    fputs(buffer, pf);
+    fputs(" ", pf);
+    //use the log-base-10 of iterations
+    log = log10(iterations);
+    sprintf(buffer, "%f", log);
+    fputs(buffer, pf);
+    fputs(" ", pf);
+    //the dependent variable - along z axis (typically time or gb/s)
+    sprintf(buffer, "%f", dependent);
+    fputs(buffer, pf);
+    fputs("\n", pf);
+    fclose(pf);
+  } else {
+    printf("Error opening file.");
+    abort();
+  }
+}
 
+void writetofile2(const char * const fname, int m, int n, double dependent){
+  FILE * pf;
+  char buffer[32];
+  pf = fopen (fname,"a");
+  double log = 0.0;
+  if(pf!=NULL){
+    //need a newline between series or else lines in gnu plot get screwed up
+    fputs("\n", pf);
+    sprintf(buffer, "%d", m);
+    fputs(buffer, pf);
+    fputs(" ", pf);
+    sprintf(buffer, "%d", n);
+    fputs(buffer, pf);
+    fputs(" ", pf);
+    //the dependent variable - along z axis (typically time or gb/s)
+    sprintf(buffer, "%f", dependent);
+    fputs(buffer, pf);
+    fputs("\n", pf);
+    fclose(pf);
+  } else {
+    printf("Error opening file.");
+    abort();
+  }
+}
+
+ /*----------------------------dgemm_simple Code-------------------------------*/
+void dgemm_simple(const double *A, const int hA, const int wA, const double *B, const int hB, const int wB, double *C) {
+/*----------------------------------------------------------------------------- 
+PURPOSE: Computes simple matrix multiplication with A and B in Column-major order. 
+ARGUEMENTS:
+	wA: Width of A, number of columns in A
+	hA: Height of A, number of rows in A
+	wB: Width of B
+	hB: Height of B 
+-----------------------------------------------------------------------------*/
+ 
+int hC = hA;
+int wC = wB;
+
+CleanMatrix(C , hC, wC);
+
+for(int i=0; i<hC; i++){
+	for(int j=0;j<wC; j++){
+		for(int k=0; k<wA;k++){
+			C[i + j*hC] += A[i +k*hA]*B[k +j*hB];
+		}
+	}
+  } 
+}
+
+void simple_transpose(const double *A, int h, int w, double *B){
+/*----------------------------------------------------------------------------- 
+PURPOSE: Computes simple matrix transpose with A in Column-major order. 
+ARGUEMENTS:
+	w = width of A
+	h = height of A
+-----------------------------------------------------------------------------*/
+  
+  for(int j = 0; j < w; j++){
+    for(int i = 0; i < h; i++){
+      B[j + i*w] = A[i + j*h];
+    }
+  }
+}

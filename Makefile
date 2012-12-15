@@ -1,5 +1,7 @@
-EXECUTABLES = householder #tests matrices_tests
-#tests cannot be compiled right now on bowery node; relied upon c-unit library
+
+EXECUTABLES = householder # tests matrices_tests
+#the latter two executables depend on -lcunit for c-unit lib and I only have that locally (not on Bowery)
+
 #gcc -std=gnu99 -g -lrt -Wall -Wextra -Werror -o$@ $^
 #gcc -std=gnu99 -O3 -march=native -mtune=native -ftree-vectorize -lrt -Wall -Wextra -Werror -o$@ $^
 all: $(EXECUTABLES)
@@ -19,7 +21,7 @@ matrixmatrix.o: QR/MatrixMatrixMultiply.c
 matrixvector.o:	QR/MatrixVector.c
 	gcc -c -g -std=gnu99 -Wall -Wextra -o$@ $^
 utilities.o: QR/Utilities.c
-	gcc -c -g -std=gnu99 -Wall -Wextra -Werror -o$@ $^
+	gcc -c -g -std=gnu99 -lm -Wall -Wextra -Werror -o$@ $^
 test.o: 	QR/test.c
 	gcc -c -std=gnu99 -Wall -Wextra -Werror -o$@ $^
 clean:
