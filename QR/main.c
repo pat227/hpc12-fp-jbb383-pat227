@@ -9,7 +9,6 @@ Generates n by m matrix and performs Blocked QR factorization/
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
-#include "WY.h"
 #include "timing.h"
 #include "test.h"
 #include "MatrixMatrixMultiply.h"
@@ -53,9 +52,22 @@ int main(int argc, char** argv)
  /* End Timing */
   get_timestamp(&time2);
   double elapsed = timestamp_diff_in_seconds(time1,time2);
-  printf("Time elasped = %f s\n", elapsed);
-  free(A);
-  free(Atest);
-  free(Q);
+  printf("Blocked QR takes %f s\n", elapsed);
+ 
+ /* Test Code */
+ printf(" Testing Code ..... \n");
+ 
+ double *Qt = malloc( m* m* sizeof(double)); 
+ MatrixTranspose(Q, m, m, Qt);	
+
+ testUpperTriangular(A, m, n);
+ printf(" R is Upper Triangular! \n");
+ testOrthogonal(Q, Qt, m);
+ printf(" Q is Orthogonal! \n");
+ IsQRequalToA(Q, A, Atest, m, m, m, n);  	
+ printf(" A = QR! QR factorization was sucessful!\n");
+
+ /* Clean Up */
+  free(A); free(Atest); free(Q); free(Qt);
 
 }
