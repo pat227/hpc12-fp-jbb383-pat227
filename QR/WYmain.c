@@ -21,9 +21,9 @@ Generates n by m matrix and performs Blocked QR factorization/
 int main(int argc, char** argv) 
 {
 /* Check for two arguemnts, m = height of matrix, n = width of matrix k=iterations  */ 
-  if (argc != 4)
+  if (argc != 5)
   {
-    fprintf(stderr, "Need three arguments, m, n, iterations.\n");
+    fprintf(stderr, "Need three arguments, m, n, iterations, and a (0,1) to indicate if testing is desired.\n");
     abort(); 
   } 
  
@@ -31,6 +31,11 @@ int main(int argc, char** argv)
   int m = atoi(argv[1]);
   int n = atoi(argv[2]);
   int iterations = atoi(argv[3]);
+  int testing = atoi(argv[4]);
+  if(iterations < 1){
+    printf("\nIterations must be non-zero positive #.\n");
+    abort();
+  }
 
  /* Initilize matrices A, Atest, and Q */
   double * A = malloc(m * n * sizeof(double));
@@ -49,10 +54,18 @@ int main(int argc, char** argv)
   for(int i2 = 0; i2 < iterations; i2++){
     for(i=0; i< (m*n) ; i++){
       A[i] = (double) (rand() %1000)/100;
-      //Atest[i] = A[i];
+      Atest[i] = A[i];
     }
     /* BlockedQR replaces A with R, which is why we needed to copy A in order to test code */
-    WY(A, m, n, Q, Qt, R);    
+    WY(A, m, n, Q, Qt, R);
+    if(testing){
+      testUpperTriangular(A, m, n);
+      printf(" R is Upper Triangular! \n");
+      testOrthogonal(Q, Qt, m);
+      printf(" Q is Orthogonal! \n");
+      IsQRequalToA(Q, A, Atest, m, m, m, n);  	
+      printf(" A = QR! QR factorization was sucessful!\n");
+    }
   }
   get_timestamp(&time2);
   double elapsed = timestamp_diff_in_seconds(time1,time2);

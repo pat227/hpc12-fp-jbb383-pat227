@@ -194,6 +194,8 @@ void writetofile(const char * const fname, int m, int n, int iterations, double 
   pf = fopen (fname,"a");
   double log = 0.0;
   if(pf!=NULL){
+    //need a newline between series or else lines in gnu plot get screwed up
+    fputs("\n", pf);
     //number of elements as log-base-2
     sprintf(buffer, "%f", (log10(m*n) / log10(2)) );
     fputs(buffer, pf);

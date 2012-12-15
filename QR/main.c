@@ -59,7 +59,7 @@ int main(int argc, char** argv)
  
  double *Qt = malloc( m* m* sizeof(double)); 
  MatrixTranspose(Q, m, m, Qt);	
-
+ 
  testUpperTriangular(A, m, n);
  printf(" R is Upper Triangular! \n");
  testOrthogonal(Q, Qt, m);
