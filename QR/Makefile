@@ -6,10 +6,10 @@ householder: householder.c  matrices.o qrlib.o
 	gcc -std=gnu99 -O3 -lrt -lm -Wall -Wextra  -o$@ $^
 wy:	WYmain.c WY.o Utilities.o test.o MatrixMatrixMultiply.o MatrixTranspose.o
 	gcc -std=gnu99 -Wall -Wextra -O3 -lrt -lm  -o$@ $^
-BlockedQR:	BlockedQR_main.c BlockedQR.o Utilities.o WY.o MatrixTranspose.o
+BlockedQR:	BlockedQR_main.c BlockedQR.o Utilities.o WY.o MatrixTranspose.o MatrixMatrixMultiply.o test.o
 	gcc -fopenmp -std=gnu99 -Wall -Wextra -O3 -lrt -lm  -o$@ $^
 
-BlockedQR2: BlockedQR_main2.c BlockedQR2.o Utilities.o WY.o MatrixTranspose.o BlockedQR.o
+BlockedQR2: BlockedQR_main2.c BlockedQR2.o Utilities.o WY.o MatrixTranspose.o BlockedQR.o MatrixMatrixMultiply.o test.o
 	gcc -fopenmp -std=gnu99 -Wall -Wextra -O3 -lrt -lm -o$@ $^
 
 MatrixMatrixMultiply.o:	MatrixMatrixMultiply.c
