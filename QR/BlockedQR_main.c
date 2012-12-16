@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 
  /* Fill up matrix A with elements from [0,10)*/
   int i = 0; 
-  srand ( 1 );	 
+  srand ( time(NULL) );	 
 
   timestamp_type time1, time2;
   get_timestamp(&time1); 
