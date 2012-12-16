@@ -53,7 +53,6 @@ int WY( double *A, int h, int w, double *Q, double *Qt, double *R){
 		
 /* Calculate Q^T */
 	simple_transpose(Q, h, h, Qt);
-	//MatrixTranspose(Q, h, h, Qt);
 
 /* Set n equal to min(w, h). */
 	int n = w;
@@ -79,15 +78,13 @@ for(int k=1; k<n; k++){
 	}
 
 	/* Update a_k */
-	//MatrixMatrixMultiply(Qt, h, h, a1, h, 1, a2);
 	dgemm_simple(Qt, h, h, a1, h, 1, a2);
 
 	/* Calculate kth v */
 	CalculateV( a2, h, k, v);	
 
 	/* Calculate kth z */
-	MatrixMatrixMultiply(Q,h,h,v, h,1, z);
-	//dgemm_simple(Q, h, h, v, h, 1, z);	
+	dgemm_simple(Q, h, h, v, h, 1, z);	
 
 	/* Fill in the kth row or column */	
 	for(int i = 0; i < h; i++){
@@ -100,26 +97,16 @@ for(int k=1; k<n; k++){
 	
 	/* Calculate Q^T */
 	simple_transpose(Q, h, h, Qt);
-	//MatrixTranspose(Q, h, h, Qt);
+
 
 }	
 
 /*========================= Calculate R ==============================*/
-//MatrixMatrixMultiply(Qt, h,h,A , h ,w , R);
 dgemm_simple(Qt, h, h, A, h, w, R);
 
-/*====================== Test Code =================================*/
-
-/* Uncomment if you want to test this code */
-//testOrthogonal(Q, Qt, h);
-//testUpperTriangular(R, h, w);
-
-
-
 /*======================== Clean Up  ====================================*/
-//double free error if we try next 2 lines - BUG someplace
-//free(v); 
-//free(z); 
+free(v); 
+free(z); 
 free(a1); 
 free(a2); 
 free(W); 
@@ -135,7 +122,7 @@ void CalculateQ( double *W, double *Yt, int h, int w, double *Q){
 /* Calculates temp =  I + W Y^T */
 
 dgemm_simple(W, h, w, Yt, w, h, Q);
-//MatrixMatrixMultiply( W, h, w, Yt, w, h, Q);
+
 
 for(int i=0; i<h; i++){
 	Q[ i + i*h] += 1;

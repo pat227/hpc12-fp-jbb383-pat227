@@ -42,7 +42,7 @@ int main(int argc, char** argv)
   double * Atest = (double*) malloc( m * n * sizeof(double));	
   double * Q = (double*) malloc(m * m * sizeof(double));
   double * Qt = (double*) malloc(m * m * sizeof(double));
-  double * R = (double *)malloc(m * m * sizeof(double));
+  double * R = (double *)malloc(m * n * sizeof(double));
 
  /* Fill up matrix A with elements from [0,10)*/
   int i = 0; 
@@ -59,11 +59,11 @@ int main(int argc, char** argv)
     /* BlockedQR replaces A with R, which is why we needed to copy A in order to test code */
     WY(A, m, n, Q, Qt, R);
     if(testing){
-      testUpperTriangular(A, m, n);
+      testUpperTriangular(R, m, n);
       printf(" R is Upper Triangular! \n");
       testOrthogonal(Q, Qt, m);
       printf(" Q is Orthogonal! \n");
-      IsQRequalToA(Q, A, Atest, m, m, m, n);  	
+      IsQRequalToA(Q, R, Atest, m, m, m, n);  	
       printf(" A = QR! QR factorization was sucessful!\n");
     }
   }
