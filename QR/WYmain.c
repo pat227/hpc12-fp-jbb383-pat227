@@ -38,11 +38,11 @@ int main(int argc, char** argv)
   }
 
  /* Initilize matrices A, Atest, and Q */
-  double * A = malloc(m * n * sizeof(double));
-  double * Atest = malloc( m * n * sizeof(double));	
-  double * Q = malloc(m * m * sizeof(double));
-  double * Qt = malloc(m * m * sizeof(double));
-  double * R = malloc(m * m * sizeof(double));
+  double * A = (double*) malloc(m * n * sizeof(double));
+  double * Atest = (double*) malloc( m * n * sizeof(double));	
+  double * Q = (double*) malloc(m * m * sizeof(double));
+  double * Qt = (double*) malloc(m * m * sizeof(double));
+  double * R = (double *)malloc(m * m * sizeof(double));
 
  /* Fill up matrix A with elements from [0,10)*/
   int i = 0; 
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
   writetofile("wy_gbs.txt", m, n, iterations, gbs);
   writetofile2("wy_mbyn.txt", m, n, (elapsed/(double)iterations));
   if(verbose) printf("Time elasped = %f s over %d iterations\n", elapsed, iterations);
-
+  
   free(A);
   free(Atest);
   free(Q);

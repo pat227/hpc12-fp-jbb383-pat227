@@ -20,8 +20,8 @@ Given a Matrix A this code outputs the transpose of the orthogonal matrix Q.
 int WY( double *A, int h, int w, double *Q, double *Qt, double *R){
 
 /* Initialize Matrices and vectors */
-	double *v = malloc( h * sizeof(double));
-	double *z = malloc( h * sizeof(double));
+  double *v = malloc( h * sizeof(double));
+  double *z = malloc( h * sizeof(double));
 	double *a1 = malloc( h * sizeof(double));
 	double *a2 = malloc( h * sizeof(double)); 
 	double *Yt = malloc( w * h * sizeof(double));
@@ -86,8 +86,8 @@ for(int k=1; k<n; k++){
 	CalculateV( a2, h, k, v);	
 
 	/* Calculate kth z */
-	//MatrixMatrixMultiply(Q,h,h,v, h,1, z);
-	dgemm_simple(Q, h, h, v, h, 1, z);	
+	MatrixMatrixMultiply(Q,h,h,v, h,1, z);
+	//dgemm_simple(Q, h, h, v, h, 1, z);	
 
 	/* Fill in the kth row or column */	
 	for(int i = 0; i < h; i++){
@@ -117,7 +117,13 @@ dgemm_simple(Qt, h, h, A, h, w, R);
 
 
 /*======================== Clean Up  ====================================*/
-free(v); free(z); free(a1); free(a2); free(W); free(Yt);
+//double free error if we try next 2 lines - BUG someplace
+//free(v); 
+//free(z); 
+free(a1); 
+free(a2); 
+free(W); 
+free(Yt);
 
 return 0;
 }
