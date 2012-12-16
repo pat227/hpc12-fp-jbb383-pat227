@@ -220,7 +220,6 @@ void writetofile2(const char * const fname, int m, int n, double dependent){
   FILE * pf;
   char buffer[32];
   pf = fopen (fname,"a");
-  double log = 0.0;
   if(pf!=NULL){
     //need a newline between series or else lines in gnu plot get screwed up
     fputs("\n", pf);
