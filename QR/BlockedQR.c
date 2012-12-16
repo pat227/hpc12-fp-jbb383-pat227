@@ -76,7 +76,7 @@ for(int k =0; k< n; k++){
 		free(tempQt);
 
 	}
-	if( k == hn_bloc - 1){
+	if( (k == hn_bloc - 1) && (n == hn_bloc) ){
 	/* Update Diagonal Block by itself if we are on the last column and there will be no zero rows. */
 	double *tempA = malloc( b*b*sizeof(double));
 	double *tempR = malloc( b * b* sizeof(double));	
