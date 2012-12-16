@@ -56,7 +56,7 @@ int main(int argc, char** argv)
       A[i] = (double) (rand() %1000)/100;
       Atest[i] = A[i];
     }
-    /* BlockedQR replaces A with R, which is why we needed to copy A in order to test code */
+
     WY(A, m, n, Q, Qt, R);
     if(testing){
       testUpperTriangular(R, m, n);
