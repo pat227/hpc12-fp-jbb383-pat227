@@ -2,7 +2,7 @@
 /* HPC 2012 Project  : Jacqueline Bush, Paul Torres */
 
 /* BlockedQR FILE: 
-Performs Blocked QR factorization/
+Performs Blocked QR factorization using static Matrices
 */
 
 /* Headers: */
@@ -16,21 +16,16 @@ Performs Blocked QR factorization/
 #include "BlockedQR.h"
 #include "BlockedQR2.h"
 
+#define L1_BLK_SIZE 16
+#define L2_BLK_SIZE (L1_BLK_SIZE * 32)
+
+static void dgemm_lowest( const double*restrict, const double*restrict, double*restrict);
+static void dgemm_middle( const double*restrict, const double*restrict, double*restrict);
+static void staticWY( const double*restrict A, double*restrict Q, double*restrict Qt, double*restrict R);
+static void BlockedQRMiddle(const double*restrict A, double*restrict Q, double*restrict Qt);
+
 
 void BlockedQR2( double *A, int h, int w, double *Q){
-
-/* Block size */
-	int b= 16 ;
-
-/* Calculate Number of blocks */
-	int wn_bloc = (w+b-1)/b; // Number of Blocks in width (round up)
-	int hn_bloc = (h+b -1)/b; // Number of Blocks in height (round up)
-
-
-/* Determine which num. of blocks is smaller */
-	int n = wn_bloc; 
-	if( wn_bloc > hn_bloc )
-		n = hn_bloc;
 
 /* Set Q = m by m identity matrix */
  	for(int i = 0; i<h; i++){
@@ -42,83 +37,98 @@ void BlockedQR2( double *A, int h, int w, double *Q){
 	}	
 
 
-/* Enter Loop */
-for(int k =0; k< n; k++){	
-	/* Update Diagonal Block */
-	double *tempA = malloc( b*b*sizeof(double));
-	double *tempR = malloc( b * b* sizeof(double));	
-	double *tempQ = malloc( b* b*sizeof(double));
-	double *tempQt = malloc( b* b* sizeof(double));
-	BlockMatrix(A, tempA, h, w, b, k, k);
-	WY( tempA, b, b, tempQ, tempQt, tempR); 
-	UnBlockMatrix(A, tempR, h, w, b, k,k);
-	free(tempA); free(tempR); 
 
-	/* Update Corresponding Diagonal Block in in Q */
-	double *tempQh1 = malloc( b* h* sizeof(double));
-	double *tempQh2 = malloc( b* h* sizeof(double));
-	BlockQ1(Q, tempQh1, h, h, b, k );
-	dgemm_simple(tempQh1, h, b, tempQ, b, b, tempQh2);	
-	UnBlockQ1(tempQh2 , Q, h, h, b, k);
-	free(tempQ); free(tempQh1); free(tempQh2);
-			
-	/* Update Blocks along row with Digonal Block - Do in Parallel */
-		#pragma omp parallel for shared(A, k, h, w, b, tempQt) 	
-		for( int j=k+1; j<wn_bloc ; j++){
-		double *tempA = malloc( b*b*sizeof(double));		
-		double *tempR = malloc( b*b*sizeof(double));
-		BlockMatrix(A, tempA, h, w, b, k, j);
-		dgemm_simple(tempQt, b, b, tempA, b, b, tempR);	
-		UnBlockMatrix(A, tempR, h,w,b, k, j);
-		free(tempA); free(tempR);
+
+
+/* Make static matrices */
+static __attribute__ ((aligned(16))) double a_block[L1_BLK_SIZE*L1_BLK_SIZE];
+static __attribute__ ((aligned(16))) double b_block[L1_BLK_SIZE*L1_BLK_SIZE];
+static __attribute__ ((aligned(16))) double c_block[L1_BLK_SIZE*L1_BLK_SIZE];
+
+
+
+}
+
+static void BlockedQRMiddle(const double*restrict A, double*restrict Q, double*restrict Qt)
+{
+
+
+
+
+
+}
+
+
+
+/*=========================================================================*/
+
+static void staticWY( const double*restrict A, double*restrict Q, double*restrict Qt, double*restrict R){
+
+
+
+
+
+}
+
+
+/*=========================================================================*/
+
+
+/* Matrix Multiplication Code */ 
+/*----------------------------dgemm_middle Code-------------------------------*/
+static void dgemm_middle(const double*restrict A, const double*restrict B, double*restrict C){
+/*----------------------------------------------------------------------------- 
+PURPOSE: Takes fixed sized matrices A and B, size L2_BLK_SIZE, Outputs result matrix C.  
+ARGUEMENTS:
+-----------------------------------------------------------------------------*/
+
+int n = L2_BLK_SIZE; // Size of Matrix 
+int n_bloc = L2_BLK_SIZE/L1_BLK_SIZE; // Number of Blocks
+int b = L1_BLK_SIZE; // Block Size
+
+/* Make static matrices */
+static __attribute__ ((aligned(16))) double a_block[L1_BLK_SIZE*L1_BLK_SIZE];
+static __attribute__ ((aligned(16))) double b_block[L1_BLK_SIZE*L1_BLK_SIZE];
+static __attribute__ ((aligned(16))) double c_block[L1_BLK_SIZE*L1_BLK_SIZE]; 
+
+CleanMatrix(c_block, b, b);
+
+for( int j = 0; j < n_bloc; j++){
+	for( int i=0; i < n_bloc; i++){
+		BlockMatrix(C, c_block, n, n, b, i, j);
+		for( int k = 0; k < n_bloc ; k++){
+		BlockMatrix(A, a_block, n, n, b, i, k);
+		BlockMatrix(B, b_block, n, n, b, k, j);
+		dgemm_lowest( a_block, b_block, c_block);
+		CleanMatrix(a_block, b, b);
+		CleanMatrix(b_block, b, b);	
 		}
-   		free(tempQt);
-
-	/* Update Blocks below the Diagonal (will also update diagonal) */
-	for( int i=k+1; i<hn_bloc ; i++){
-		double  *tempA = malloc(2*b*b*sizeof(double));
-		double  *tempR = malloc(2*b*b*sizeof(double));
-		double  *tempQ = malloc(2*b*2*b*sizeof(double));
-		double *tempQt = malloc(2*b*2*b*sizeof(double));
-		Block(tempA, A, h , w, b, k, i, k);	
-		WY( tempA, 2*b, b, tempQ, tempQt, tempR);
-		UnBlock(A, tempR, h, w, b,k, i, k);
-		free(tempA); free(tempR); 
-
-		/* Update Q */
-		double *tempQh1 = malloc( b* 2*h* sizeof(double));
-		double *tempQh2 = malloc( b* 2*h* sizeof(double));
-		BlockQ(Q, tempQh1, h, h, b, k, i );
-		dgemm_simple(tempQh1, h, 2*b, tempQ, 2*b, 2*b, tempQh2);	
-		UnBlockQ( tempQh2, Q, h, h, b, k, i);	
-		free(tempQ); free(tempQh1); free(tempQh2);
- 
-		/* Update Blocks along i and k  rows */
-		#pragma omp parallel for shared(A, k, h, w, b, i) 	
-		for( int j=k+1; j<wn_bloc ; j++){
-			double *tempA = malloc(2*b*b*sizeof(double));
-			double *tempR = malloc(2*b*b*sizeof(double));
-			Block(tempA, A , h, w, b, k, i, j);
-			dgemm_simple(tempQt, 2*b, 2*b, tempA, 2*b, b, tempR);
-			UnBlock(A, tempR, h, w, b,k, i, j);
-			free(tempA); free(tempR);	
-		}
-		free(tempQt);
-
+		UnBlockMatrix(C, c_block, n, n, b, i,j);		
 	}
-
-	
-}
+}	
 
 }
 
+/*----------------------------dgemm_lowest Code-------------------------------*/
+static void dgemm_lowest(const double*restrict A, const double*restrict B, double*restrict C){
+/*----------------------------------------------------------------------------- 
+PURPOSE: Takes fixed sized matrices A and B, size L1_BLK_SIZE, Outputs result matrix C.  
+ARGUEMENTS:
+-----------------------------------------------------------------------------*/
 
-
-
-
-
+int n = L1_BLK_SIZE , i, j, k;
  
+  for(j=0; j<n; j++){
+	for(k=0;k<n; k++){
+		for(i=0; i<n;i++){
+		C[i + j*n] += A[i + k*n]*B[k + j*n];
+		}
+	}
+  }
 
+}
+
+/*============================================================================*/
 
 
 

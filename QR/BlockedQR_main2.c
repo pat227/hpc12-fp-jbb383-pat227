@@ -21,7 +21,6 @@ Generates n by m matrix and performs Blocked QR factorization/
 
 int main(int argc, char** argv) 
 {
-/* Check for two arguemnts, m = height of matrix, n = width of matrix k=iterations  */ 
   if (argc != 5)
   {
     fprintf(stderr, "Need four arguments, m, n, iterations, and a (0,1) to indicate if testing is desired.\n");
@@ -43,6 +42,7 @@ int main(int argc, char** argv)
   double * A = malloc(m * n * sizeof(double));
   double * Atest = malloc( m * n * sizeof(double));	
   double * Q = malloc(m * m * sizeof(double));
+  double * Qt = malloc( m* m* sizeof(double));
 
  /* Fill up matrix A with elements from [0,10)*/
   int i = 0; 
@@ -88,6 +88,7 @@ int main(int argc, char** argv)
   free(A);
   free(Atest);
   free(Q);
+  free(Qt);
 
   return 0;
 }

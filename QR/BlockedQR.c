@@ -43,36 +43,7 @@ void BlockedQR( double *A, int h, int w, double *Q){
 
 /* Enter Loop */
 for(int k =0; k< n; k++){	
-	/* Update Diagonal Block */
-	double *tempA = malloc( b*b*sizeof(double));
-	double *tempR = malloc( b * b* sizeof(double));	
-	double *tempQ = malloc( b* b*sizeof(double));
-	double *tempQt = malloc( b* b* sizeof(double));
-	BlockMatrix(A, tempA, h, w, b, k, k);
-	WY( tempA, b, b, tempQ, tempQt, tempR); 
-	UnBlockMatrix(A, tempR, h, w, b, k,k);
-	free(tempA); free(tempR); 
-
-	/* Update Corresponding Diagonal Block in in Q */
-	double *tempQh1 = malloc( b* h* sizeof(double));
-	double *tempQh2 = malloc( b* h* sizeof(double));
-	BlockQ1(Q, tempQh1, h, h, b, k );
-	dgemm_simple(tempQh1, h, b, tempQ, b, b, tempQh2);	
-	UnBlockQ1(tempQh2 , Q, h, h, b, k);
-	free(tempQ); free(tempQh1); free(tempQh2);
-			
-	/* Update Blocks along row with Digonal Block - Do in Parallel */
-		#pragma omp parallel for shared(A, k, h, w, b, tempQt) 	
-		for( int j=k+1; j<wn_bloc ; j++){
-		double *tempA = malloc( b*b*sizeof(double));		
-		double *tempR = malloc( b*b*sizeof(double));
-		BlockMatrix(A, tempA, h, w, b, k, j);
-		dgemm_simple(tempQt, b, b, tempA, b, b, tempR);	
-		UnBlockMatrix(A, tempR, h,w,b, k, j);
-		free(tempA); free(tempR);
-		}
-   		free(tempQt);
-
+		
 	/* Update Blocks below the Diagonal (will also update diagonal) */
 	for( int i=k+1; i<hn_bloc ; i++){
 		double  *tempA = malloc(2*b*b*sizeof(double));
@@ -105,8 +76,37 @@ for(int k =0; k< n; k++){
 		free(tempQt);
 
 	}
+	if( k == hn_bloc - 1){
+	/* Update Diagonal Block by itself if we are on the last column and there will be no zero rows. */
+	double *tempA = malloc( b*b*sizeof(double));
+	double *tempR = malloc( b * b* sizeof(double));	
+	double *tempQ = malloc( b* b*sizeof(double));
+	double *tempQt = malloc( b* b* sizeof(double));
+	BlockMatrix(A, tempA, h, w, b, k, k);
+	WY( tempA, b, b, tempQ, tempQt, tempR); 
+	UnBlockMatrix(A, tempR, h, w, b, k,k);
+	free(tempA); free(tempR); 
 
+	/* Update Corresponding Diagonal Block in in Q */
+	double *tempQh1 = malloc( b* h* sizeof(double));
+	double *tempQh2 = malloc( b* h* sizeof(double));
+	BlockQ1(Q, tempQh1, h, h, b, k );
+	dgemm_simple(tempQh1, h, b, tempQ, b, b, tempQh2);	
+	UnBlockQ1(tempQh2 , Q, h, h, b, k);
+	free(tempQ); free(tempQh1); free(tempQh2);
 	
+	/* Update Blocks along row with Digonal Block - Do in Parallel */
+		#pragma omp parallel for shared(A, k, h, w, b, tempQt) 	
+		for( int j=k+1; j<wn_bloc ; j++){
+		double *tempA = malloc( b*b*sizeof(double));		
+		double *tempR = malloc( b*b*sizeof(double));
+		BlockMatrix(A, tempA, h, w, b, k, j);
+		dgemm_simple(tempQt, b, b, tempA, b, b, tempR);	
+		UnBlockMatrix(A, tempR, h,w,b, k, j);
+		free(tempA); free(tempR);
+		}
+   		free(tempQt);	
+	}
 }
 
 }
