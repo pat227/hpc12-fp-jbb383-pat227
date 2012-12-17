@@ -181,7 +181,7 @@ double normOfVector(const struct matrix * const m, const int start){
   return sqrt(norm);  
 }
 //print any sized matrix
-void prettyPrint(const struct matrix * const m){
+void prettyPrintStruct(const struct matrix * const m){
   printf("\n");
   for(int i = 0; i < m->height ; i++){
     for(int j = 0; j < m->width ; j++){

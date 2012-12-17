@@ -2,7 +2,7 @@ EXECUTABLES = householder wy BlockedQR BlockedQR2
 
 all: $(EXECUTABLES)
 
-householder: householder.c  matrices.o qrlib.o
+householder: householder.c matrices.o qrlib.o Utilities.o
 	gcc -std=gnu99 -O3 -lrt -lm -Wall -Wextra  -o$@ $^
 wy:	WYmain.c WY.o Utilities.o test.o MatrixMatrixMultiply.o MatrixTranspose.o
 	gcc -std=gnu99 -Wall -Wextra -O3 -lrt -lm  -o$@ $^

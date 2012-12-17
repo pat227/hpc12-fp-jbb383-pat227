@@ -31,11 +31,11 @@ def main(args):
         return
     sizes = [2,4,8,16,32,64,128,256,512,1024]
     iterations = [1, 10, 100, 1000, 10000, 100000, 1000000, 10000000]
-#    if(methods.find("a") > -1):
-#        print "Starting iterations up to:", iterations[n], " with sizes up to:", sizes[r]
-#        for xr in range(r):
-#            rlocal = sizes[xr]
-#                subprocess.call(["./householder", str(rlocal), str(rlocal), str(iterations[n-1]), str(0)] )
+    if(methods.find("a") > -1):
+        print "Starting iterations up to:", iterations[n], " with sizes up to:", sizes[r]
+        for xr in range(r):
+            rlocal = sizes[xr]
+            subprocess.call(["./householder", str(rlocal), str(rlocal), str(iterations[n-1]), str(0)] )
 
     if(methods.find("b") > -1):
         print "Starting iterations up to:", iterations[n-1], " with sizes up to:", sizes[r-1]
@@ -57,7 +57,7 @@ def main(args):
 #        print "Starting iterations up to:", iterations[n], " with sizes up to:", sizes[r]
 #        for xr in range(r):
 #            rlocal = sizes[xr]
-#                subprocess.call(["./BlockedQR2", str(rlocal), str(rlocal), str(iterations[n-1]), str(0)] )
+#            subprocess.call(["./BlockedQR2", str(rlocal), str(rlocal), str(iterations[n-1]), str(0)] )
 
 if __name__ == "__main__":
     import sys
