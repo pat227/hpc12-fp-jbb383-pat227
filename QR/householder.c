@@ -4,6 +4,7 @@
 #include "matrices.h"
 #include "proj-LibCorrectness.h"
 #include "timing.h"
+#include "Utilities.h"
 #define verbose 0
 
 extern void init(struct matrix * m, const int w, const int h);
@@ -84,17 +85,17 @@ int main(int argc, char** argv){
     fillWithRandomElements(&a, 10, 0);
     if(verbose){
       printf("A:");
-      prettyPrint(&a);
+      prettyPrintStruct(&a);
     }
     copyMatrix(&acopy, &a);
     
-    //the loop --AGAIN -- that computes all the reflectors and QR
+    //the loop that computes all the reflectors and QR
     while(j+1 <= a.width && j+1 <= a.height){
       extractVector(&a,j,j,&v);
       
       if(verbose){
 	printf("\nV (col vector of A from j,j):");
-	prettyPrint(&v);
+	prettyPrintStruct(&v);
       }
       
       norm = normOfVector(&v,0);
@@ -116,42 +117,42 @@ int main(int argc, char** argv){
       
       if(verbose) {
 	printf("\nV of Householder:");
-	prettyPrint(&v);
+	prettyPrintStruct(&v);
       }
 
       transpose(&v,&b);
       if(verbose){
 	printf("\nVtranopose:");
-	prettyPrint(&b);
+	prettyPrintStruct(&b);
 	printf("\nV x Vtranopose:");
       }
       matrixMultiply(&v,&b,&c);
       
       if(verbose){
-	prettyPrint(&c);
+	prettyPrintStruct(&c);
 	printf("\nVtranopose x V:");
       }
       matrixMultiply(&b, &v, &temp);
-      if(verbose) prettyPrint(&temp);
+      if(verbose) prettyPrintStruct(&temp);
       
       scalarMultiply(&c, 2.0);
       scalarMultiply(&c, (1 / getElement(&temp, 0, 0)));
       if(verbose){
 	printf("\n 2(v vT / vT v) ");
-	prettyPrint(&c);
+	prettyPrintStruct(&c);
       }
       //setToIdentity(&(mp[j]));
       subtractFromRightBottomMost(&mp[j], &c);
       if(verbose){
 	printf("\n%d Householder matrix H(%d):",j+1, j+1);
-	prettyPrint(&mp[j]);
+	prettyPrintStruct(&mp[j]);
       }
       
       if(verbose) printf("\nA(%d) = H(%d) A(%d):",j+1,j+1,j);
       matrixMultiply(&mp[j], &a, &temp);
       if(verbose){
 	printf("\nA(%d):",j+1);
-	prettyPrint(&temp);
+	prettyPrintStruct(&temp);
       }
       //use swap instead
       //copyMatrix(&a, &temp);    
@@ -176,12 +177,12 @@ int main(int argc, char** argv){
     //confirm -- use functions not on screen output
     if(verbose){
       printf("\nQ:");
-      prettyPrint(&q);
+      prettyPrintStruct(&q);
       matrixMultiply(&q, &a, &temp);
       printf("Should equal A:");
-      prettyPrint(&temp);
+      prettyPrintStruct(&temp);
       printf("A again:");
-      prettyPrint(&acopy);
+      prettyPrintStruct(&acopy);
     }
     if(verbose) printf("\nChecking that QR=A, QQtranspose = I, and that R is upper triangular...");
     //copyMatrix(&q, &h);
@@ -207,8 +208,12 @@ int main(int argc, char** argv){
 
   get_timestamp(&time2);
   double elapsed = timestamp_diff_in_seconds(time1,time2);
+  double gbs = iterations * 8 * m * n / elapsed / 1000000000;
+  writetofile("householder_gbs.txt", m, n, iterations, gbs);
+  writetofile("householder_time.txt", m, n, iterations, elapsed);
+
   printf("Total Elapsed Time: %f", elapsed);
-  
+ 
   printf("\n");
 
   //============cleanup=============
