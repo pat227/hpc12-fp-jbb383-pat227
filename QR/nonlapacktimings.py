@@ -35,29 +35,29 @@ def main(args):
 #        print "Starting iterations up to:", iterations[n], " with sizes up to:", sizes[r]
 #        for xr in range(r):
 #            rlocal = sizes[xr]
-#            for xn in range(n):
-#                subprocess.call(["./householder", str(rlocal), str(rlocal), str(iterations[xn]), str(0)] )
+#                subprocess.call(["./householder", str(rlocal), str(rlocal), str(iterations[n-1]), str(0)] )
 
     if(methods.find("b") > -1):
         print "Starting iterations up to:", iterations[n-1], " with sizes up to:", sizes[r-1]
         for xr in range(r):
             rlocal = sizes[xr]
-            for xn in range(n):
-#                print "xn:"; print xn; print "xr:"; print xr; print "rlocal"; print rlocal; print "iters:"; print iterations[xn];
-                subprocess.call(["./wy", str(rlocal), str(rlocal), str(iterations[xn]), str(0)] )
+            for xr2 in range(8):
+                rlocal2 = sizes[xr2]
+                if(rlocal < 256):
+                    subprocess.call(["./wy", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)] )
+                else:
+                    pass
 
     if(methods.find("c") > -1):                
         for xr in range(r):
             rlocal = sizes[xr]
-            for xn in range(n):
-                subprocess.call(["./BlockedQR", str(rlocal), str(rlocal), str(iterations[xn]), str(0)] )
+            subprocess.call(["./BlockedQR", str(rlocal), str(rlocal), str(iterations[n-1]), str(0)] )
   
 #    if(methods.find("d") > -1):
 #        print "Starting iterations up to:", iterations[n], " with sizes up to:", sizes[r]
 #        for xr in range(r):
 #            rlocal = sizes[xr]
-#            for xn in range(n):
-#                subprocess.call(["./BlockedQR2", str(rlocal), str(rlocal), str(iterations[xn]), str(0)] )
+#                subprocess.call(["./BlockedQR2", str(rlocal), str(rlocal), str(iterations[n-1]), str(0)] )
 
 if __name__ == "__main__":
     import sys
