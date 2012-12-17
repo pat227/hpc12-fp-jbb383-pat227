@@ -42,7 +42,7 @@ void BlockedQR2( double *A, int h, int w, double *Q){
 	}	
 
 /* Enter Loop */
-for( int k =0 ; k< n; k++){
+for( int k =0 ; k< 1; k++){
 
 	/* Calculate number of blocks below diagonal */
 	int nbloc = hn_bloc - k ; 
@@ -61,18 +61,7 @@ for( int k =0 ; k< n; k++){
 
 		for(int i=k; i< hn_bloc-c1; i += c2){
 		printf("k = %d, nbloc = %d, iteration = %d, Blocks called : %d, %d \n", k, nbloc, iteration, i, i+c1); 	
-		if ( leftover == i + c1)
-			leftover = 0; 
 		}
-
-		mod = (nbloc + mod) % c2 ;	
-		
-		if ( mod != 0 && leftover == 0){
-			printf("k = %d, leftover= %d  \n", k, hn_bloc-c1);
-			leftover = hn_bloc -c1;
-			}
-
-		
 
 		/* Update constants c1 and c2 */
 		c1 *= 2; 
@@ -81,10 +70,10 @@ for( int k =0 ; k< n; k++){
 
 	}
 
-	if (leftover != 0){
-	printf("k = %d, nbloc = %d, Blocks called : %d, %d \n", k, nbloc, k, leftover); 
-	leftover =0;
-	}
+	//if (leftover != 0){
+	//printf("k = %d, nbloc = %d, Blocks called : %d, %d \n", k, nbloc, k, leftover); 
+	//leftover =0;
+	//}
 
 	if( k == hn_bloc -1){
 	printf(" k = %d, nbloc = %d, Blocks called : %d \n", k, nbloc, k);
