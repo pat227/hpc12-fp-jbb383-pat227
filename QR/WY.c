@@ -86,8 +86,8 @@ for(int k=1; k<n; k++){
 	CalculateV( a2, h, k, v);	
 
 	/* Calculate kth z */
-	MatrixMatrixMultiply(Q,h,h,v, h,1, z);
-	//dgemm_simple(Q, h, h, v, h, 1, z);	
+	//MatrixMatrixMultiply(Q,h,h,v, h,1, z);
+	dgemm_simple(Q, h, h, v, h, 1, z);	
 
 	/* Fill in the kth row or column */	
 	for(int i = 0; i < h; i++){

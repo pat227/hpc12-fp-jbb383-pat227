@@ -42,7 +42,7 @@ int main(int argc, char** argv)
   double * Atest = (double*) malloc( m * n * sizeof(double));	
   double * Q = (double*) malloc(m * m * sizeof(double));
   double * Qt = (double*) malloc(m * m * sizeof(double));
-  double * R = (double *)malloc(m * m * sizeof(double));
+  double * R = (double *)malloc(m * n * sizeof(double));
 
  /* Fill up matrix A with elements from [0,10)*/
   int i = 0; 
