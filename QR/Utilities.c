@@ -256,9 +256,9 @@ int wC = wB;
 
 CleanMatrix(C , hC, wC);
 
-for(int i=0; i<hC; i++){
-	for(int j=0;j<wC; j++){
-		for(int k=0; k<wA;k++){
+for(int j=0; j<wC; j++){
+	for(int k=0;k<wA; k++){
+		for(int i=0; i<hC;i++){
 			C[i + j*hC] += A[i +k*hA]*B[k +j*hB];
 		}
 	}

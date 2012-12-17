@@ -56,14 +56,14 @@ int main(int argc, char** argv)
       A[i] = (double) (rand() %1000)/100;
       Atest[i] = A[i];
     }
-    /* BlockedQR replaces A with R, which is why we needed to copy A in order to test code */
+
     WY(A, m, n, Q, Qt, R);
     if(testing){
-      testUpperTriangular(A, m, n);
+      testUpperTriangular(R, m, n);
       printf(" R is Upper Triangular! \n");
       testOrthogonal(Q, Qt, m);
       printf(" Q is Orthogonal! \n");
-      IsQRequalToA(Q, A, Atest, m, m, m, n);  	
+      IsQRequalToA(Q, R, Atest, m, m, m, n);  	
       printf(" A = QR! QR factorization was sucessful!\n");
     }
   }
