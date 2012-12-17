@@ -25,8 +25,9 @@ void BlockedQR2( double *A, int h, int w, double *Q){
 /* Calculate Number of blocks */
 	int wn_bloc = (w+b-1)/b; // Number of Blocks in width (round up)
 	int hn_bloc = (h+b -1)/b; // Number of Blocks in height (round up)
-
-
+	int * listofroots = malloc(sizeof(int)*20);
+	//	for(int i = 0; i < 20; i++) 
+	//listofroots[i] = 0;
 /* Determine which num. of blocks is smaller */
 	int n = wn_bloc; 
 	if( wn_bloc > hn_bloc )
@@ -42,52 +43,100 @@ void BlockedQR2( double *A, int h, int w, double *Q){
 	}	
 
 /* Enter Loop */
-for( int k =0 ; k< 1; k++){
-
-	/* Calculate number of blocks below diagonal */
-	int nbloc = hn_bloc - k ; 
-	
-
-	/* Set initial c1 and c2, leftover constants */
-	int c1 = 1; int c2 = 2; int leftover =0; int mod =0;
-
-	int iteration = 1;
-
-	printf(" k = %d, nbloc = %d \n", k, nbloc);		
-	
-	while( c2 <= nbloc ){
-		
-		printf("c2 = %d \n", c2);
-
-		for(int i=k; i< hn_bloc-c1; i += c2){
-		printf("k = %d, nbloc = %d, iteration = %d, Blocks called : %d, %d \n", k, nbloc, iteration, i, i+c1); 	
-		}
-
-		/* Update constants c1 and c2 */
-		c1 *= 2; 
-		c2 *= 2;
-		iteration += 1;
-
+for( int k =0 ; k < 1; k++){
+  /* Calculate number of blocks below diagonal */
+  int nbloc = hn_bloc - k ; 
+  /* Set initial c1 and c2 */
+  int c = 2;
+  int c1 = 1; 
+  int c2 = 2; 
+  int power = 0;
+  int boundary = 0;
+  int iteration = 0;
+  int bigiter = 0;
+  int localn = n - boundary - 1;
+  int oldboundary = boundary;
+  //handle special case of only 1 remaining block
+  while(boundary <= n){
+    if(localn == 1){
+      printf("STOP HERE: k = %d, nbloc = %d, iteration = %d, Blocks called : %d, %d \n", k, nbloc, iteration, 0, oldboundary+1);
+      break;
+    }
+    //compute how many we can evenly fit into binary tree and just do those
+    while(c <= localn){
+      c*=2;
+      power++;
+    }
+    oldboundary = boundary;
+    boundary += c;
+    c1 = 1;
+    c2 = 2;
+    printf(" %d (rd/st/th) boundary at %d \n", bigiter, boundary);
+    printf(" k = %d, nbloc = %d \n", k, nbloc);		
+    
+    while( c2 <= c ){
+      printf("c2 = %d \n", c2);
+      //only on first iteration do we start at zero, for rest it's prior boundary + 1
+      if(bigiter > 0){
+	for(int i=oldboundary+1; i < boundary; i += c2){
+	  printf("k = %d, nbloc = %d, iteration = %d, Blocks called : %d, %d \n", k, nbloc, iteration, i, i+c1); 	
 	}
-
-	//if (leftover != 0){
-	//printf("k = %d, nbloc = %d, Blocks called : %d, %d \n", k, nbloc, k, leftover); 
-	//leftover =0;
-	//}
-
-	if( k == hn_bloc -1){
-	printf(" k = %d, nbloc = %d, Blocks called : %d \n", k, nbloc, k);
+      } else {
+	for(int i=k; i < boundary; i += c2){
+	  printf("k = %d, nbloc = %d, iteration = %d, Blocks called : %d, %d \n", k, nbloc, iteration, i, i+c1); 	
+	}
+      }
+      
+      /* Update constants c1 and c2 */
+      c1 *= 2; 
+      c2 *= 2;
+      iteration += 1;
+    }
+    bigiter++;
+    //now repeat for rest of "tree"
+    iteration = 0;
+    c = 2;
+    localn = n - boundary;
+    power = 0;
+  }
+ }
+}
+  /*
+  while(c < localn){
+    c*=2;
+    power++;
+  }
+  int oldboundary = boundary;
+  boundary += c;
+  c2 = 2;
+  c1 = 1;
+  printf(" second boundary at %d \n", boundary);		
+  printf(" k = %d, nbloc = %d \n", k, nbloc);		
 	
-	}	
+  while( c2 <= c){
+    printf("c2 = %d \n", c2);
+    for(int i=oldboundary+1; i < boundary; i += c2){
+      printf("k = %d, nbloc = %d, iteration = %d, Blocks called : %d, %d \n", k, nbloc, iteration, i, i+c1); 	
+    }
+    
+    // Update constants c1 and c2
+    c1 *= 2; 
+    c2 *= 2;
+    iteration += 1;
+    
+	}
+  if(bigiter > 0){
+    printf("k = %d, nbloc = %d, iteration = %d, Blocks called : %d, %d \n", k, nbloc, iteration, 0, oldboundary+1); 	
+  }
+  
+ }
 
-		
+
+
+
+
+
+
+
 }
-
-
-
-
-
-
-
-
-}
+  */
