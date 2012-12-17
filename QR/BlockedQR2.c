@@ -46,32 +46,33 @@ for( int k =0 ; k< n; k++){
 
 	/* Calculate number of blocks below diagonal */
 	int nbloc = hn_bloc - k ; 
-	int nbloc_copy = nbloc;
+	
 
 	/* Set initial c1 and c2, leftover constants */
-	int c1 = 1; int c2 = 2; int leftover =0; 
+	int c1 = 1; int c2 = 2; int leftover =0; int mod =0;
 
 	int iteration = 1;
 
-	printf(" k = %d \n", k);		
+	printf(" k = %d, nbloc = %d \n", k, nbloc);		
 	
 	while( c2 <= nbloc ){
 		
-		for(int i=k; i< nbloc+k-1; i += c2){
+		printf("c2 = %d \n", c2);
+
+		for(int i=k; i< hn_bloc-c1; i += c2){
 		printf("k = %d, nbloc = %d, iteration = %d, Blocks called : %d, %d \n", k, nbloc, iteration, i, i+c1); 	
+		if ( leftover == i + c1)
+			leftover = 0; 
 		}
 
-		int mod = nbloc_copy % c2 ;
-		nbloc_copy -= mod;		
+		mod = (nbloc + mod) % c2 ;	
 		
-		if ( mod != 0){
-			if (leftover != 0){
-			printf("k = %d, nbloc = %d, iteration = %d, Blocks called: %d, %d \n", k, nbloc, iteration, k+nbloc-c1, leftover);
-			leftover =0; 	
-			}else{
-			leftover = k + nbloc -c1;
+		if ( mod != 0 && leftover == 0){
+			printf("k = %d, leftover= %d  \n", k, hn_bloc-c1);
+			leftover = hn_bloc -c1;
 			}
-		}
+
+		
 
 		/* Update constants c1 and c2 */
 		c1 *= 2; 
