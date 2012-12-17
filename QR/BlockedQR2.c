@@ -1,8 +1,7 @@
-
 /* HPC 2012 Project  : Jacqueline Bush, Paul Torres */
 
-/* BlockedQR FILE: 
-Performs Blocked QR factorization using static Matrices
+/* BlockedQR2 FILE: 
+Performs Blocked QR factorization - version 2
 */
 
 /* Headers: */
@@ -16,16 +15,22 @@ Performs Blocked QR factorization using static Matrices
 #include "BlockedQR.h"
 #include "BlockedQR2.h"
 
-#define L1_BLK_SIZE 16
-#define L2_BLK_SIZE (L1_BLK_SIZE * 32)
-
-static void dgemm_lowest( const double*restrict, const double*restrict, double*restrict);
-static void dgemm_middle( const double*restrict, const double*restrict, double*restrict);
-static void staticWY( const double*restrict A, double*restrict Q, double*restrict Qt, double*restrict R);
-static void BlockedQRMiddle(const double*restrict A, double*restrict Q, double*restrict Qt);
-
 
 void BlockedQR2( double *A, int h, int w, double *Q){
+
+/* Block size */
+	int b= 2;
+	printf(" b = %d \n", b);
+
+/* Calculate Number of blocks */
+	int wn_bloc = (w+b-1)/b; // Number of Blocks in width (round up)
+	int hn_bloc = (h+b -1)/b; // Number of Blocks in height (round up)
+
+
+/* Determine which num. of blocks is smaller */
+	int n = wn_bloc; 
+	if( wn_bloc > hn_bloc )
+		n = hn_bloc;
 
 /* Set Q = m by m identity matrix */
  	for(int i = 0; i<h; i++){
@@ -36,99 +41,58 @@ void BlockedQR2( double *A, int h, int w, double *Q){
 		}
 	}	
 
+/* Enter Loop */
+for( int k =0 ; k< n; k++){
 
+	/* Calculate number of blocks below diagonal */
+	int nbloc = hn_bloc - k ; 
+	int nbloc_copy = nbloc;
 
+	/* Set initial c1 and c2, leftover constants */
+	int c1 = 1; int c2 = 2; int leftover =0; 
 
+	int iteration = 1;
 
-/* Make static matrices */
-static __attribute__ ((aligned(16))) double a_block[L1_BLK_SIZE*L1_BLK_SIZE];
-static __attribute__ ((aligned(16))) double b_block[L1_BLK_SIZE*L1_BLK_SIZE];
-static __attribute__ ((aligned(16))) double c_block[L1_BLK_SIZE*L1_BLK_SIZE];
-
-
-
-}
-
-static void BlockedQRMiddle(const double*restrict A, double*restrict Q, double*restrict Qt)
-{
-
-
-
-
-
-}
-
-
-
-/*=========================================================================*/
-
-static void staticWY( const double*restrict A, double*restrict Q, double*restrict Qt, double*restrict R){
-
-
-
-
-
-}
-
-
-/*=========================================================================*/
-
-
-/* Matrix Multiplication Code */ 
-/*----------------------------dgemm_middle Code-------------------------------*/
-static void dgemm_middle(const double*restrict A, const double*restrict B, double*restrict C){
-/*----------------------------------------------------------------------------- 
-PURPOSE: Takes fixed sized matrices A and B, size L2_BLK_SIZE, Outputs result matrix C.  
-ARGUEMENTS:
------------------------------------------------------------------------------*/
-
-int n = L2_BLK_SIZE; // Size of Matrix 
-int n_bloc = L2_BLK_SIZE/L1_BLK_SIZE; // Number of Blocks
-int b = L1_BLK_SIZE; // Block Size
-
-/* Make static matrices */
-static __attribute__ ((aligned(16))) double a_block[L1_BLK_SIZE*L1_BLK_SIZE];
-static __attribute__ ((aligned(16))) double b_block[L1_BLK_SIZE*L1_BLK_SIZE];
-static __attribute__ ((aligned(16))) double c_block[L1_BLK_SIZE*L1_BLK_SIZE]; 
-
-CleanMatrix(c_block, b, b);
-
-for( int j = 0; j < n_bloc; j++){
-	for( int i=0; i < n_bloc; i++){
-		BlockMatrix(C, c_block, n, n, b, i, j);
-		for( int k = 0; k < n_bloc ; k++){
-		BlockMatrix(A, a_block, n, n, b, i, k);
-		BlockMatrix(B, b_block, n, n, b, k, j);
-		dgemm_lowest( a_block, b_block, c_block);
-		CleanMatrix(a_block, b, b);
-		CleanMatrix(b_block, b, b);	
+	printf(" k = %d \n", k);		
+	
+	while( c2 <= nbloc ){
+		
+		for(int i=k; i< nbloc+k-1; i += c2){
+		printf("k = %d, nbloc = %d, iteration = %d, Blocks called : %d, %d \n", k, nbloc, iteration, i, i+c1); 	
 		}
-		UnBlockMatrix(C, c_block, n, n, b, i,j);		
-	}
-}	
 
-}
-
-/*----------------------------dgemm_lowest Code-------------------------------*/
-static void dgemm_lowest(const double*restrict A, const double*restrict B, double*restrict C){
-/*----------------------------------------------------------------------------- 
-PURPOSE: Takes fixed sized matrices A and B, size L1_BLK_SIZE, Outputs result matrix C.  
-ARGUEMENTS:
------------------------------------------------------------------------------*/
-
-int n = L1_BLK_SIZE , i, j, k;
- 
-  for(j=0; j<n; j++){
-	for(k=0;k<n; k++){
-		for(i=0; i<n;i++){
-		C[i + j*n] += A[i + k*n]*B[k + j*n];
+		int mod = nbloc_copy % c2 ;
+		nbloc_copy -= mod;		
+		
+		if ( mod != 0){
+			if (leftover != 0){
+			printf("k = %d, nbloc = %d, iteration = %d, Blocks called: %d, %d \n", k, nbloc, iteration, k+nbloc-c1, leftover);
+			leftover =0; 	
+			}else{
+			leftover = k + nbloc -c1;
+			}
 		}
-	}
-  }
 
+		/* Update constants c1 and c2 */
+		c1 *= 2; 
+		c2 *= 2;
+		iteration += 1;
+
+	}
+
+	if (leftover != 0){
+	printf("k = %d, nbloc = %d, Blocks called : %d, %d \n", k, nbloc, k, leftover); 
+	leftover =0;
+	}
+
+	if( k == hn_bloc -1){
+	printf(" k = %d, nbloc = %d, Blocks called : %d \n", k, nbloc, k);
+	
+	}	
+
+		
 }
 
-/*============================================================================*/
 
 
 
@@ -136,4 +100,4 @@ int n = L1_BLK_SIZE , i, j, k;
 
 
 
-
+}
