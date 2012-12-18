@@ -61,7 +61,7 @@ for( int k =0 ; k < n; k++){
     c1 = 1;
     c2 = 2;
 	
-  /* Run through Binary Tree */
+  /* Run through Binary Tree - Do in Parallel */
     while( c2 <= c ){
       #pragma omp parallel for shared(A, k, h, w, b, c1, c2, c) 
       for(int i = boundary; i < boundary + c - c1; i += c2){
@@ -85,8 +85,8 @@ for( int k =0 ; k < n; k++){
 	UnBlockQ( tempQh2, Q, h, h, b, i, i+c1);	
 	free(tempQ); free(tempQh1); free(tempQh2);
  
-	/* Update Blocks along i and k  rows */
-	//#pragma omp parallel for shared(A, k, h, w, b, i) 	
+	/* Update Blocks along i and i +c1  rows */
+	#pragma omp parallel for shared(A, k, h, w, b, c1, i) 	
 	for( int j=k+1; j<wn_bloc ; j++){
 		double *tempA = malloc(2*b*b*sizeof(double));
 		double *tempR = malloc(2*b*b*sizeof(double));
@@ -122,8 +122,8 @@ for( int k =0 ; k < n; k++){
 		UnBlockQ( tempQh2, Q, h, h, b, k, boundary);	
 		free(tempQ); free(tempQh1); free(tempQh2);
  
-		/* Update Blocks along i and k  rows */
-		//#pragma omp parallel for shared(A, k, h, w, b, i) 	
+		/* Update Blocks along boundary and k  rows - Do in Parallel */
+		#pragma omp parallel for shared(A, k, h, w, b, boundary) 	
 		for( int j=k+1; j<wn_bloc ; j++){
 			double *tempA = malloc(2*b*b*sizeof(double));
 			double *tempR = malloc(2*b*b*sizeof(double));
@@ -162,7 +162,7 @@ for( int k =0 ; k < n; k++){
 	free(tempQ); free(tempQh1); free(tempQh2);
 	
 	/* Update Blocks along row with Digonal Block - Do in Parallel */
-		//#pragma omp parallel for shared(A, k, h, w, b, tempQt) 	
+		#pragma omp parallel for shared(A, k, h, w, b, tempQt) 	
 		for( int j=k+1; j<wn_bloc ; j++){
 		double *tempA = malloc( b*b*sizeof(double));		
 		double *tempR = malloc( b*b*sizeof(double));
