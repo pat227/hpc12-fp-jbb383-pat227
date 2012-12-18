@@ -172,13 +172,8 @@ for( int k =0 ; k < n; k++){
 		free(tempA); free(tempR);
 		}
    		free(tempQt);
-
-
-
-
-
    
-    }
+    } /* If Loop Ends */
 
  } /* Outer For Loop Ends */
 	
