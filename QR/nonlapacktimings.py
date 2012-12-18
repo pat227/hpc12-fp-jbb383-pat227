@@ -10,29 +10,31 @@ import subprocess
 def main(args):
     if len(args) != 3:
         print "Usage: python nonlapacktimings.py n rank verbosity"
-        print "   n         -> the maximum number of iterations to be used, specified as the exponent of 10^(n-1)"
-        print "   rank      -> the upper bound of the square matrix size to decompose as exponent of 2^(r-1)"
+        print "   n         -> the maximum number of iterations to be used, specified as the "
+        print "                exponent of 10^(n-1)"
+        print "   rank      -> the upper bound of the square matrix size to decompose as "
+        print "                (almost) an exponent of 2^(r-1); we with a few cases of "
+        print "                non-powers of 2 thrown in at 100, 500, and 1000."
         print "   algorithm -> one or more of (a,b,c,d)"
-        print " Computes the QR decompositions of random square matrices for a range of iterations and sizes"
-        print " using the following optional methods: "
+        print " Computes the QR decompositions of random square matrices for a range of "
+        print " iterations and sizes using the following optional methods: "
         print "    a)Householder reflectors       b)WY"
-        print "    c)Blocked-QR utilizing WY"
-#        print " NOTE: on a quad-core Q6600 intel cpu, with rank=50, 100,000 iterations take about 74 seconds."
+        print "    c)Blocked-QR utilizing WY      d)BlockedQR2 "
         return
     n = int(args[0])
     r = int(args[1])
     methods = str(args[2])
     print("Timing QR decompositions...")
-    if( n > 7 or n < 1):
-        print "N must be a value of 1 through 7 (corresponding to 10^(N-1)); exercise caution in selection."
+    if( n > 8 or n < 1):
+        print "N must be a value of 1 through 8 (corresponding to 10^(N-1)); exercise caution in selection."
         return
-    if( r > 9 or r < 1):
-        print "R must be a value of 1 through 9 (corresponding to 2^(R-1)); exercise caution in selection."
+    if( r > 14 or r < 1):
+        print "R must be a value of 1 through 13 (almost corresponding to 2^(R-1)); exercise caution in selection."
         return
-    sizes = [2,4,8,16,32,64,128,256,512,1024]
+    sizes = [2,4,8,16,32,64,100,128,256,500,512,1000,1024,2048]
     iterations = [1, 10, 100, 1000, 10000, 100000, 1000000, 10000000]
     if(methods.find("a") > -1):
-        print "Starting iterations up to:", iterations[n], " with sizes up to:", sizes[r]
+        print "Starting iterations up to:", iterations[n-1], " with sizes up to:", sizes[r-1]
         for xr in range(r):
             rlocal = sizes[xr]
             subprocess.call(["./householder", str(rlocal), str(rlocal), str(iterations[n-1]), str(0)] )
@@ -41,23 +43,23 @@ def main(args):
         print "Starting iterations up to:", iterations[n-1], " with sizes up to:", sizes[r-1]
         for xr in range(r):
             rlocal = sizes[xr]
-#            for xr2 in range(8):
-#                rlocal2 = sizes[xr2]
-#                if(rlocal < 256):
             subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/wy", str(rlocal), str(rlocal), str(iterations[n-1]), str(0)] )
-#                else:
-#                    pass
 
-    if(methods.find("c") > -1):                
+    if(methods.find("c") > -1):
+        print "Starting iterations up to:", iterations[n-1], " with sizes up to:", sizes[r-1]
         for xr in range(r):
             rlocal = sizes[xr]
-            subprocess.call(["./BlockedQR", str(rlocal), str(rlocal), str(iterations[n-1]), str(0)] )
+            for xr2 in range(13):
+                rlocal2 = sizes[xr2]
+                subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/BlockedQR", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)] )
   
-#    if(methods.find("d") > -1):
-#        print "Starting iterations up to:", iterations[n], " with sizes up to:", sizes[r]
-#        for xr in range(r):
-#            rlocal = sizes[xr]
-#            subprocess.call(["./BlockedQR2", str(rlocal), str(rlocal), str(iterations[n-1]), str(0)] )
+    if(methods.find("d") > -1):
+        print "Starting iterations up to:", iterations[n-1], " with sizes up to:", sizes[r-1]
+        for xr in range(r):
+            rlocal = sizes[xr]
+            for xr2 in range(13):
+                rlocal2 = sizes[xr2]
+                subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/BlockedQR2", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)] )
 
 if __name__ == "__main__":
     import sys

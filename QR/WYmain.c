@@ -69,10 +69,10 @@ int main(int argc, char** argv)
   }
   get_timestamp(&time2);
   double elapsed = timestamp_diff_in_seconds(time1,time2);
-  double gbs = m * n * 8 * iterations / elapsed / 1e9;
-
+  //double gbs = m * n * 8 * iterations / elapsed / 1e9;
+  double gflops = n * n * n; //fabs(m * n * n / 2 - n * n * n / 3); 
   writetofile("wy_time.txt", m, n, iterations, elapsed);
-  writetofile("wy_gbs.txt", m, n, iterations, gbs);
+  writetofile("wy_gfs.txt", m, n, iterations, gflops);
   writetofile2("wy_mbyn.txt", m, n, (elapsed/(double)iterations));
   if(verbose) printf("Time elasped = %f s over %d iterations\n", elapsed, iterations);
   

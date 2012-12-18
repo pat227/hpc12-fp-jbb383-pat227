@@ -1,11 +1,13 @@
 #!/bin/bash
 
 #PBS -l nodes=1:ppn=8,walltime=0:30:00
-#PBS -N QR
+#PBS -N qr2
 #PBS -e localhost:/scratch/pat227/${PBS_JOBNAME}.e${PBS_JOBID}
 #PBS -o localhost:/scratch/pat227/${PBS_JOBNAME}.o${PBS_JOBID}
 
 cd /scratch/pat227/qr/
+
+export OMP_NUM_THREADS=8
 
 python /home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/nonlapacktimings.py 1 14 d &> output
 

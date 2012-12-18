@@ -208,8 +208,10 @@ int main(int argc, char** argv){
 
   get_timestamp(&time2);
   double elapsed = timestamp_diff_in_seconds(time1,time2);
-  double gbs = iterations * 8 * m * n / elapsed / 1000000000;
-  writetofile("householder_gbs.txt", m, n, iterations, gbs);
+  //double gbs = iterations * 8 * m * n / elapsed / 1000000000;
+  //approximate; actually fabs? (2 * m * n * n - n * n * n / 3)
+  double gflops = n * n * n;
+  writetofile("householder_gbs.txt", m, n, iterations, gflops);
   writetofile("householder_time.txt", m, n, iterations, elapsed);
 
   printf("Total Elapsed Time: %f", elapsed);
