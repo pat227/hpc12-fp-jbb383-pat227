@@ -19,7 +19,7 @@ Performs Blocked QR factorization - version 2
 void BlockedQR2( double *A, int h, int w, double *Q){
 
 /* Block size */
-	int b= 2;
+	int b= 16;
 	
 /* Calculate Number of blocks */
 	int wn_bloc = (w+b-1)/b; // Number of Blocks in width (round up)
