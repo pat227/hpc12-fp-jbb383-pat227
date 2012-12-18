@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-import numpy
-import scipy
-import time
+#import numpy
+#import scipy
+#import time
 import os
 import subprocess
 #output is suitable for input to gnu plot: (x,y,z) triples that may need sorting
@@ -41,12 +41,12 @@ def main(args):
         print "Starting iterations up to:", iterations[n-1], " with sizes up to:", sizes[r-1]
         for xr in range(r):
             rlocal = sizes[xr]
-            for xr2 in range(8):
-                rlocal2 = sizes[xr2]
-                if(rlocal < 256):
-                    subprocess.call(["./wy", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)] )
-                else:
-                    pass
+#            for xr2 in range(8):
+#                rlocal2 = sizes[xr2]
+#                if(rlocal < 256):
+            subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/wy", str(rlocal), str(rlocal), str(iterations[n-1]), str(0)] )
+#                else:
+#                    pass
 
     if(methods.find("c") > -1):                
         for xr in range(r):
