@@ -75,10 +75,10 @@ int main(int argc, char** argv)
   get_timestamp(&time2);
   double elapsed = timestamp_diff_in_seconds(time1,time2);
   //double gbs = m * n * 8 * iterations / elapsed / 1e9;
-  double gflops = m * n * n / elapsed / 1000000000; //fabs(m * n * n / 2 - n * n * n / 3);
+  double kflops = m * n * n / elapsed / 1000; //fabs(m * n * n / 2 - n * n * n / 3);
   char * omp = getenv("OMP_NUM_THREADS");
-  writetofile3("blockedQR2_8_scaled_time.txt", m, n, elapsed, omp);
-  writetofile3("blockedQR2_8_scaled_gfs.txt", m, n, gflops, omp);
+  writetofile3("blockedQR2_8_scaled_time.txt", elapsed, omp);
+  writetofile3("blockedQR2_8_scaled_gfs.txt", kflops, omp);
   
   if(verbose) printf("QR2_8_scaled: Time elasped = %f s over %d iterations\n", elapsed, iterations);
 

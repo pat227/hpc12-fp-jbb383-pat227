@@ -239,16 +239,16 @@ void writetofile2(const char * const fname, int m, int n, double dependent){
     abort();
   }
 }
-void writetofile3(const char * const fname, int m, int n, double dependent, const char * omp){
+void writetofile3(const char * const fname, double dependent, const char * omp){
   FILE * pf;
   char buffer[32];
   pf = fopen (fname,"a");
   if(pf!=NULL){
     //need a newline between series or else lines in gnu plot get screwed up
     fputs("\n", pf);
-    sprintf(buffer, "%d", m * n);
-    fputs(buffer, pf);
-    fputs(" ", pf);
+    //sprintf(buffer, "%d", m * n);
+    //fputs(buffer, pf);
+    //fputs(" ", pf);
     fputs(omp, pf);
     fputs(" ", pf);
     //the dependent variable - along z axis (typically time or gb/s)

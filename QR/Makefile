@@ -1,4 +1,4 @@
-EXECUTABLES = householder wy BlockedQR BlockedQR2 BlockedQR_8 BlockedQR2_8
+EXECUTABLES = householder wy BlockedQR BlockedQR2 BlockedQR_8 BlockedQR2_8 BlockedQR2_8_scaled BlockedQR_8_scaled
 
 all: $(EXECUTABLES)
 

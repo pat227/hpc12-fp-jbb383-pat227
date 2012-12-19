@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-from numpy import *
-from scipy import *
-from time import *
+import numpy
+#from scipy import *
+import time
 #I confirmed that lapack libary is being used via 
 # import numpy.distutils.system_info as sysinfo
 # sysinfo.get_info('lapack')
@@ -25,17 +25,37 @@ def main(args):
 #    example()
     print("Timing QR decompositions...")
     sizes = [2,4,8,16,32,64,128,256,512,1024,2048]
-    starttime = time()
+    file = open("lapack_time.txt", 'a')
+    file2 = open("lapack_gflps.txt", 'a')
+    gflps = 0.0
     for x in range(n):
         for s in range(r):
-            size = sizes[s]
-            a = random.randn(size, size)
-            qr(a, verbose)
-    endtime = time()
-    elapsed = (endtime-starttime)
-    print "Total Time elapsed:", elapsed, " s"
-    print "QR decomps / s: ", (r/elapsed)
-    print "Gflops /s: ", (n*n*n/elapsed/1000000000)
+            for s2 in range(r):
+                size = sizes[s]
+                size2 = sizes[s2]
+                starttime = time()
+                a = random.randn(size, size2)
+                qr(a, verbose)
+                endtime = time()
+                elapsed = (endtime-starttime)
+                print " s m:", size, "n:", size2, "time:", elapsed,
+                file.write('\n')
+                file.write(str(m))
+                file.write(' ')
+                file.write(str(n))
+                file.write(' ')
+                file.write(str(elapsed))
+#                print "QR decomps / s: ", (r/elapsed)
+                gflps = size * size2 * size2 / elapsed / 1000000000
+                print "Gflops /s: ", gflps
+                file2.write('\n')
+                file2.write(str(m))
+                file2.write(' ')
+                file2.write(str(n))
+                file2.write(' ')
+                file2.write(str(gflps))
+    file.close()
+    file2.close()
 
 def example():
     print("Example QR decomposition for a 3x3 matrix...")

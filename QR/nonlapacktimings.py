@@ -96,22 +96,22 @@ def main(args):
 
     if(methods.find("g") > -1):
         print "Starting scaling measurements for BlockedQR..."
-        for x in range(9):
+        for x in range(8):
             rlocal = 2048
             rlocal2 = 2048
             #this is an openmp sub call; be sure that environment variable OMP_NUM_THREAD=x is set here 
             environ = os.environ
-            environ["OMP_NUM_THREADS"]=str(x) 
+            environ["OMP_NUM_THREADS"]=str(8-x) 
             subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/BlockedQR_8_scaled", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)])
   
     if(methods.find("h") > -1):
         print "Starting scaling measurements for BlockedQR2..."
-        for x in range(9):
+        for x in range(8):
             rlocal = 2048
             rlocal2 = 2048
             #this is an openmp sub call; be sure that environment variable OMP_NUM_THREAD=x is set here
             environ = os.environ
-            environ["OMP_NUM_THREADS"]=str(x) 
+            environ["OMP_NUM_THREADS"]=str(8-x) 
             subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/BlockedQR2_8_scaled", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)])
 
 if __name__ == "__main__":
