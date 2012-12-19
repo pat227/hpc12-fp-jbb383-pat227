@@ -15,7 +15,7 @@ Generates n by m matrix and performs Blocked QR factorization/
 #include "MatrixMatrixMultiply.h"
 #include "MatrixTranspose.h"
 #include "Utilities.h"
-#include "BlockedQR.h"
+//#include "BlockedQR.h"
 #include "BlockedQR2.h"
 #define verbose 1
 
@@ -42,7 +42,6 @@ int main(int argc, char** argv)
   double * A = malloc(m * n * sizeof(double));
   double * Atest = malloc( m * n * sizeof(double));	
   double * Q = malloc(m * m * sizeof(double));
-  double * Qt = malloc( m* m* sizeof(double));
 
  /* Fill up matrix A with elements from [0,10)*/
   int i = 0; 
@@ -70,25 +69,23 @@ int main(int argc, char** argv)
       printf(" Q is Orthogonal! \n");
       IsQRequalToA(Q, A, Atest, m, m, m, n);  	
       printf(" A = QR! QR factorization was sucessful!\n");	
+      free(Qt);
     }
   }
   get_timestamp(&time2);
   double elapsed = timestamp_diff_in_seconds(time1,time2);
-  double gbs = m * n * 8 * iterations / elapsed / 1e9;
+  //  double gbs = m * n * iterations / elapsed / 1e9;
+  double gfps = m * n * n / elapsed / 1000000000;
   
-  writetofile("blockedQR_time.txt", m, n, iterations, elapsed);
-  writetofile("blockedQR_gbs.txt", m, n, iterations, gbs);
+  writetofile2("blockedQR2_time.txt", m, n, elapsed);
+  writetofile2("blockedQR2_gfps.txt", m, n, gfps);
   
-  if(verbose) printf("Time elasped = %f s over %d iterations\n", elapsed, iterations);
-
-
-
-
+  if(verbose) printf("QR2: Time elasped = %f s over %d iterations\n", elapsed, iterations);
 
   free(A);
   free(Atest);
   free(Q);
-  free(Qt);
+
 
   return 0;
 }

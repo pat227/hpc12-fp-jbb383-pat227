@@ -33,11 +33,12 @@ def main(args):
         return
     sizes = [2,4,8,16,32,64,100,128,256,500,512,1000,1024,2048]
     iterations = [1, 10, 100, 1000, 10000, 100000, 1000000, 10000000]
+
     if(methods.find("a") > -1):
         print "Starting iterations up to:", iterations[n-1], " with sizes up to:", sizes[r-1]
         for xr in range(r):
             rlocal = sizes[xr]
-            subprocess.call(["./householder", str(rlocal), str(rlocal), str(iterations[n-1]), str(0)] )
+            subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/householder", str(rlocal), str(rlocal), str(iterations[n-1]), str(0)] )
 
     if(methods.find("b") > -1):
         print "Starting iterations up to:", iterations[n-1], " with sizes up to:", sizes[r-1]
@@ -51,7 +52,10 @@ def main(args):
             rlocal = sizes[xr]
             for xr2 in range(13):
                 rlocal2 = sizes[xr2]
-                subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/BlockedQR", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)] )
+                #this is an openmp sub call; be sure that environment variable OMP_NUM_THREAD=8 in the pbs script
+#                environ = os.environ()
+#                environ["OMP_NUM_THREAD"]="8" 
+                subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/BlockedQR", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)])
   
     if(methods.find("d") > -1):
         print "Starting iterations up to:", iterations[n-1], " with sizes up to:", sizes[r-1]
@@ -59,7 +63,10 @@ def main(args):
             rlocal = sizes[xr]
             for xr2 in range(13):
                 rlocal2 = sizes[xr2]
-                subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/BlockedQR2", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)] )
+                #this is an openmp sub call; be sure that environment variable OMP_NUM_THREAD=8
+#                environ = os.environ()
+#                environ["OMP_NUM_THREAD"]="8" 
+                subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/BlockedQR2", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)])
 
 if __name__ == "__main__":
     import sys

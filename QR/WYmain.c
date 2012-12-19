@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 /* Check for two arguemnts, m = height of matrix, n = width of matrix k=iterations  */ 
   if (argc != 5)
   {
-    fprintf(stderr, "Need three arguments, m, n, iterations, and a (0,1) to indicate if testing is desired.\n");
+    fprintf(stderr, "Need four arguments, m, n, iterations, and a (0,1) to indicate if testing is desired.\n");
     abort(); 
   } 
  
@@ -38,11 +38,11 @@ int main(int argc, char** argv)
   }
 
  /* Initilize matrices A, Atest, and Q */
-  double * A = (double*) malloc(m * n * sizeof(double));
-  double * Atest = (double*) malloc( m * n * sizeof(double));	
-  double * Q = (double*) malloc(m * m * sizeof(double));
-  double * Qt = (double*) malloc(m * m * sizeof(double));
-  double * R = (double *)malloc(m * n * sizeof(double));
+  double * A = malloc(m * n * sizeof(double));
+  double * Atest = malloc( m * n * sizeof(double));	
+  double * Q = malloc(m * m * sizeof(double));
+  double * Qt = malloc(m * m * sizeof(double));
+  double * R = malloc(m * n * sizeof(double));
 
  /* Fill up matrix A with elements from [0,10)*/
   int i = 0; 
@@ -70,9 +70,9 @@ int main(int argc, char** argv)
   get_timestamp(&time2);
   double elapsed = timestamp_diff_in_seconds(time1,time2);
   //double gbs = m * n * 8 * iterations / elapsed / 1e9;
-  double gflops = n * n * n; //fabs(m * n * n / 2 - n * n * n / 3); 
-  writetofile("wy_time.txt", m, n, iterations, elapsed);
-  writetofile("wy_gfs.txt", m, n, iterations, gflops);
+  double gflops = m * n * n / elapsed / 1000000000; //fabs(m * n * n  - n * n * n / 3); 
+  writetofile2("wy_time.txt", m, n, elapsed);
+  writetofile2("wy_gfps.txt", m, n, gflops);
   writetofile2("wy_mbyn.txt", m, n, (elapsed/(double)iterations));
   if(verbose) printf("Time elasped = %f s over %d iterations\n", elapsed, iterations);
   

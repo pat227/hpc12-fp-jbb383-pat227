@@ -17,7 +17,7 @@ def main(args):
     n = int(args[0])
     r = int(args[1])
     verbose = int(args[2])
-    example()
+#    example()
     print("Timing QR decompositions...")
     starttime = time()
     for x in range(n):
@@ -27,6 +27,7 @@ def main(args):
     elapsed = (endtime-starttime)
     print "Total Time elapsed:", elapsed, " s"
     print "QR decomps / s: ", (n/elapsed)
+    print "Gflops /s: ", (n*r*r/elapsed)
 
 def example():
     print("Example QR decomposition for a 3x3 matrix...")

@@ -20,7 +20,7 @@ Generates n by m matrix and performs Blocked QR factorization/
 
 int main(int argc, char** argv) 
 {
-/* Check for two arguemnts, m = height of matrix, n = width of matrix k=iterations  */ 
+/* Check for arguemnts, m = height of matrix, n = width of matrix k=iterations  */ 
   if (argc != 5)
   {
     fprintf(stderr, "Need four arguments, m, n, iterations, and a (0,1) to indicate if testing is desired.\n");
@@ -75,15 +75,11 @@ int main(int argc, char** argv)
   get_timestamp(&time2);
   double elapsed = timestamp_diff_in_seconds(time1,time2);
   //double gbs = m * n * 8 * iterations / elapsed / 1e9;
-  double gflops = n * n * n; //fabs(m * n * n / 2 - n * n * n / 3);
-  writetofile("blockedQR_time.txt", m, n, iterations, elapsed);
-  writetofile("blockedQR_gfs.txt", m, n, iterations, gflops);
+  double gflops = m * n * n / elapsed / 1000000000; //fabs(m * n * n / 2 - n * n * n / 3);
+  writetofile2("blockedQR_time.txt", m, n, elapsed);
+  writetofile2("blockedQR_gfs.txt", m, n, gflops);
   
-  if(verbose) printf("Time elasped = %f s over %d iterations\n", elapsed, iterations);
-
-
-
-
+  if(verbose) printf("QR: Time elasped = %f s over %d iterations\n", elapsed, iterations);
 
   free(A);
   free(Atest);

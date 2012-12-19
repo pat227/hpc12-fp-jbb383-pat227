@@ -1,12 +1,12 @@
 #!/bin/bash
 
-#PBS -l nodes=1:ppn=8,walltime=0:30:00
-#PBS -N householder
+#PBS -l nodes=1:ppn=8,walltime=0:05:00
+#PBS -N wy3
 #PBS -e localhost:/scratch/pat227/${PBS_JOBNAME}.e${PBS_JOBID}
 #PBS -o localhost:/scratch/pat227/${PBS_JOBNAME}.o${PBS_JOBID}
 
 cd /scratch/pat227/qr/
 
-python /home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/nonlapacktimings.py 1 9 a &> output
+/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/wy 32 16 1 0 &> output
 
 exit 0;
