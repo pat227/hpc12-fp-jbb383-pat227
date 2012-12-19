@@ -33,25 +33,25 @@ def main(args):
             for s2 in range(r):
                 size = sizes[s]
                 size2 = sizes[s2]
-                starttime = time()
-                a = random.randn(size, size2)
+                starttime = time.time()
+                a = numpy.random.randn(size, size2)
                 qr(a, verbose)
-                endtime = time()
+                endtime = time.time()
                 elapsed = (endtime-starttime)
-                print " s m:", size, "n:", size2, "time:", elapsed,
+                print "m:", size, "n:", size2, "time:", elapsed,
                 file.write('\n')
-                file.write(str(m))
+                file.write(str(size))
                 file.write(' ')
-                file.write(str(n))
+                file.write(str(size2))
                 file.write(' ')
                 file.write(str(elapsed))
 #                print "QR decomps / s: ", (r/elapsed)
                 gflps = size * size2 * size2 / elapsed / 1000000000
                 print "Gflops /s: ", gflps
                 file2.write('\n')
-                file2.write(str(m))
+                file2.write(str(size))
                 file2.write(' ')
-                file2.write(str(n))
+                file2.write(str(size2))
                 file2.write(' ')
                 file2.write(str(gflps))
     file.close()
@@ -69,7 +69,7 @@ def example():
     print "C is:"
     print(c)
     #the key line:
-    q, r = linalg.qr(a, mode='full')
+    q, r = numpy.linalg.qr(a, mode='full')
     print "QR decomp of A:"
     print "Q:"
     print(q)
@@ -83,7 +83,7 @@ def qr(a, v):
         print "A is:"
         print(a)
         #the key line:
-    q, r = linalg.qr(a, mode='full')  
+    q, r = numpy.linalg.qr(a, mode='full')  
     if(v == 1):    
         print "QR decomp of A:"
         print "Q:"
