@@ -77,10 +77,12 @@ int main(int argc, char** argv)
   //double gbs = m * n * 8 * iterations / elapsed / 1e9;
   double kflops = m * n * n / elapsed / 1000; //fabs(m * n * n / 2 - n * n * n / 3);
   char * ompthreads = getenv("NUM_OMP_THREADS");
-  writetofile3("blockedQR_8_scaled_time.txt", elapsed, ompthreads);
-  writetofile3("blockedQR_8_scaled_gfs.txt", kflops, ompthreads);
+  printf("\n ran with OMP %s ", ompthreads);
+  //just use output...bug someplace...and not many points to copy paste
+  //writetofile3("blockedQR_8_scaled_time.txt", elapsed, ompthreads);
+  //writetofile3("blockedQR_8_scaled_gfs.txt", kflops, ompthreads);
   
-  if(verbose) printf("QR: Time elasped = %f s over %d iterations\n", elapsed, iterations);
+  if(verbose) printf("QR_8_scaled: Time = %f numthreads=%s, m:%d, n:%d kflops:%f\n", elapsed, ompthreads, m,n, kflops);
 
   free(A);
   free(Atest);
