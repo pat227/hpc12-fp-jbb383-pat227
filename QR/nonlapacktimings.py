@@ -20,6 +20,10 @@ def main(args):
         print " iterations and sizes using the following optional methods: "
         print "    a)Householder reflectors       b)WY"
         print "    c)Blocked-QR utilizing WY      d)BlockedQR2 "
+        print "    e)Blocked-QR using optimized blocksize=8"
+        print "    f)Blocked-QR2 using optimized blocksize=8"
+        print "    g)Scaling measurements (different #s of OMP threads) for e (n and r fixed)"
+        print "    h)Scaling measurements (different #s of OMP threads) for f (n and r fixed)"
         return
     n = int(args[0])
     r = int(args[1])
@@ -54,7 +58,7 @@ def main(args):
                 rlocal2 = sizes[xr2]
                 #this is an openmp sub call; be sure that environment variable OMP_NUM_THREAD=8 in the pbs script
 #                environ = os.environ()
-#                environ["OMP_NUM_THREAD"]="8" 
+#                environ["OMP_NUM_THREADS"]="8" 
                 subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/BlockedQR", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)])
   
     if(methods.find("d") > -1):
@@ -63,10 +67,52 @@ def main(args):
             rlocal = sizes[xr]
             for xr2 in range(13):
                 rlocal2 = sizes[xr2]
-                #this is an openmp sub call; be sure that environment variable OMP_NUM_THREAD=8
+                #this is an openmp sub call; be sure that environment variable OMP_NUM_THREAD=8 in the pbs script
 #                environ = os.environ()
-#                environ["OMP_NUM_THREAD"]="8" 
+#                environ["OMP_NUM_THREADS"]="8" 
                 subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/BlockedQR2", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)])
+
+    if(methods.find("e") > -1):
+        print "Starting iterations up to:", iterations[n-1], " with sizes up to:", sizes[r-1]
+        for xr in range(r):
+            rlocal = sizes[xr]
+            for xr2 in range(13):
+                rlocal2 = sizes[xr2]
+                #this is an openmp sub call; be sure that environment variable OMP_NUM_THREAD=8 in the pbs script
+#                environ = os.environ()
+#                environ["OMP_NUM_THREADS"]="8" 
+                subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/BlockedQR_8", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)])
+  
+    if(methods.find("f") > -1):
+        print "Starting iterations up to:", iterations[n-1], " with sizes up to:", sizes[r-1]
+        for xr in range(r):
+            rlocal = sizes[xr]
+            for xr2 in range(13):
+                rlocal2 = sizes[xr2]
+                #this is an openmp sub call; be sure that environment variable OMP_NUM_THREAD=8 in the pbs script
+#                environ = os.environ()
+#                environ["OMP_NUM_THREADS"]="8" 
+                subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/BlockedQR2_8", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)])
+
+    if(methods.find("g") > -1):
+        print "Starting scaling measurements for BlockedQR..."
+        for x in range(9):
+            rlocal = 2048
+            rlocal2 = 2048
+            #this is an openmp sub call; be sure that environment variable OMP_NUM_THREAD=x is set here 
+            environ = os.environ
+            environ["OMP_NUM_THREADS"]=str(x) 
+            subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/BlockedQR_8_scaled", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)])
+  
+    if(methods.find("h") > -1):
+        print "Starting scaling measurements for BlockedQR2..."
+        for x in range(9):
+            rlocal = 2048
+            rlocal2 = 2048
+            #this is an openmp sub call; be sure that environment variable OMP_NUM_THREAD=x is set here
+            environ = os.environ
+            environ["OMP_NUM_THREADS"]=str(x) 
+            subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/BlockedQR2_8_scaled", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)])
 
 if __name__ == "__main__":
     import sys

@@ -10,24 +10,32 @@ from time import *
 def main(args):
     if len(args) != 3:
         print "Usage: python lapack.py n rank"
-        print "   n -> # of time to compute QR decomposition"
+        print "   n -> # of times to compute QR decomposition"
         print "   rank -> the size of the square matrices to decompose"
+        print "            as 2^(r-1)"
         print "   verbosity -> 0,1"
         return
     n = int(args[0])
     r = int(args[1])
     verbose = int(args[2])
+    if(n < 1):
+        print "n must be > 0; exercise caution"
+    if(r < 1):
+        print "rank must be > 0; exercise caution"
 #    example()
     print("Timing QR decompositions...")
+    sizes = [2,4,8,16,32,64,128,256,512,1024,2048]
     starttime = time()
     for x in range(n):
-        a = random.randn(r, r)
-        qr(a, verbose)
+        for s in range(r):
+            size = sizes[s]
+            a = random.randn(size, size)
+            qr(a, verbose)
     endtime = time()
     elapsed = (endtime-starttime)
     print "Total Time elapsed:", elapsed, " s"
-    print "QR decomps / s: ", (n/elapsed)
-    print "Gflops /s: ", (n*r*r/elapsed)
+    print "QR decomps / s: ", (r/elapsed)
+    print "Gflops /s: ", (n*n*n/elapsed/1000000000)
 
 def example():
     print("Example QR decomposition for a 3x3 matrix...")

@@ -14,7 +14,7 @@ int main(int argc, char** argv){
     printf("\nGeneralized householder & example arguments:                                    ");
     printf("\nm -> desired height of matrix to decompose into QR                              ");
     printf("\nn -> desired width of matrix to decompose into QR                               ");
-    printf("\niterations -> desied # of iterations (for performance timing purposes)          ");
+    printf("\niterations -> desired # of iterations (for performance timing purposes)          ");
     printf("\ntesting -> (0,1) to indicate if testing is desired.");
     printf("\nThis program will compute an example 3x3 QR decomposition by Householder        ");
     printf("\nreflectors and then compute a QR decomposition for a matrix of random elements  ");
