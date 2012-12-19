@@ -29,7 +29,11 @@ def main(args):
     file2 = open("lapack_gflps.txt", 'a')
     gflps = 0.0
     for x in range(n):
+        file.write('\n')
+        file2.write('\n')
         for s in range(r):
+            file.write('\n')
+            file2.write('\n')
             for s2 in range(r):
                 size = sizes[s]
                 size2 = sizes[s2]
