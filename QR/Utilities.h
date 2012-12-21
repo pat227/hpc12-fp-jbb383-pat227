@@ -13,7 +13,7 @@ void UnBlockVectorForMatrixVector(double *outA, const double *inA, const int hA,
 				  const int b, const int i_bloc);
 void writetofile(const char * const fname, int m, int n, int iterations, double dependent);
 void writetofile2(const char * const fname, int m, int n, double dependent);
-void writetofile3(const char * const fname, int m, int n, double dependent, const char * omp);
+void writetofile3(const char * const fname, double dependent, const char * omp);
 //imports from test.h b/c no longer being used merely for testing but for code
 void dgemm_simple( const double *, const int, const int, const double *, const int, const int, double *);
 void simple_transpose(const double *, int , int , double *);

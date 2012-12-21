@@ -15,7 +15,7 @@ def main(args):
         print "   rank      -> the upper bound of the square matrix size to decompose as "
         print "                (almost) an exponent of 2^(r-1); we with a few cases of "
         print "                non-powers of 2 thrown in at 100, 500, and 1000."
-        print "   algorithm -> one or more of (a,b,c,d)"
+        print "   algorithm -> one or more of (a,b,c,d,e,f,g,h)"
         print " Computes the QR decompositions of random square matrices for a range of "
         print " iterations and sizes using the following optional methods: "
         print "    a)Householder reflectors       b)WY"
@@ -96,22 +96,26 @@ def main(args):
 
     if(methods.find("g") > -1):
         print "Starting scaling measurements for BlockedQR..."
-        for x in range(9):
+        for x in range(8):
             rlocal = 2048
             rlocal2 = 2048
-            #this is an openmp sub call; be sure that environment variable OMP_NUM_THREAD=x is set here 
+            #this is an openmp sub call; be sure that environment variable OMP_NUM_THREAD=x is set here
+            #this STILL has some kind of bug...won't set the variable!?!?
             environ = os.environ
-            environ["OMP_NUM_THREADS"]=str(x) 
+            environ["OMP_NUM_THREADS"]=str(8-x)
+            print "Calling BlockedQR_8_scaled with OMP_NUM_THREADS=", str(environ["OMP_NUM_THREADS"])
             subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/BlockedQR_8_scaled", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)])
   
     if(methods.find("h") > -1):
         print "Starting scaling measurements for BlockedQR2..."
-        for x in range(9):
+        for x in range(8):
             rlocal = 2048
             rlocal2 = 2048
             #this is an openmp sub call; be sure that environment variable OMP_NUM_THREAD=x is set here
+            #this STILL has some kind of bug...won't set the variable!?!?
             environ = os.environ
-            environ["OMP_NUM_THREADS"]=str(x) 
+            environ["OMP_NUM_THREADS"]=str(8-x)
+            print "Calling BlockedQR2_8_scaled with OMP_NUM_THREADS=", str(environ["OMP_NUM_THREADS"])
             subprocess.call(["/home/pat227/hpc-fall12/hpc12-proj-pat227-jbb383/QR/BlockedQR2_8_scaled", str(rlocal), str(rlocal2), str(iterations[n-1]), str(0)])
 
 if __name__ == "__main__":
