@@ -82,7 +82,7 @@ int main(int argc, char** argv)
   //writetofile3("blockedQR2_8_scaled_time.txt", elapsed, omp);
   //writetofile3("blockedQR2_8_scaled_gfs.txt", kflops, omp);
   
-  printf("QR2_8_scaled: Time = %f klpfs: %f for m:%d n:%d \n", elapsed, kflops, m, n);
+  printf("QR2_8_scaled: Time = %f klpfs: %f for m:%d n:%d NUM_THREADS=%s n", elapsed, kflops, m, n, omp);
 
   free(A);
   free(Atest);

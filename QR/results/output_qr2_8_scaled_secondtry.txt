@@ -1,0 +1,26 @@
+
+ ran with OMP 8 QR2_8_scaled: Time = 189.462121 klpfs: 0.000000 for m:2048 n:2048 
+
+ ran with OMP 7 QR2_8_scaled: Time = 187.964736 klpfs: 0.000000 for m:2048 n:2048 
+
+ ran with OMP 6 QR2_8_scaled: Time = 189.965884 klpfs: 0.000000 for m:2048 n:2048 
+
+ ran with OMP 5 QR2_8_scaled: Time = 197.127958 klpfs: 0.000000 for m:2048 n:2048 
+
+ ran with OMP 4 QR2_8_scaled: Time = 209.596134 klpfs: 0.000000 for m:2048 n:2048 
+
+ ran with OMP 3 QR2_8_scaled: Time = 226.931627 klpfs: 0.000000 for m:2048 n:2048 
+
+ ran with OMP 2 QR2_8_scaled: Time = 271.433515 klpfs: 0.000000 for m:2048 n:2048 
+
+ ran with OMP 1 QR2_8_scaled: Time = 238.821494 klpfs: 0.000000 for m:2048 n:2048 
+Timing QR decompositions...
+Starting scaling measurements for BlockedQR2...
+Calling BlockedQR2_8_scaled with OMP_NUM_THREADS= 8
+Calling BlockedQR2_8_scaled with OMP_NUM_THREADS= 7
+Calling BlockedQR2_8_scaled with OMP_NUM_THREADS= 6
+Calling BlockedQR2_8_scaled with OMP_NUM_THREADS= 5
+Calling BlockedQR2_8_scaled with OMP_NUM_THREADS= 4
+Calling BlockedQR2_8_scaled with OMP_NUM_THREADS= 3
+Calling BlockedQR2_8_scaled with OMP_NUM_THREADS= 2
+Calling BlockedQR2_8_scaled with OMP_NUM_THREADS= 1
